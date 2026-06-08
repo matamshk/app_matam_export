@@ -1,0 +1,384 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>لوحة التحكم - بوابة المأتم</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    <link rel="stylesheet" href="css/admin.css">
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"></script>
+    <style>
+        .report-controls {
+            background: rgba(255,255,255,0.05);
+            padding: 20px;
+            border-radius: 12px;
+            margin-bottom: 20px;
+            display: flex;
+            gap: 15px;
+            flex-wrap: wrap;
+            align-items: flex-end;
+            border: 1px solid var(--primary-color);
+        }
+        .btn-view { background: rgba(212,175,55,0.1); color: var(--primary-color); border: 1px solid var(--primary-color); padding: 6px 12px; border-radius: 4px; cursor: pointer; }
+        .btn-edit { background: rgba(23, 162, 184, 0.1); color: #17a2b8; border: 1px solid #17a2b8; padding: 6px 12px; border-radius: 4px; cursor: pointer; }
+        .btn-delete { background: rgba(220, 53, 69, 0.1); color: #dc3545; border: 1px solid #dc3545; padding: 6px 12px; border-radius: 4px; cursor: pointer; }
+        
+        .modal-overlay {
+            position: fixed; top: 0; left: 0; width: 100%; height: 100%;
+            background: rgba(0,0,0,0.85); z-index: 9999;
+            display: none; justify-content: center; align-items: center; padding: 20px;
+        }
+        .modal-box {
+            background: var(--bg-card); border-radius: 12px; padding: 30px; width: 100%;
+            max-width: 500px; max-height: 90vh; overflow-y: auto; text-align: right;
+            border: 1px solid var(--primary-color);
+        }
+        
+        @media print {
+            body:not(.printing-modal) .sidebar, 
+            body:not(.printing-modal) .top-header,
+            body:not(.printing-modal) .report-controls,
+            body:not(.printing-modal) .action-btns { display: none !important; }
+            body:not(.printing-modal) .main-content { margin: 0; padding: 0; }
+        }
+    </style>
+</head>
+<body>
+
+    <!-- Loader -->
+    <div id="authLoader" class="loader-overlay">
+        <i class="fas fa-circle-notch fa-spin"></i>
+        <h3>جاري التحقق من الصلاحيات...</h3>
+    </div>
+
+    <div class="dashboard-container" style="display: none;" id="mainDashboard">
+        
+        <!-- Sidebar -->
+        <aside class="sidebar">
+            <div class="sidebar-header">
+                <i class="fas fa-shield-alt"></i>
+                <h3>لوحة الإدارة</h3>
+            </div>
+            
+            <ul class="sidebar-menu">
+                <li><a href="#" class="active" onclick="showSection('bookingsViewer')"><i class="fas fa-book"></i> إدارة الحجوزات</a></li>
+                <li><a href="#" onclick="showSection('reportsViewer')"><i class="fas fa-chart-bar"></i> التقارير</a></li>
+                <li id="menu-users" style="display:none;"><a href="#" onclick="showSection('usersViewer')"><i class="fas fa-users"></i> إدارة المستخدمين</a></li>
+                <li id="menu-occasions" style="display:none;"><a href="#" onclick="showSection('occasionsViewer')"><i class="fas fa-calendar-alt"></i> المناسبات</a></li>
+                <li id="menu-settings" style="display:none;"><a href="#" onclick="showSection('settingsViewer')"><i class="fas fa-cogs"></i> الإعدادات</a></li>
+                <li><a href="index.html" target="_blank"><i class="fas fa-external-link-alt"></i> عرض الموقع</a></li>
+            </ul>
+
+            <div class="sidebar-footer">
+                <button class="logout-btn" onclick="logout()"><i class="fas fa-sign-out-alt"></i> تسجيل الخروج</button>
+            </div>
+        </aside>
+
+        <!-- Main Content -->
+        <main class="main-content">
+            <header class="top-header">
+                <h2 class="page-title" id="pageTitle">إدارة الحجوزات</h2>
+                <div class="user-info">
+                    <span style="color: var(--text-gray);" id="loggedInUser"><i class="fas fa-user-circle"></i> جاري التحميل...</span>
+                </div>
+            </header>
+
+            <div class="content-body">
+                
+                <!-- Section: Bookings -->
+                <section id="bookingsViewer">
+                    <div class="stats-grid">
+                        <div class="stat-card">
+                            <div class="stat-info">
+                                <h4>إجمالي الحجوزات</h4>
+                                <h2 id="statTotalBooks">0</h2>
+                            </div>
+                            <div class="stat-icon"><i class="fas fa-list-alt"></i></div>
+                        </div>
+                        <div class="stat-card">
+                            <div class="stat-info">
+                                <h4>قيد الانتظار</h4>
+                                <h2 id="statPendingBooks">0</h2>
+                            </div>
+                            <div class="stat-icon" style="color: var(--warning); background: rgba(241, 196, 15, 0.1);"><i class="fas fa-clock"></i></div>
+                        </div>
+                        <div class="stat-card">
+                            <div class="stat-info">
+                                <h4>مؤكدة</h4>
+                                <h2 id="statApprovedBooks">0</h2>
+                            </div>
+                            <div class="stat-icon" style="color: var(--success); background: rgba(46, 204, 113, 0.1);"><i class="fas fa-check-circle"></i></div>
+                        </div>
+                    </div>
+
+                    <div class="card-panel">
+                        <div class="card-header">
+                            <h3>أحدث الطلبات</h3>
+                            <button class="btn-primary" onclick="loadDashboardData()"><i class="fas fa-sync"></i> تحديث</button>
+                        </div>
+                        <div style="overflow-x: auto;">
+                            <table>
+                                <thead>
+                                    <tr>
+                                        <th>رقم الطلب</th>
+                                        <th>الاسم</th>
+                                        <th>الهاتف</th>
+                                        <th>التاريخ</th>
+                                        <th>النوع</th>
+                                        <th>الحالة</th>
+                                        <th>إجراءات</th>
+                                    </tr>
+                                </thead>
+                                <tbody id="bookingsTableBody">
+                                    <tr><td colspan="7" style="text-align: center;">جاري التحميل...</td></tr>
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                </section>
+
+                <!-- Section: Advanced Reports -->
+                <section id="reportsViewer" style="display: none;">
+                    <div class="report-controls">
+                        <div style="flex: 1; min-width: 150px;">
+                            <label>نوع الحجز</label>
+                            <select id="reportTypeFilter">
+                                <option value="all">الكل</option>
+                                <option value="مأتم">حجز مأتم</option>
+                                <option value="خطيب">حجز خطيب</option>
+                                <option value="احتفالات">احتفالات</option>
+                            </select>
+                        </div>
+                        <div style="flex: 1; min-width: 150px;">
+                            <label>من تاريخ</label>
+                            <input type="date" id="dateFrom">
+                        </div>
+                        <div style="flex: 1; min-width: 150px;">
+                            <label>إلى تاريخ</label>
+                            <input type="date" id="dateTo">
+                        </div>
+                        <div style="display: flex; gap: 10px;">
+                            <button onclick="generateReport()" class="btn-primary" style="width:auto;"><i class="fas fa-filter"></i> تصفية</button>
+                            <button onclick="window.print()" class="btn-primary" style="background: #e74c3c; width:auto;"><i class="fas fa-file-pdf"></i> حفظ PDF</button>
+                            <button onclick="exportToExcel()" class="btn-primary" style="background: #28a745; width:auto;"><i class="fas fa-file-excel"></i> حفظ Excel</button>
+                        </div>
+                    </div>
+
+                    <div class="card-panel">
+                        <div class="card-header">
+                            <h3>نتائج التقرير</h3>
+                        </div>
+                        <div style="overflow-x: auto;">
+                            <table id="reportTable">
+                                <thead>
+                                    <tr>
+                                        <th>رقم الحجز</th>
+                                        <th>التاريخ</th>
+                                        <th>النوع</th>
+                                        <th>الاسم</th>
+                                        <th>الهاتف</th>
+                                        <th>الحالة</th>
+                                        <th class="action-btns">الإجراءات (عرض/تعديل/حذف)</th>
+                                    </tr>
+                                </thead>
+                                <tbody id="reportTableBody">
+                                    <tr><td colspan="7" style="text-align: center;">جاري التحميل...</td></tr>
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                </section>
+
+                <!-- Section: Settings -->
+                <section id="settingsViewer" style="display: none;">
+                    <div class="card-panel">
+                        <div class="card-header">
+                            <h3>تعديل التقويم الهجري</h3>
+                        </div>
+                        <p style="color: var(--text-gray); margin-bottom: 20px;">يمكنك تعديل فارق الأيام إذا كان التقويم الهجري العالمي يختلف عن الرؤية الشرعية المحلية.</p>
+                        <form id="offsetForm" onsubmit="saveOffset(event)">
+                            <div class="form-group" style="max-width: 300px; margin-bottom: 20px;">
+                                <label>مقدار الإزاحة (بالأيام)</label>
+                                <input type="number" id="hijriOffsetInput" value="0" step="1">
+                            </div>
+                            <button type="submit" class="btn-primary"><i class="fas fa-save"></i> حفظ الإزاحة</button>
+                        </form>
+                    </div>
+
+                    <div class="card-panel">
+                        <div class="card-header">
+                            <h3>الإعدادات العامة للموقع</h3>
+                        </div>
+                        <p style="color: var(--text-gray); margin-bottom: 20px;">إدارة معلومات التواصل والروابط الخارجية الأساسية.</p>
+                        <form id="generalSettingsForm" onsubmit="saveGeneralSettings(event)">
+                            <div class="form-group" style="max-width: 300px; margin-bottom: 20px;">
+                                <label>رقم الواتساب (للتواصل والحجوزات)</label>
+                                <input type="text" id="whatsappPhoneInput" placeholder="مثال: 97330000000" required>
+                                <small style="display:block; margin-top:5px; color:#888;">الرجاء إدخال الرقم مع رمز الدولة بدون أصفار إضافية أو علامة +</small>
+                            </div>
+                            <button type="submit" class="btn-primary"><i class="fas fa-save"></i> حفظ الإعدادات</button>
+                        </form>
+                    </div>
+                </section>
+
+                <!-- Section: Occasions -->
+                <section id="occasionsViewer" style="display: none;">
+                    <div class="card-panel">
+                        <div class="card-header">
+                            <h3>إضافة مناسبة جديدة</h3>
+                        </div>
+                        <form id="adminOccasionForm" class="grid-form" onsubmit="saveAdminOccasion(event)">
+                            <div class="form-group">
+                                <label>عنوان المناسبة</label>
+                                <input type="text" id="occTitle" required>
+                            </div>
+                            <div class="form-group">
+                                <label>نوع المناسبة</label>
+                                <select id="occType">
+                                    <option value="religious">ديني (عام)</option>
+                                    <option value="happy">ميلاد / عيد (سعيد)</option>
+                                    <option value="sad">وفاة / استشهاد (حزين)</option>
+                                </select>
+                            </div>
+                            <div class="form-group">
+                                <label>الشهر الهجري</label>
+                                <select id="occMonth">
+                                    <option value="1">محرم</option><option value="2">صفر</option><option value="3">ربيع الأول</option><option value="4">ربيع الآخر</option>
+                                    <option value="5">جمادى الأولى</option><option value="6">جمادى الآخرة</option><option value="7">رجب</option><option value="8">شعبان</option>
+                                    <option value="9">رمضان</option><option value="10">شوال</option><option value="11">ذو القعدة</option><option value="12">ذو الحجة</option>
+                                </select>
+                            </div>
+                            <div class="form-group">
+                                <label>اليوم</label>
+                                <input type="number" id="occDay" min="1" max="30" required>
+                            </div>
+                            <div class="form-group" style="grid-column: 1 / -1;">
+                                <label>وصف إضافي</label>
+                                <textarea id="occDesc" rows="2"></textarea>
+                            </div>
+                            <div class="form-group" style="grid-column: 1 / -1;">
+                                <button type="submit" class="btn-primary" style="width: auto;"><i class="fas fa-plus"></i> إضافة المناسبة للإرشيف</button>
+                            </div>
+                        </form>
+                    </div>
+
+                    <div class="card-panel">
+                        <div class="card-header">
+                            <h3>قائمة المناسبات المخصصة</h3>
+                        </div>
+                        <div style="overflow-x: auto;">
+                            <table>
+                                <thead>
+                                    <tr>
+                                        <th>الشهر</th>
+                                        <th>اليوم</th>
+                                        <th>العنوان</th>
+                                        <th>النوع</th>
+                                    </tr>
+                                </thead>
+                                <tbody id="occasionsTableBody">
+                                    <tr><td colspan="4" style="text-align: center;">جاري التحميل...</td></tr>
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                </section>
+
+                <!-- Section: Users Management -->
+                <section id="usersViewer" style="display: none;">
+                    <div class="card-panel">
+                        <div class="card-header">
+                            <h3>إضافة / تعديل مستخدم</h3>
+                        </div>
+                        <form id="userForm" class="grid-form" onsubmit="saveUserSubmit(event)">
+                            <input type="hidden" id="userIdInput">
+                            <div class="form-group">
+                                <label>اسم المستخدم (للدخول)</label>
+                                <input type="text" id="userUsername" required>
+                            </div>
+                            <div class="form-group">
+                                <label>الاسم الكامل</label>
+                                <input type="text" id="userName" required>
+                            </div>
+                            <div class="form-group">
+                                <label>كلمة المرور</label>
+                                <input type="password" id="userPassword" placeholder="اتركه فارغاً إذا لم ترغب بالتغيير">
+                            </div>
+                            <div class="form-group">
+                                <label>الصلاحية</label>
+                                <select id="userRole" required>
+                                    <option value="manager">مدير حجوزات وتقارير (Manager)</option>
+                                    <option value="superadmin">مدير عام بتصريح كامل (Super Admin)</option>
+                                </select>
+                            </div>
+                            <div class="form-group" style="grid-column: 1 / -1;">
+                                <button type="submit" class="btn-primary" style="width: auto;"><i class="fas fa-save"></i> حفظ بيانات المستخدم</button>
+                                <button type="button" class="btn-primary" style="width: auto; background: #666;" onclick="document.getElementById('userForm').reset(); document.getElementById('userIdInput').value='';">جديد</button>
+                            </div>
+                        </form>
+                    </div>
+
+                    <div class="card-panel">
+                        <div class="card-header">
+                            <h3>قائمة مدراء النظام</h3>
+                        </div>
+                        <div style="overflow-x: auto;">
+                            <table>
+                                <thead>
+                                    <tr>
+                                        <th>اسم المستخدم</th>
+                                        <th>الاسم الكامل</th>
+                                        <th>الصلاحية</th>
+                                        <th>إجراءات</th>
+                                    </tr>
+                                </thead>
+                                <tbody id="usersTableBody">
+                                    <tr><td colspan="4" style="text-align: center;">جاري التحميل...</td></tr>
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                </section>
+
+            </div>
+        </main>
+    </div>
+
+    <!-- Edit Booking Modal -->
+    <div class="modal-overlay" id="editModalOverlay">
+        <div class="modal-box">
+            <h3 style="color: var(--primary-color); margin-bottom: 20px;">تعديل تفاصيل الحجز الأساسية</h3>
+            <form id="editBookingForm" onsubmit="submitEditBooking(event)">
+                <input type="hidden" id="editBookingId">
+                <div class="form-group">
+                    <label>الاسم</label>
+                    <input type="text" id="editName" required>
+                </div>
+                <div class="form-group">
+                    <label>رقم الهاتف</label>
+                    <input type="tel" id="editPhone" required>
+                </div>
+                <div class="form-group">
+                    <label>التاريخ</label>
+                    <input type="date" id="editDate" required>
+                </div>
+                <div style="display: flex; gap: 10px; margin-top: 20px;">
+                    <button type="submit" class="btn-primary" style="flex: 1;"><i class="fas fa-save"></i> حفظ التعديلات</button>
+                    <button type="button" class="btn-primary" style="flex: 1; background: #aaa;" onclick="document.getElementById('editModalOverlay').style.display='none'">إلغاء</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <!-- Full Details View Modal -->
+    <div class="modal-overlay" id="viewModalOverlay">
+        <div class="modal-box" id="viewModalContent" style="max-width: 600px; background: #fff; color: #000;">
+            <!-- Populated dynamically -->
+        </div>
+    </div>
+
+    <script src="js/admin.js?v=2026"></script>
+
+    <script src="js/admin.js?v=2026"></script>
+</body>
+</html>

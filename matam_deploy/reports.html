@@ -1,0 +1,390 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>بوابة المأتم - التقارير</title>
+    <!-- Google Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Tajawal:wght@400;500;700;800&display=swap" rel="stylesheet">
+    <!-- FontAwesome -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    <!-- Styles -->
+    <link rel="stylesheet" href="css/style.css">
+    <style>
+        .report-controls {
+            background: var(--bg-card);
+            padding: 20px;
+            border-radius: 12px;
+            margin-bottom: 20px;
+            display: flex;
+            gap: 15px;
+            flex-wrap: wrap;
+            align-items: flex-end;
+            border: 1px solid var(--primary-color);
+        }
+
+        .report-table {
+            width: 100%;
+            border-collapse: collapse;
+            background: var(--bg-card);
+            border-radius: 12px;
+            overflow: hidden;
+        }
+
+        .report-table th, .report-table td {
+            padding: 15px;
+            text-align: right;
+            border-bottom: 1px solid rgba(255,255,255,0.05);
+        }
+
+        .report-table th {
+            background: rgba(212,175,55,0.1);
+            color: var(--primary-color);
+            font-weight: bold;
+        }
+
+        .status-badge {
+            padding: 4px 8px;
+            border-radius: 4px;
+            font-size: 0.85em;
+            font-weight: bold;
+        }
+        .status-pending { background: rgba(255, 193, 7, 0.2); color: #d39e00; }
+        .status-accepted { background: rgba(40, 167, 69, 0.2); color: #28a745; }
+        .status-rejected { background: rgba(220, 53, 69, 0.2); color: #dc3545; }
+
+        .btn-view {
+            background: rgba(212,175,55,0.1); 
+            color: var(--primary-color); 
+            border: 1px solid var(--primary-color);
+            padding: 6px 12px;
+            border-radius: 4px;
+            cursor: pointer;
+            font-family: inherit;
+        }
+
+        /* Admin Modal Styles */
+        .admin-modal-overlay {
+            position: fixed; top: 0; left: 0; width: 100%; height: 100%;
+            background: rgba(0,0,0,0.85); z-index: 9999;
+            display: none; justify-content: center; align-items: center; padding: 20px;
+        }
+        .admin-modal {
+            background: white; border-radius: 12px; padding: 30px; width: 100%;
+            max-width: 600px; max-height: 90vh; overflow-y: auto; text-align: right;
+            border: 2px solid var(--gold-primary); box-shadow: 0 10px 30px rgba(0,0,0,0.5);
+            position: relative;
+        }
+        .admin-modal h3 { color: var(--gold-primary); margin-bottom: 20px; border-bottom: 2px solid #eee; padding-bottom: 10px;}
+        .admin-modal .details-grid {
+            background: #fdfcf8; border: 1px solid rgba(212,175,55,0.3); border-radius: 8px; padding: 15px; margin-bottom: 20px;
+        }
+        .admin-actions { display: flex; gap: 15px; flex-wrap: wrap; margin-top: 25px; border-top: 1px solid #eee; padding-top: 20px; text-align: center; }
+        .btn-accept { background: #28a745; color: white; padding: 12px 20px; border-radius: 8px; border: none; cursor: pointer; flex: 1; font-weight: bold; }
+        .btn-reject { background: #dc3545; color: white; padding: 12px 20px; border-radius: 8px; border: none; cursor: pointer; flex: 1; font-weight: bold; }
+        .btn-close { background: #aaa; color: white; padding: 12px 20px; border-radius: 8px; border: none; cursor: pointer; width: 100%; font-weight: bold; margin-top: 10px; }
+
+        @media print {
+            /* General report print rules */
+            body:not(.printing-modal) { background: white; color: black; }
+            body:not(.printing-modal) .navbar, 
+            body:not(.printing-modal) .report-controls, 
+            body:not(.printing-modal) .whatsapp-float,
+            body:not(.printing-modal) .admin-modal-overlay { display: none !important; }
+            body:not(.printing-modal) .report-table { border: 1px solid #ccc; }
+            body:not(.printing-modal) .report-table th, body:not(.printing-modal) .report-table td { border: 1px solid #ccc; color: black; }
+            body:not(.printing-modal) .report-table th { background: #eee; color: black; }
+            body:not(.printing-modal) .btn-view { display: none !important; }
+
+            /* Modal Print rules */
+            body.printing-modal * { visibility: hidden; }
+            body.printing-modal #adminModalContent, body.printing-modal #adminModalContent * { visibility: visible; }
+            body.printing-modal #adminModalContent {
+                position: absolute;
+                left: 0;
+                top: 0;
+                width: 100%;
+                margin: 0;
+                padding: 20px;
+                border: none;
+                box-shadow: none;
+            }
+            body.printing-modal .admin-actions, body.printing-modal .btn-close, body.printing-modal .btn-print-modal {
+                display: none !important;
+            }
+        }
+    </style>
+</head>
+
+<body>
+    <!-- Navbar -->
+    <nav class="navbar">
+        <div class="container nav-content">
+            <a href="index.html" class="logo"><i class="fas fa-mosque"></i> بوابة المأتم</a>
+            <div class="menu-toggle"><i class="fas fa-bars"></i></div>
+            <ul class="nav-links"></ul>
+        </div>
+    </nav>
+
+    <div class="container" style="padding: 40px 20px;">
+        <h2 class="section-title"><i class="fas fa-chart-bar"></i> مركز التقارير الشاملة</h2>
+
+        <div class="report-controls">
+            <div style="flex: 1; min-width: 200px;">
+                <label>نوع الحجز</label>
+                <select id="reportTypeFilter">
+                    <option value="all">الكل</option>
+                    <option value="مأتم">حجز مأتم</option>
+                    <option value="خطيب">حجز خطيب</option>
+                    <option value="احتفالات">احتفالات</option>
+                </select>
+            </div>
+            <div style="flex: 1; min-width: 200px;">
+                <label>من تاريخ</label>
+                <input type="date" id="dateFrom">
+            </div>
+            <div style="flex: 1; min-width: 200px;">
+                <label>إلى تاريخ</label>
+                <input type="date" id="dateTo">
+            </div>
+            <div>
+                <button onclick="generateReport()" class="btn" style="background: var(--primary-color);"><i class="fas fa-filter"></i> تصفية</button>
+                <button onclick="window.print()" class="btn" style="background: #28a745; color: white;"><i class="fas fa-print"></i> طباعة التقرير</button>
+            </div>
+        </div>
+
+        <div style="overflow-x: auto;">
+            <table class="report-table">
+                <thead>
+                    <tr>
+                        <th>رقم الحجز</th>
+                        <th>التاريخ</th>
+                        <th>النوع</th>
+                        <th>الاسم</th>
+                        <th>رقم الهاتف</th>
+                        <th>التفاصيل الأساسية</th>
+                        <th>الحالة</th>
+                        <th>الإجراء</th>
+                    </tr>
+                </thead>
+                <tbody id="reportTableBody">
+                    <tr><td colspan="6" class="text-center">جاري التحميل...</td></tr>
+                </tbody>
+            </table>
+        </div>
+    </div>
+
+    <!-- Admin Details Modal -->
+    <div class="admin-modal-overlay" id="adminModalOverlay">
+        <div class="admin-modal" id="adminModalContent">
+            <!-- Populated dynamically -->
+        </div>
+    </div>
+
+    <script src="js/main.js"></script>
+    <script>
+        document.addEventListener('DOMContentLoaded', () => {
+            generateReport();
+        });
+
+        function generateReport() {
+            const typeFilter = document.getElementById('reportTypeFilter').value;
+            const dateFrom = document.getElementById('dateFrom').value;
+            const dateTo = document.getElementById('dateTo').value;
+            const tbody = document.getElementById('reportTableBody');
+
+            const allBookings = JSON.parse(localStorage.getItem('matam_bookings') || '[]');
+            
+            let filtered = allBookings.filter(b => {
+                let matchType = true;
+                if (typeFilter !== 'all') {
+                    matchType = b.type && b.type.includes(typeFilter);
+                }
+
+                let matchDate = true;
+                if (dateFrom) {
+                    matchDate = matchDate && (b.date >= dateFrom);
+                }
+                if (dateTo) {
+                    matchDate = matchDate && (b.date <= dateTo);
+                }
+
+                return matchType && matchDate;
+            });
+
+            if (filtered.length === 0) {
+                tbody.innerHTML = '<tr><td colspan="6" class="text-center">لا توجد سجلات تطابق عوامل التصفية</td></tr>';
+                return;
+            }
+
+            tbody.innerHTML = filtered.map(b => {
+                let detailsHTML = '<ul style="margin:0; padding-right:15px; text-align:right; font-size:0.85em; list-style-type:circle; line-height: 1.6;">';
+                if(b.details.time) detailsHTML += '<li><strong>الوقت:</strong> ' + b.details.time + '</li>';
+                if(b.details.period) detailsHTML += '<li><strong>الفترة:</strong> ' + b.details.period + '</li>';
+                if(b.details.time_specific) detailsHTML += '<li><strong>الوقت المحدد:</strong> ' + b.details.time_specific + '</li>';
+                if(b.details.service) detailsHTML += '<li><strong>المناسبة/الخدمة:</strong> ' + b.details.service + '</li>';
+                else if(b.details.occasion_type) detailsHTML += '<li><strong>نوع الفعالية:</strong> ' + b.details.occasion_type + '</li>';
+                if(b.details.event_type) detailsHTML += '<li><strong>الفعالية:</strong> ' + b.details.event_type + '</li>';
+                if(b.details.hall) detailsHTML += '<li><strong>الموقع:</strong> ' + b.details.hall + '</li>';
+                if(b.details.hall_details) detailsHTML += '<li><strong>الموقع:</strong> ' + b.details.hall_details + '</li>';
+                if(b.details.package) detailsHTML += '<li><strong>الباقة:</strong> ' + b.details.package + '</li>';
+                
+                // participants
+                if(b.details.participant_khatib) detailsHTML += '<li><strong>الخطيب:</strong> ' + b.details.participant_khatib + '</li>';
+                if(b.details.participant_quran) detailsHTML += '<li><strong>قارئ القرآن:</strong> ' + b.details.participant_quran + '</li>';
+                if(b.details.participant_radod) detailsHTML += '<li><strong>الرادود/أهازيج:</strong> ' + b.details.participant_radod + '</li>';
+                if(b.details.participant_speech) detailsHTML += '<li><strong>الكلمة:</strong> ' + b.details.participant_speech + '</li>';
+                if(b.details.participant_poet) detailsHTML += '<li><strong>الشعر:</strong> ' + b.details.participant_poet + '</li>';
+                if(b.details.participant_intro) detailsHTML += '<li><strong>تعريف الحفل:</strong> ' + b.details.participant_intro + '</li>';
+
+                // addons
+                let addons = [];
+                if(b.details.has_tables) addons.push((b.details.tables_count || '') + ' طاولات');
+                if(b.details.has_chairs) addons.push((b.details.chairs_count || '') + ' كراسي');
+                if(b.details.has_tea) addons.push('شاي');
+                if(b.details.has_coffee) addons.push('قهوة');
+                if(b.details.services) addons.push('الخدمات: ' + b.details.services);
+                if(addons.length > 0) detailsHTML += '<li><strong>الإضافات:</strong> ' + addons.join(' + ') + '</li>';
+                
+                if(b.details.other_services || b.details.message) detailsHTML += '<li><strong>ملاحظات:</strong> ' + (b.details.other_services || b.details.message) + '</li>';
+                detailsHTML += '</ul>';
+
+                // Handle status string
+                let statusStr = b.status || 'pending';
+                let statusLabel = 'قيد المراجعة';
+                let statusClass = 'status-pending';
+                if(statusStr === 'accepted') { statusLabel = 'مقبول ✅'; statusClass = 'status-accepted'; }
+                if(statusStr === 'rejected') { statusLabel = 'مرفوض ❌'; statusClass = 'status-rejected'; }
+
+                let trId = b.id.toString().substring(b.id.toString().length - 5);
+                let typeBadge = '<span class="status-badge" style="background: rgba(212,175,55,0.1); color: var(--primary-color); border-radius: 4px; padding: 4px 8px;">' + b.type.replace('بوابة المأتم - ', '') + '</span>';
+                
+                let basicService = b.details.service || b.details.occasion_type || b.details.event_type || b.details.occasion || '-';
+                let basicTime = b.details.time || b.details.period || '';
+                let basicDetails = `<strong>${basicService}</strong><br><small style="color:var(--text-light);">${basicTime}</small>`;
+
+                return `
+                <tr>
+                    <td>#${trId}</td>
+                    <td style="font-weight:bold;">${b.date}</td>
+                    <td>${typeBadge}</td>
+                    <td>${b.name}</td>
+                    <td><a href="tel:${b.phone}" style="color:var(--text-light); text-decoration:none;">${b.phone}</a></td>
+                    <td>${basicDetails}</td>
+                    <td><span class="status-badge ${statusClass}">${statusLabel}</span></td>
+                    <td><button class="btn-view" onclick="openAdminModal('${b.id}')"><i class="fas fa-eye"></i> عرض الكامل</button></td>
+                </tr>
+                `;
+            }).join('');
+        }
+
+        // Global function to open details modal
+        window.openAdminModal = function(id) {
+            const allBookings = JSON.parse(localStorage.getItem('matam_bookings') || '[]');
+            const b = allBookings.find(x => x.id.toString() === id.toString());
+            if(!b) return;
+
+            let detailsHTML = '<ul style="margin:0; padding-right:15px; font-size:1rem; list-style-type:square; line-height: 1.8;">';
+            if(b.details.time) detailsHTML += '<li><strong>الوقت:</strong> ' + b.details.time + '</li>';
+            if(b.details.period) detailsHTML += '<li><strong>الفترة:</strong> ' + b.details.period + '</li>';
+            if(b.details.time_specific) detailsHTML += '<li><strong>الوقت المحدد:</strong> ' + b.details.time_specific + '</li>';
+            if(b.details.service) detailsHTML += '<li><strong>المناسبة/الخدمة:</strong> ' + b.details.service + '</li>';
+            else if(b.details.occasion_type) detailsHTML += '<li><strong>نوع الفعالية:</strong> ' + b.details.occasion_type + '</li>';
+            if(b.details.event_type) detailsHTML += '<li><strong>الفعالية:</strong> ' + b.details.event_type + '</li>';
+            if(b.details.hall) detailsHTML += '<li><strong>الموقع:</strong> ' + b.details.hall + '</li>';
+            if(b.details.hall_details) detailsHTML += '<li><strong>الموقع:</strong> ' + b.details.hall_details + '</li>';
+            if(b.details.package) detailsHTML += '<li><strong>الباقة:</strong> ' + b.details.package + '</li>';
+            
+            if(b.details.participant_khatib) detailsHTML += '<li><strong>الخطيب:</strong> ' + b.details.participant_khatib + '</li>';
+            if(b.details.participant_quran) detailsHTML += '<li><strong>قارئ القرآن:</strong> ' + b.details.participant_quran + '</li>';
+            if(b.details.participant_radod) detailsHTML += '<li><strong>الرادود/أهازيج:</strong> ' + b.details.participant_radod + '</li>';
+            if(b.details.participant_speech) detailsHTML += '<li><strong>الكلمة:</strong> ' + b.details.participant_speech + '</li>';
+            if(b.details.participant_poet) detailsHTML += '<li><strong>الشعر:</strong> ' + b.details.participant_poet + '</li>';
+            if(b.details.participant_intro) detailsHTML += '<li><strong>تعريف الحفل:</strong> ' + b.details.participant_intro + '</li>';
+
+            let addons = [];
+            if(b.details.has_tables) addons.push((b.details.tables_count || '') + ' طاولات');
+            if(b.details.has_chairs) addons.push((b.details.chairs_count || '') + ' كراسي');
+            if(b.details.has_tea) addons.push('شاي');
+            if(b.details.has_coffee) addons.push('قهوة');
+            if(b.details.services) addons.push('الخدمات: ' + (Array.isArray(b.details.services) ? b.details.services.join(',') : b.details.services));
+            if(addons.length > 0) detailsHTML += '<li><strong>الإضافات:</strong> ' + addons.join(' + ') + '</li>';
+            
+            if(b.details.other_services || b.details.message) detailsHTML += '<li><strong>ملاحظات:</strong> ' + (b.details.other_services || b.details.message) + '</li>';
+            detailsHTML += '</ul>';
+
+            let statusStr = b.status || 'pending';
+            let statusLabel = 'قيد المراجعة 🕳️';
+            if(statusStr === 'accepted') statusLabel = 'مقبول ✅';
+            if(statusStr === 'rejected') statusLabel = 'مرفوض ❌';
+
+            const formattedId = b.id.toString().substring(b.id.toString().length - 5);
+
+            const modalHtml = `
+                <h3>تفاصيل الطلب: #${formattedId}</h3>
+                <div style="display:flex; justify-content:space-between; margin-bottom: 15px; font-size: 0.95em;">
+                    <div><strong>مقدم الطلب:</strong> ${b.name}</div>
+                    <div><strong>الهاتف:</strong> <a href="tel:${b.phone}">${b.phone}</a></div>
+                </div>
+                <div style="display:flex; justify-content:space-between; margin-bottom: 15px; color: var(--gold-secondary); font-size: 0.95em;">
+                    <div><strong>تاريخ الحجز:</strong> ${b.date}</div>
+                    <div><strong>الحالة الحالية:</strong> ${statusLabel}</div>
+                </div>
+                
+                <div class="details-grid">
+                    ${detailsHTML}
+                </div>
+
+                <div class="admin-actions">
+                    <button class="btn-accept" onclick="updateBookingStatus('${b.id}', 'accepted')"><i class="fas fa-check"></i> قبول الفعالية</button>
+                    <button class="btn-reject" onclick="updateBookingStatus('${b.id}', 'rejected')"><i class="fas fa-times"></i> رفض الفعالية</button>
+                </div>
+                <div style="display:flex; gap: 10px; margin-top: 10px;">
+                    <button class="btn-print-modal" onclick="printAdminModal()" style="background: #17a2b8; color: white; padding: 12px 20px; border-radius: 8px; border: none; cursor: pointer; flex: 1; font-weight: bold;"><i class="fas fa-print"></i> طباعة التفاصيل</button>
+                    <button class="btn-close" onclick="closeAdminModal()" style="margin-top:0; flex: 1;">إغلاق الشاشة</button>
+                </div>
+            `;
+            
+            document.getElementById('adminModalContent').innerHTML = modalHtml;
+            document.getElementById('adminModalOverlay').style.display = 'flex';
+        };
+
+        window.printAdminModal = function() {
+            document.body.classList.add('printing-modal');
+            window.print();
+            setTimeout(() => {
+                document.body.classList.remove('printing-modal');
+            }, 500);
+        };
+
+        window.closeAdminModal = function() {
+            document.getElementById('adminModalOverlay').style.display = 'none';
+        };
+
+        window.updateBookingStatus = function(id, status) {
+            let allBookings = JSON.parse(localStorage.getItem('matam_bookings') || '[]');
+            // Must strip surrounding quotes if they got passed into the string literal accidentally
+            let safeId = id.replace(/'/g, "");
+            let b = allBookings.find(x => x.id.toString() === safeId);
+            if(b) {
+                b.status = status;
+                localStorage.setItem('matam_bookings', JSON.stringify(allBookings));
+                
+                // Sync status to server
+                fetch('/api/update_booking_status', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ id: safeId, status: status })
+                }).catch(e => console.error("Could not sync status update", e));
+
+                closeAdminModal();
+                generateReport(); // refresh table
+            }
+        };
+
+    </script>
+</body>
+</html>

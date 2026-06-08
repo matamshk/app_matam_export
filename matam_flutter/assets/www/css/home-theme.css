@@ -1,0 +1,456 @@
+/* Modern Gold/Beige Theme for Homepage */
+:root {
+    --gold-primary: #D4AF37;
+    --gold-light: #F4E4BC;
+    --beige-bg: #FDFCF8;
+    --text-dark: #2C2C2C;
+    --text-gold: #8A6E1E;
+    --card-shadow: 0 10px 30px rgba(212, 175, 55, 0.15);
+    --gradient-gold: linear-gradient(135deg, #FFF8E7 0%, #F4E4BC 100%);
+    --gradient-card: linear-gradient(180deg, #FFFFFF 0%, #FCFBF8 100%);
+}
+
+body {
+    background-color: var(--beige-bg);
+    color: var(--text-dark);
+}
+
+/* Header Section */
+.hero-section {
+    background: var(--gradient-gold);
+    padding: 60px 20px 80px;
+    /* More padding at bottom for overlap */
+    border-radius: 0 0 40px 40px;
+    text-align: center;
+    position: relative;
+    /* margin-bottom handled by negative margin on cards */
+    border-bottom: 2px solid rgba(212, 175, 55, 0.2);
+    box-shadow: 0 4px 20px rgba(212, 175, 55, 0.1);
+}
+
+.city-display {
+    font-size: 2rem;
+    font-weight: 700;
+    color: #1E3C72; /* User requested bold blue */
+    margin-bottom: 10px;
+    text-shadow: 0 2px 4px rgba(255,255,255,0.5);
+}
+
+.date-display {
+    font-size: 1.1rem;
+    color: #1E3C72;
+    opacity: 0.9;
+    background: rgba(255, 255, 255, 0.6);
+    display: inline-block;
+    padding: 5px 15px;
+    border-radius: 20px;
+    font-weight: bold;
+}
+
+/* Make Homepage Navbar Links Blue */
+.navbar .nav-links a {
+    color: #1E3C72;
+    font-weight: bold;
+}
+.navbar .nav-links a:hover,
+.navbar .nav-links a.active {
+    color: var(--gold-primary);
+}
+
+/* Main Cards Grid - Shifted up to overlap header */
+.prayer-grid {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    /* Mobile: 3 columns */
+    gap: 15px;
+    padding: 0 20px;
+    max-width: 900px;
+    margin: -50px auto 30px;
+    /* Negative margin to pull up */
+    position: relative;
+    z-index: 2;
+}
+
+.prayer-main-card {
+    background: var(--gradient-card);
+    border: 1px solid rgba(212, 175, 55, 0.2);
+    border-radius: 20px;
+    padding: 20px 10px;
+    text-align: center;
+    box-shadow: var(--card-shadow);
+    transition: transform 0.3s ease;
+}
+
+.prayer-main-card:hover {
+    transform: translateY(-5px);
+}
+
+.prayer-main-card.active {
+    border: 2px solid var(--gold-primary);
+    background: #FFFEFA;
+    transform: translateY(-5px);
+    box-shadow: 0 15px 35px rgba(212, 175, 55, 0.25);
+}
+
+.prayer-name {
+    font-size: 1rem;
+    color: var(--text-gold);
+    font-weight: 600;
+    margin-bottom: 8px;
+    display: block;
+}
+
+.prayer-time {
+    font-size: 1.4rem;
+    font-weight: 800;
+    color: var(--text-dark);
+    font-family: 'Tajawal', sans-serif;
+    display: block;
+}
+
+/* Mobile & Tablet Responsiveness */
+@media (max-width: 768px) {
+    .hero-section {
+        padding: 50px 15px 60px;
+        border-radius: 0 0 25px 25px;
+    }
+    .city-display {
+        font-size: 1.6rem;
+    }
+    .prayer-grid {
+        grid-template-columns: repeat(3, 1fr);
+        gap: 8px;
+    }
+    .prayer-main-card {
+        padding: 15px 5px;
+    }
+    .prayer-name {
+        font-size: 0.85rem;
+    }
+    .prayer-time {
+        font-size: 1rem;
+    }
+    .date-display {
+        font-size: 0.85rem;
+        padding: 8px 12px;
+        margin: 0 auto;
+    }
+    .services-grid {
+        grid-template-columns: repeat(2, 1fr);
+    }
+}
+
+
+/* Secondary Info */
+.info-section {
+    padding: 20px;
+    max-width: 900px;
+    margin: 0 auto;
+}
+
+/* Next Month Banner instead of Prayer Banner */
+.next-month-banner {
+    background: linear-gradient(135deg, #1E3C72 0%, #2A5298 100%);
+    color: white;
+    border-radius: 16px;
+    padding: 25px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    margin-bottom: 30px;
+    box-shadow: 0 10px 25px rgba(30, 60, 114, 0.3);
+    position: relative;
+    overflow: hidden;
+}
+
+.next-month-banner::before {
+    content: '';
+    position: absolute;
+    top: -50%;
+    left: -50%;
+    width: 200%;
+    height: 200%;
+    background: radial-gradient(circle, rgba(255, 255, 255, 0.1) 0%, transparent 60%);
+    pointer-events: none;
+}
+
+.next-month-item {
+    display: flex;
+    justify-content: space-between;
+    padding: 8px 0;
+    border-bottom: 1px solid rgba(255,255,255,0.1);
+    font-size: 0.95rem;
+}
+.next-month-item:last-child {
+    border-bottom: none;
+}
+
+.next-month-item-title {
+    font-weight: 500;
+}
+.next-month-item-date {
+    opacity: 0.8;
+    font-size: 0.85rem;
+}
+
+/* Service Links Grid */
+.services-section-title {
+    font-size: 1.2rem;
+    color: var(--text-dark);
+    margin-bottom: 15px;
+    font-weight: 700;
+    padding-right: 10px;
+    border-right: 4px solid var(--gold-primary);
+}
+
+.services-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(120px, 1fr));
+    gap: 15px;
+    margin-bottom: 40px;
+}
+
+.service-card {
+    background: white;
+    border-radius: 16px;
+    padding: 20px;
+    text-align: center;
+    border: 1px solid rgba(0, 0, 0, 0.05);
+    /* Very subtle border */
+    transition: all 0.2s;
+    text-decoration: none;
+    color: var(--text-dark);
+    box-shadow: 0 4px 15px rgba(0, 0, 0, 0.03);
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    height: 140px;
+}
+
+.service-card:hover {
+    border-color: var(--gold-primary);
+    transform: translateY(-3px);
+    box-shadow: 0 8px 25px rgba(212, 175, 55, 0.15);
+}
+
+.service-icon {
+    font-size: 1.8rem;
+    color: var(--gold-primary);
+    margin-bottom: 15px;
+    background: var(--gold-light);
+    /* Or slightly lighter */
+    background: rgba(212, 175, 55, 0.1);
+    width: 60px;
+    height: 60px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border-radius: 50%;
+    transition: background 0.2s;
+}
+
+.service-card:hover .service-icon {
+    background: var(--gold-primary);
+    color: white;
+}
+
+.service-title {
+    font-weight: 600;
+    font-size: 1rem;
+}
+
+/* Occasions List */
+.occasions-mini-list {
+    background: white;
+    border-radius: 16px;
+    padding: 0;
+    margin-bottom: 30px;
+    border: 1px solid rgba(0, 0, 0, 0.05);
+    box-shadow: 0 4px 15px rgba(0, 0, 0, 0.03);
+    overflow: hidden;
+}
+
+.occasion-item {
+    display: flex;
+    align-items: center;
+    gap: 15px;
+    padding: 15px 20px;
+    border-bottom: 1px solid #f5f5f5;
+    transition: background 0.2s;
+}
+
+.occasion-item:hover {
+    background: #fafafa;
+}
+
+.occasion-item:last-child {
+    border-bottom: none;
+}
+
+.occasion-date-box {
+    background: #FFF8E7;
+    border: 1px solid var(--gold-primary);
+    color: var(--text-gold);
+    padding: 8px 12px;
+    border-radius: 10px;
+    font-weight: bold;
+    text-align: center;
+    min-width: 60px;
+    line-height: 1.2;
+}
+
+.occasion-date-day {
+    font-size: 1.2rem;
+    display: block;
+}
+
+.occasion-date-month {
+    font-size: 0.8rem;
+    font-weight: normal;
+}
+
+.occasion-details {
+    flex-grow: 1;
+}
+
+.occasion-title {
+    font-weight: 700;
+    font-size: 1rem;
+    margin-bottom: 3px;
+}
+
+.occasion-type {
+    font-size: 0.8rem;
+    opacity: 0.6;
+}
+
+/* Calendar Widget */
+.calendar-widget {
+    background: white;
+    border-radius: 16px;
+    padding: 20px;
+    margin-bottom: 30px;
+    border: 1px solid rgba(0, 0, 0, 0.05);
+    box-shadow: 0 4px 15px rgba(0, 0, 0, 0.03);
+}
+
+.calendar-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 15px;
+    font-weight: bold;
+    color: var(--text-dark);
+}
+
+.calendar-grid {
+    display: grid;
+    grid-template-columns: repeat(7, 1fr);
+    gap: 5px;
+    text-align: center;
+}
+
+.calendar-day-name {
+    font-size: 0.8rem;
+    color: var(--gold-primary);
+    font-weight: bold;
+    padding-bottom: 10px;
+}
+
+.calendar-day {
+    aspect-ratio: 1;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    border-radius: 8px;
+    font-size: 0.9rem;
+    background: #fdfdfd;
+    border: 1px solid #eee;
+    cursor: default;
+    position: relative;
+}
+
+.calendar-day.has-event {
+    background: #FFF8E7;
+    border-color: var(--gold-primary);
+    color: var(--text-gold);
+    font-weight: bold;
+}
+
+.calendar-day.has-event::after {
+    content: '';
+    position: absolute;
+    bottom: 4px;
+    width: 6px;
+    height: 6px;
+    border-radius: 50%;
+    background: var(--gold-primary);
+}
+
+.calendar-day.today {
+    background: var(--gold-primary);
+    color: white;
+    border-color: var(--gold-primary);
+}
+
+.calendar-day.empty {
+    background: transparent;
+    border: none;
+}
+
+.calendar-day.has-booking {
+    background: #E3F2FD;
+    border-color: #2196F3;
+    color: #1565C0;
+    font-weight: bold;
+}
+.calendar-day.has-booking::after {
+    content: '';
+    position: absolute;
+    bottom: -4px;
+    width: 100%;
+    height: 3px;
+    background: #2196F3;
+    border-radius: 2px;
+}
+
+/* Event List below calendar */
+.calendar-events-list {
+    margin-top: 15px;
+    border-top: 1px solid #eee;
+    padding-top: 15px;
+}
+
+
+@media (min-width: 768px) {
+    .prayer-grid {
+        grid-template-columns: repeat(3, 1fr);
+        gap: 20px;
+        max-width: 800px;
+    }
+}
+
+@media (min-width: 768px) and (max-width: 1024px) {
+    .info-section {
+        display: grid;
+        grid-template-columns: 1fr;
+        gap: 30px;
+        align-items: start;
+    }
+}
+
+@media (min-width: 1025px) {
+    .info-section {
+        display: grid;
+        grid-template-columns: 2fr 1fr;
+        gap: 30px;
+        align-items: start;
+    }
+
+    .highlight-banner {
+        height: 100%;
+        margin-bottom: 0;
+    }
+}

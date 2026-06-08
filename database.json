@@ -1,0 +1,715 @@
+{
+  "bookings": [
+    {
+      "id": 1780783280514,
+      "createdAt": "2026-06-06T22:01:20.514Z",
+      "type": "حجز المأتم",
+      "details": {
+        "name": "<img src=x onerror=\"document.title='XSS:'+localStorage.getItem('site_settings')\">",
+        "phone": "36522442",
+        "date": "2026-06-29",
+        "time": "الظهر",
+        "service": "عقد قران",
+        "hall": "المأتم بالكامل",
+        "package": "حجز مع المسرح والتنظيف",
+        "tables_count": "",
+        "chairs_count": "",
+        "other_services": ""
+      },
+      "date": "2026-06-29",
+      "name": "<img src=x onerror=\"document.title='XSS:'+localStorage.getItem('site_settings')\">",
+      "phone": "36522442"
+    },
+    {
+      "id": 1780782917627,
+      "createdAt": "2026-06-06T21:55:17.628Z",
+      "type": "حجز المأتم",
+      "details": {
+        "name": "<img src=x onerror=\"console.log('XSS_SUCCESS:',localStorage.getItem('site_settings'))\">",
+        "phone": "36522442",
+        "date": "2026-06-28",
+        "time": "الظهر",
+        "service": "عقد قران",
+        "hall": "المأتم بالكامل",
+        "package": "حجز مع المسرح والتنظيف",
+        "tables_count": "",
+        "chairs_count": "",
+        "other_services": ""
+      },
+      "date": "2026-06-28",
+      "name": "<img src=x onerror=\"console.log('XSS_SUCCESS:',localStorage.getItem('site_settings'))\">",
+      "phone": "36522442"
+    },
+    {
+      "id": 1780766474594,
+      "createdAt": "2026-06-06T17:21:14.594Z",
+      "type": "حجز المأتم",
+      "details": {
+        "name": "<img src=x onerror=\"console.log('SITE<img src=x onerror=\"console.log('SITE_SETTINGS_VAL:',localStorage.getItem('site_settings'))\"><img src=x onerror=\"console.log('SITE_SETTINGS_VAL:',localStorage.getItem('site_settings'))\">_SETTINGS_VAL:',localStorage.getItem('site_settings'))\">",
+        "phone": "365224423652244236522442",
+        "date": "60627-02-02",
+        "time": "الصباح",
+        "service": "عقد قران",
+        "hall": "المأتم بالكامل",
+        "package": "حجز مع المسرح والتنظيف",
+        "tables_count": "",
+        "chairs_count": "",
+        "other_services": ""
+      },
+      "date": "60627-02-02",
+      "name": "<img src=x onerror=\"console.log('SITE<img src=x onerror=\"console.log('SITE_SETTINGS_VAL:',localStorage.getItem('site_settings'))\"><img src=x onerror=\"console.log('SITE_SETTINGS_VAL:',localStorage.getItem('site_settings'))\">_SETTINGS_VAL:',localStorage.getItem('site_settings'))\">",
+      "phone": "365224423652244236522442"
+    },
+    {
+      "id": 1780764268720,
+      "createdAt": "2026-06-06T16:44:28.720Z",
+      "type": "حجز الخطباء",
+      "details": {
+        "name": "Hani al mahary",
+        "phone": "36522442",
+        "date": "2026-06-27",
+        "time": "الصباح",
+        "time_specific": "08:45",
+        "event_type": "مولد",
+        "service": "المباهلة وتصدق أمير المؤمنين (ع) بالخاتم"
+      },
+      "date": "2026-06-27",
+      "name": "Hani al mahary",
+      "phone": "36522442"
+    },
+    {
+      "id": 1780764201874,
+      "createdAt": "2026-06-06T16:43:21.874Z",
+      "type": "حجز المأتم",
+      "details": {
+        "name": "hani",
+        "phone": "36522442",
+        "date": "2026-06-27",
+        "time": "الصباح",
+        "service": "عقد قران",
+        "hall": "الصالة الأرضية",
+        "package": "حجز مع التنظيف",
+        "tables_count": "",
+        "chairs_count": "",
+        "has_coffee": "نعم",
+        "other_services": ""
+      },
+      "date": "2026-06-27",
+      "name": "hani",
+      "phone": "36522442"
+    },
+    {
+      "id": 1777548010769,
+      "createdAt": "2026-04-30T11:20:10.769Z",
+      "type": "حجز المأتم",
+      "details": {
+        "name": "hani",
+        "phone": "36522442",
+        "date": "2026-04-29",
+        "time": "الصباح",
+        "service": "محاضرة",
+        "hall": "المأتم بالكامل",
+        "package": "حجز مع التنظيف",
+        "tables_count": "",
+        "chairs_count": "",
+        "has_coffee": "نعم",
+        "other_services": ""
+      },
+      "date": "2026-04-29",
+      "name": "hani",
+      "phone": "36522442"
+    }
+  ],
+  "custom_occasions": [
+    {
+      "id": "dh_occ_1",
+      "hijri": {
+        "month": 12,
+        "day": 7
+      },
+      "title": "استشهاد الإمام محمد الباقر (ع) 114هـ",
+      "type": "sad",
+      "description": "ذكرى شهادة الإمام محمد بن علي الباقر عليه السلام"
+    },
+    {
+      "id": "dh_occ_2",
+      "hijri": {
+        "month": 12,
+        "day": 8
+      },
+      "title": "يوم التروية / خروج الإمام الحسين (ع) من مكة إلى العراق",
+      "type": "sad",
+      "description": "خروج الإمام الحسين عليه السلام من مكة متوجهاً إلى كربلاء"
+    },
+    {
+      "id": "dh_occ_3",
+      "hijri": {
+        "month": 12,
+        "day": 9
+      },
+      "title": "يوم عرفة / استشهاد مسلم بن عقيل وهانئ بن عروة",
+      "type": "sad",
+      "description": "يوم عرفة وشهادة مسلم بن عقيل سفير الحسين وهانئ بن عروة في الكوفة عام 60هـ"
+    },
+    {
+      "id": "dh_occ_4",
+      "hijri": {
+        "month": 12,
+        "day": 10
+      },
+      "title": "عيد الأضحى المبارك",
+      "type": "happy",
+      "description": "عيد الأضحى المبارك / تبليغ سورة براءة"
+    },
+    {
+      "id": "dh_occ_5",
+      "hijri": {
+        "month": 12,
+        "day": 18
+      },
+      "title": "عيد الغدير الأغر",
+      "type": "happy",
+      "description": "تنصيب الإمام علي بن أبي طالب عليه السلام أميراً للمؤمنين عام 10هـ"
+    },
+    {
+      "id": "dh_occ_6",
+      "hijri": {
+        "month": 12,
+        "day": 24
+      },
+      "title": "يوم المباهلة",
+      "type": "happy",
+      "description": "ذكرى مباهلة الرسول الأكرم صلى الله عليه وآله لنصارى نجران عام 9هـ"
+    },
+    {
+      "id": "dh_occ_7",
+      "hijri": {
+        "month": 12,
+        "day": 25
+      },
+      "title": "تصدق الإمام علي (ع) بالخاتم ونزول سورة الدهر",
+      "type": "happy",
+      "description": "تصدق أمير المؤمنين عليه السلام بالخاتم أثناء الركوع ونزول سورة الإنسان/الدهر في فضل أهل البيت عليهم السلام"
+    },
+    {
+      "id": "dh_occ_8",
+      "hijri": {
+        "month": 12,
+        "day": 28
+      },
+      "title": "واقعة الحرة واستباحة المدينة المنورة",
+      "type": "sad",
+      "description": "استباحة الجيش الأموي لمدينة الرسول صلى الله عليه وآله وسلم عام 63هـ"
+    }
+  ],
+  "hijri_offset": 0,
+  "settings": {
+    "whatsapp_phone": "97300000000",
+    "hidden_pages": [],
+    "hidden_prayers": [
+      "imsak",
+      "asr",
+      "isha",
+      "midnight"
+    ],
+    "contribution_price": 10,
+    "google_webapp_url": "https://script.google.com/macros/s/AKfycbzqaTV-Wc1nLNASCUh9L_MZU2g6QU7GKZXh7hIWmvvKifwaQbeMFi_jYdsLWNkGfAc2eQ/exec",
+    "prayer_reference_url": "/uploads/144701.jpg",
+    "prayer_reference_option": "apply_offsets",
+    "prayer_calendar_database": {
+      "2026-05-18": {
+        "hijri_day": 1,
+        "hijri_month": 12,
+        "hijri_year": 1447,
+        "day_name_ar": "الإثنين",
+        "fajr": "3:30",
+        "sunrise": "4:50",
+        "dhuhr": "11:34",
+        "sunset": "6:18",
+        "maghrib": "6:33",
+        "midnight": "11:34"
+      },
+      "2026-05-19": {
+        "hijri_day": 2,
+        "hijri_month": 12,
+        "hijri_year": 1447,
+        "day_name_ar": "الثلاثاء",
+        "fajr": "3:30",
+        "sunrise": "4:49",
+        "dhuhr": "11:34",
+        "sunset": "6:19",
+        "maghrib": "6:34",
+        "midnight": "11:34"
+      },
+      "2026-05-20": {
+        "hijri_day": 3,
+        "hijri_month": 12,
+        "hijri_year": 1447,
+        "day_name_ar": "الأربعاء",
+        "fajr": "3:29",
+        "sunrise": "4:49",
+        "dhuhr": "11:34",
+        "sunset": "6:19",
+        "maghrib": "6:34",
+        "midnight": "11:34"
+      },
+      "2026-05-21": {
+        "hijri_day": 4,
+        "hijri_month": 12,
+        "hijri_year": 1447,
+        "day_name_ar": "الخميس",
+        "fajr": "3:28",
+        "sunrise": "4:49",
+        "dhuhr": "11:34",
+        "sunset": "6:20",
+        "maghrib": "6:35",
+        "midnight": "11:34"
+      },
+      "2026-05-22": {
+        "hijri_day": 5,
+        "hijri_month": 12,
+        "hijri_year": 1447,
+        "day_name_ar": "الجمعة",
+        "fajr": "3:28",
+        "sunrise": "4:48",
+        "dhuhr": "11:34",
+        "sunset": "6:20",
+        "maghrib": "6:35",
+        "midnight": "11:34"
+      },
+      "2026-05-23": {
+        "hijri_day": 6,
+        "hijri_month": 12,
+        "hijri_year": 1447,
+        "day_name_ar": "السبت",
+        "fajr": "3:27",
+        "sunrise": "4:48",
+        "dhuhr": "11:34",
+        "sunset": "6:21",
+        "maghrib": "6:36",
+        "midnight": "11:34"
+      },
+      "2026-05-24": {
+        "hijri_day": 7,
+        "hijri_month": 12,
+        "hijri_year": 1447,
+        "day_name_ar": "الأحد",
+        "fajr": "3:27",
+        "sunrise": "4:47",
+        "dhuhr": "11:34",
+        "sunset": "6:22",
+        "maghrib": "6:37",
+        "midnight": "11:34"
+      },
+      "2026-05-25": {
+        "hijri_day": 8,
+        "hijri_month": 12,
+        "hijri_year": 1447,
+        "day_name_ar": "الإثنين",
+        "fajr": "3:26",
+        "sunrise": "4:47",
+        "dhuhr": "11:34",
+        "sunset": "6:22",
+        "maghrib": "6:37",
+        "midnight": "11:35"
+      },
+      "2026-05-26": {
+        "hijri_day": 9,
+        "hijri_month": 12,
+        "hijri_year": 1447,
+        "day_name_ar": "الثلاثاء",
+        "fajr": "3:26",
+        "sunrise": "4:47",
+        "dhuhr": "11:35",
+        "sunset": "6:23",
+        "maghrib": "6:38",
+        "midnight": "11:34"
+      },
+      "2026-05-27": {
+        "hijri_day": 10,
+        "hijri_month": 12,
+        "hijri_year": 1447,
+        "day_name_ar": "الأربعاء",
+        "fajr": "3:25",
+        "sunrise": "4:46",
+        "dhuhr": "11:35",
+        "sunset": "6:23",
+        "maghrib": "6:38",
+        "midnight": "11:35"
+      },
+      "2026-05-28": {
+        "hijri_day": 11,
+        "hijri_month": 12,
+        "hijri_year": 1447,
+        "day_name_ar": "الخميس",
+        "fajr": "3:25",
+        "sunrise": "4:46",
+        "dhuhr": "11:35",
+        "sunset": "6:24",
+        "maghrib": "6:39",
+        "midnight": "11:35"
+      },
+      "2026-05-29": {
+        "hijri_day": 12,
+        "hijri_month": 12,
+        "hijri_year": 1447,
+        "day_name_ar": "الجمعة",
+        "fajr": "3:24",
+        "sunrise": "4:46",
+        "dhuhr": "11:35",
+        "sunset": "6:24",
+        "maghrib": "6:39",
+        "midnight": "11:35"
+      },
+      "2026-05-30": {
+        "hijri_day": 13,
+        "hijri_month": 12,
+        "hijri_year": 1447,
+        "day_name_ar": "السبت",
+        "fajr": "3:24",
+        "sunrise": "4:46",
+        "dhuhr": "11:35",
+        "sunset": "6:25",
+        "maghrib": "6:40",
+        "midnight": "11:35"
+      },
+      "2026-05-31": {
+        "hijri_day": 14,
+        "hijri_month": 12,
+        "hijri_year": 1447,
+        "day_name_ar": "الأحد",
+        "fajr": "3:23",
+        "sunrise": "4:45",
+        "dhuhr": "11:35",
+        "sunset": "6:25",
+        "maghrib": "6:40",
+        "midnight": "11:35"
+      },
+      "2026-06-01": {
+        "hijri_day": 15,
+        "hijri_month": 12,
+        "hijri_year": 1447,
+        "day_name_ar": "الإثنين",
+        "fajr": "3:23",
+        "sunrise": "4:45",
+        "dhuhr": "11:35",
+        "sunset": "6:26",
+        "maghrib": "6:41",
+        "midnight": "11:35"
+      },
+      "2026-06-02": {
+        "hijri_day": 16,
+        "hijri_month": 12,
+        "hijri_year": 1447,
+        "day_name_ar": "الثلاثاء",
+        "fajr": "3:23",
+        "sunrise": "4:45",
+        "dhuhr": "11:35",
+        "sunset": "6:26",
+        "maghrib": "6:41",
+        "midnight": "11:35"
+      },
+      "2026-06-03": {
+        "hijri_day": 17,
+        "hijri_month": 12,
+        "hijri_year": 1447,
+        "day_name_ar": "الأربعاء",
+        "fajr": "3:22",
+        "sunrise": "4:45",
+        "dhuhr": "11:35",
+        "sunset": "6:26",
+        "maghrib": "6:41",
+        "midnight": "11:35"
+      },
+      "2026-06-04": {
+        "hijri_day": 18,
+        "hijri_month": 12,
+        "hijri_year": 1447,
+        "day_name_ar": "الخميس",
+        "fajr": "3:22",
+        "sunrise": "4:45",
+        "dhuhr": "11:36",
+        "sunset": "6:27",
+        "maghrib": "6:42",
+        "midnight": "11:36"
+      },
+      "2026-06-05": {
+        "hijri_day": 19,
+        "hijri_month": 12,
+        "hijri_year": 1447,
+        "day_name_ar": "الجمعة",
+        "fajr": "3:22",
+        "sunrise": "4:45",
+        "dhuhr": "11:36",
+        "sunset": "6:27",
+        "maghrib": "6:42",
+        "midnight": "11:36"
+      },
+      "2026-06-06": {
+        "hijri_day": 20,
+        "hijri_month": 12,
+        "hijri_year": 1447,
+        "day_name_ar": "السبت",
+        "fajr": "3:22",
+        "sunrise": "4:45",
+        "dhuhr": "11:36",
+        "sunset": "6:28",
+        "maghrib": "6:43",
+        "midnight": "11:36"
+      },
+      "2026-06-07": {
+        "hijri_day": 21,
+        "hijri_month": 12,
+        "hijri_year": 1447,
+        "day_name_ar": "الأحد",
+        "fajr": "3:22",
+        "sunrise": "4:45",
+        "dhuhr": "11:36",
+        "sunset": "6:28",
+        "maghrib": "6:43",
+        "midnight": "11:36"
+      },
+      "2026-06-08": {
+        "hijri_day": 22,
+        "hijri_month": 12,
+        "hijri_year": 1447,
+        "day_name_ar": "الإثنين",
+        "fajr": "3:21",
+        "sunrise": "4:44",
+        "dhuhr": "11:36",
+        "sunset": "6:29",
+        "maghrib": "6:44",
+        "midnight": "11:36"
+      },
+      "2026-06-09": {
+        "hijri_day": 23,
+        "hijri_month": 12,
+        "hijri_year": 1447,
+        "day_name_ar": "الثلاثاء",
+        "fajr": "3:21",
+        "sunrise": "4:44",
+        "dhuhr": "11:37",
+        "sunset": "6:29",
+        "maghrib": "6:44",
+        "midnight": "11:36"
+      },
+      "2026-06-10": {
+        "hijri_day": 24,
+        "hijri_month": 12,
+        "hijri_year": 1447,
+        "day_name_ar": "الأربعاء",
+        "fajr": "3:21",
+        "sunrise": "4:44",
+        "dhuhr": "11:37",
+        "sunset": "6:29",
+        "maghrib": "6:44",
+        "midnight": "11:36"
+      },
+      "2026-06-11": {
+        "hijri_day": 25,
+        "hijri_month": 12,
+        "hijri_year": 1447,
+        "day_name_ar": "الخميس",
+        "fajr": "3:21",
+        "sunrise": "4:44",
+        "dhuhr": "11:37",
+        "sunset": "6:30",
+        "maghrib": "6:45",
+        "midnight": "11:37"
+      },
+      "2026-06-12": {
+        "hijri_day": 26,
+        "hijri_month": 12,
+        "hijri_year": 1447,
+        "day_name_ar": "الجمعة",
+        "fajr": "3:21",
+        "sunrise": "4:44",
+        "dhuhr": "11:37",
+        "sunset": "6:30",
+        "maghrib": "6:45",
+        "midnight": "11:37"
+      },
+      "2026-06-13": {
+        "hijri_day": 27,
+        "hijri_month": 12,
+        "hijri_year": 1447,
+        "day_name_ar": "السبت",
+        "fajr": "3:21",
+        "sunrise": "4:45",
+        "dhuhr": "11:37",
+        "sunset": "6:31",
+        "maghrib": "6:46",
+        "midnight": "11:38"
+      },
+      "2026-06-14": {
+        "hijri_day": 28,
+        "hijri_month": 12,
+        "hijri_year": 1447,
+        "day_name_ar": "الأحد",
+        "fajr": "3:21",
+        "sunrise": "4:45",
+        "dhuhr": "11:38",
+        "sunset": "6:31",
+        "maghrib": "6:46",
+        "midnight": "11:38"
+      },
+      "2026-06-15": {
+        "hijri_day": 29,
+        "hijri_month": 12,
+        "hijri_year": 1447,
+        "day_name_ar": "الإثنين",
+        "fajr": "3:21",
+        "sunrise": "4:45",
+        "dhuhr": "11:38",
+        "sunset": "6:31",
+        "maghrib": "6:46",
+        "midnight": "11:38"
+      },
+      "2026-06-16": {
+        "hijri_day": 30,
+        "hijri_month": 12,
+        "hijri_year": 1447,
+        "day_name_ar": "الثلاثاء",
+        "fajr": "3:21",
+        "sunrise": "4:45",
+        "dhuhr": "11:38",
+        "sunset": "6:31",
+        "maghrib": "6:46",
+        "midnight": "11:38"
+      }
+    }
+  },
+  "users": [
+    {
+      "id": "superadmin1",
+      "username": "admin",
+      "password": "admin123",
+      "role": "superadmin",
+      "name": "المدير العام"
+    },
+    {
+      "id": "user_3d3b7939",
+      "username": "hani",
+      "name": "hani almahary",
+      "role": "manager",
+      "password": "hani198161"
+    }
+  ],
+  "sessions": {
+    "8009e09467e544469120a47d59c7ee16": {
+      "user_id": "superadmin1",
+      "role": "superadmin",
+      "name": "المدير العام"
+    },
+    "b4bff8e8a2ad43a4874b6714b3e1700c": {
+      "user_id": "superadmin1",
+      "role": "superadmin",
+      "name": "المدير العام"
+    },
+    "22cf02d79b06479eb3d173069f38ff4b": {
+      "user_id": "superadmin1",
+      "role": "superadmin",
+      "name": "المدير العام"
+    },
+    "ff7e981613b44c019db997db934c5e03": {
+      "user_id": "superadmin1",
+      "role": "superadmin",
+      "name": "المدير العام"
+    },
+    "3e520d469c8f4f3d87ba8ed422c94894": {
+      "user_id": "superadmin1",
+      "role": "superadmin",
+      "name": "المدير العام"
+    },
+    "b9df81c799954c1a9a9855541075e1b5": {
+      "user_id": "superadmin1",
+      "role": "superadmin",
+      "name": "المدير العام"
+    },
+    "9b6ca694d32644fa85e499645b7bb3e3": {
+      "user_id": "superadmin1",
+      "role": "superadmin",
+      "name": "المدير العام"
+    },
+    "60c43e5c980245b2b286904ad28916cb": {
+      "user_id": "user_3d3b7939",
+      "role": "manager",
+      "name": "hani almahary"
+    },
+    "385f2ae9bb424257b16f9baa475fae4d": {
+      "user_id": "superadmin1",
+      "role": "superadmin",
+      "name": "المدير العام"
+    },
+    "143b9d2f46564875918090702d44f4c9": {
+      "user_id": "superadmin1",
+      "role": "superadmin",
+      "name": "المدير العام"
+    },
+    "5016f3501f5d42cca14a54c4371d68db": {
+      "user_id": "superadmin1",
+      "role": "superadmin",
+      "name": "المدير العام"
+    }
+  },
+  "contributions": [
+    {
+      "id": "cont_1780159347477",
+      "date": "30/05/2026",
+      "timestamp": 1780159347477,
+      "sender_name": "hani",
+      "sender_phone": "36522442",
+      "hijri_month": "2",
+      "occasion": "وفيات",
+      "total_amount": 10,
+      "deceased_list": [
+        {
+          "name": "سيد محمد ابرهيم",
+          "photo": "uploads/deceased_0_1780159347_0b9a6c.jpeg"
+        }
+      ],
+      "receipt_image": "uploads/receipt_1780159347_c75543.jpeg",
+      "status": "pending"
+    },
+    {
+      "id": "cont_1780158816746",
+      "date": "30/05/2026",
+      "timestamp": 1780158816747,
+      "sender_name": "محسن علي",
+      "sender_phone": "36522442",
+      "hijri_month": "1",
+      "occasion": "عامة",
+      "total_amount": 20,
+      "deceased_list": [
+        {
+          "name": "محمد علي ",
+          "photo": "uploads/deceased_0_1780158817_a1f321.jpeg"
+        },
+        {
+          "name": "محسن علي",
+          "photo": "uploads/deceased_1_1780158817_69536b.jpeg"
+        }
+      ],
+      "receipt_image": "uploads/receipt_1780158817_5b2db7.jpeg",
+      "status": "pending"
+    },
+    {
+      "id": "cont_1780156825262",
+      "date": "30/05/2026",
+      "timestamp": 1780156825263,
+      "sender_name": "hani",
+      "sender_phone": "36522442",
+      "hijri_month": "1",
+      "occasion": "وفيات",
+      "total_amount": 10,
+      "deceased_list": [
+        {
+          "name": "محمد علي",
+          "photo": "uploads/deceased_0_1780156825_81ab97.jpeg"
+        }
+      ],
+      "receipt_image": "uploads/receipt_1780156825_ab1f8f.jpeg",
+      "status": "pending"
+    }
+  ]
+}

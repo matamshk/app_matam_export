@@ -1,0 +1,407 @@
+:root {
+    --primary-color: #d4af37;
+    /* Gold */
+    --primary-hover: #b5952f;
+    --bg-dark: #121212;
+    --bg-card: #1e1e1e;
+    --text-light: #ffffff;
+    --text-muted: #b0b0b0;
+    --success: #28a745;
+    --danger: #dc3545;
+    --font-main: 'Tajawal', sans-serif;
+    --glass-bg: rgba(30, 30, 30, 0.7);
+    --glass-border: 1px solid rgba(255, 255, 255, 0.1);
+    --shadow: 0 4px 6px rgba(0, 0, 0, 0.3);
+}
+
+* {
+    box-sizing: border-box;
+    margin: 0;
+    padding: 0;
+}
+
+body {
+    font-family: var(--font-main);
+    background-color: var(--bg-dark);
+    color: var(--text-light);
+    direction: rtl;
+    line-height: 1.6;
+    overflow-x: hidden;
+}
+
+/* Container */
+.container {
+    max-width: 1200px;
+    margin: 0 auto;
+    padding: 20px;
+    width: 95%;
+}
+
+/* Navigation */
+.navbar {
+    background: var(--glass-bg);
+    backdrop-filter: blur(10px);
+    border-bottom: var(--glass-border);
+    padding: 1rem 0;
+    position: sticky;
+    top: 0;
+    z-index: 1000;
+}
+
+.nav-content {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+.logo {
+    font-size: 1.5rem;
+    font-weight: bold;
+    color: var(--primary-color);
+    text-decoration: none;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+}
+
+.nav-links {
+    display: flex;
+    gap: 20px;
+    list-style: none;
+}
+
+.nav-links a {
+    color: var(--text-light);
+    text-decoration: none;
+    font-weight: 500;
+    transition: color 0.3s;
+}
+
+.nav-links a:hover,
+.nav-links a.active {
+    color: var(--primary-color);
+}
+
+/* Mobile Menu */
+.menu-toggle {
+    display: none;
+    font-size: 1.5rem;
+    cursor: pointer;
+}
+
+/* Hero & Cards */
+.hero {
+    text-align: center;
+    padding: 4rem 0;
+}
+
+.section-title {
+    color: var(--primary-color);
+    margin-bottom: 2rem;
+    text-align: center;
+    font-size: 2rem;
+}
+
+.card {
+    background: var(--bg-card);
+    border: var(--glass-border);
+    border-radius: 12px;
+    padding: 20px;
+    box-shadow: var(--shadow);
+    transition: transform 0.3s ease;
+}
+
+.card:hover {
+    transform: translateY(-5px);
+}
+
+/* Forms */
+.form-group {
+    margin-bottom: 1.5rem;
+}
+
+label {
+    display: block;
+    margin-bottom: 0.5rem;
+    color: var(--text-muted);
+}
+
+input,
+select,
+textarea {
+    width: 100%;
+    padding: 12px;
+    background: rgba(255, 255, 255, 0.05);
+    border: 1px solid rgba(255, 255, 255, 0.1);
+    border-radius: 8px;
+    color: var(--text-light);
+    font-family: var(--font-main);
+    font-size: 1rem;
+}
+
+input:focus,
+select:focus,
+textarea:focus {
+    outline: none;
+    border-color: var(--primary-color);
+}
+
+select option {
+    color: #000;
+    background: #fff;
+}
+
+.btn {
+    display: inline-block;
+    padding: 12px 24px;
+    background: var(--primary-color);
+    color: #000;
+    border: none;
+    border-radius: 8px;
+    cursor: pointer;
+    font-weight: bold;
+    font-size: 1rem;
+    transition: background 0.3s;
+    text-decoration: none;
+    text-align: center;
+}
+
+.btn:hover {
+    background: var(--primary-hover);
+}
+
+.btn-block {
+    display: block;
+    width: 100%;
+}
+
+/* Dashboard List */
+.bookings-list {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+    gap: 20px;
+}
+
+.booking-item {
+    background: var(--bg-card);
+    border-right: 4px solid var(--primary-color);
+    padding: 20px;
+    border-radius: 8px;
+    position: relative;
+}
+
+.booking-header {
+    display: flex;
+    justify-content: space-between;
+    margin-bottom: 10px;
+}
+
+.booking-date {
+    color: var(--primary-color);
+    font-weight: bold;
+}
+
+.booking-details p {
+    margin-bottom: 5px;
+    color: var(--text-muted);
+}
+
+.status-badge {
+    padding: 4px 8px;
+    border-radius: 4px;
+    font-size: 0.8rem;
+    background: rgba(40, 167, 69, 0.2);
+    color: var(--success);
+}
+
+/* Occasions Month View */
+.month-group {
+    margin-bottom: 3rem;
+}
+
+.month-title {
+    font-size: 1.5rem;
+    color: var(--primary-color);
+    border-bottom: 2px solid rgba(255, 255, 255, 0.1);
+    padding-bottom: 10px;
+    margin-bottom: 20px;
+}
+
+.occasions-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));
+    gap: 15px;
+}
+
+.occasion-card {
+    background: rgba(255, 255, 255, 0.05);
+    padding: 15px;
+    border-radius: 8px;
+    display: flex;
+    align-items: center;
+    gap: 15px;
+    border-left: 1px solid transparent;
+    /* default */
+    transition: transform 0.2s;
+}
+
+.occasion-card:hover {
+    transform: translateY(-2px);
+}
+
+.occasion-day {
+    background: var(--primary-color);
+    color: #000;
+    width: 40px;
+    height: 40px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border-radius: 50%;
+    font-weight: bold;
+    flex-shrink: 0;
+}
+
+/* WhatsApp Float */
+.whatsapp-float {
+    position: fixed;
+    bottom: 30px;
+    left: 30px;
+    /* Left because RTL */
+    background: #25d366;
+    color: white;
+    width: 60px;
+    height: 60px;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.3);
+    z-index: 1000;
+    transition: transform 0.3s;
+    font-size: 2rem;
+    text-decoration: none;
+}
+
+.whatsapp-float:hover {
+    transform: scale(1.1);
+}
+
+/* Utilities */
+.text-center {
+    text-align: center;
+}
+
+.hidden {
+    display: none;
+}
+
+/* Responsive */
+/* Mobile Menu (Bottom Navigation) */
+.bottom-nav {
+    display: none;
+    position: fixed;
+    bottom: 0;
+    left: 0;
+    width: 100%;
+    background: var(--glass-bg);
+    backdrop-filter: blur(15px);
+    border-top: var(--glass-border);
+    justify-content: space-around;
+    align-items: center;
+    padding: 10px 0;
+    z-index: 2000;
+    box-shadow: 0 -4px 10px rgba(0, 0, 0, 0.2);
+}
+
+.nav-item {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    text-decoration: none;
+    color: var(--text-muted);
+    font-size: 0.75rem;
+    transition: color 0.3s;
+}
+
+.nav-item i {
+    font-size: 1.4rem;
+    margin-bottom: 4px;
+    transition: transform 0.2s;
+}
+
+.nav-item.active {
+    color: var(--primary-color);
+}
+
+.nav-item.active i {
+    transform: translateY(-2px);
+}
+
+/* Responsive */
+@media (max-width: 768px) {
+    body {
+        padding-bottom: 70px;
+        /* Space for bottom nav */
+    }
+
+    /* Hide Top Nav Elements */
+    .nav-links,
+    .menu-toggle {
+        display: none !important;
+    }
+
+    .navbar {
+        display: none;
+        /* Hide entire top bar on mobile if we want full app feel, or just links */
+    }
+
+    /* We might want to keep a simple top bar for Logo/Title? Let's keep .navbar but hide links */
+    .navbar {
+        display: block;
+        /* Keep header */
+    }
+
+    /* Show Bottom Nav */
+    .bottom-nav {
+        display: flex;
+    }
+}
+
+/* Event Types Styling */
+.occasion-card.sad {
+    border-right: 4px solid var(--danger);
+    background: linear-gradient(90deg, rgba(220, 53, 69, 0.1), rgba(255, 255, 255, 0.05));
+}
+
+.occasion-card.happy {
+    border-right: 4px solid var(--success);
+    background: linear-gradient(90deg, rgba(40, 167, 69, 0.1), rgba(255, 255, 255, 0.05));
+}
+
+.occasion-card.religious {
+    border-right: 4px solid var(--primary-color);
+    background: linear-gradient(90deg, rgba(212, 175, 55, 0.1), rgba(255, 255, 255, 0.05));
+}
+
+.occasion-content {
+    flex: 1;
+}
+
+/* Global Mobile Responsiveness */
+@media (max-width: 768px) {
+    .container { padding: 10px; width: 100%; }
+    .section-title { font-size: 1.5rem; margin-bottom: 1.5rem; }
+    .card { padding: 15px; border-radius: 12px; }
+    .dashboard-grid { grid-template-columns: 1fr; gap: 15px; } 
+    .report-controls { flex-direction: column; align-items: stretch; padding: 15px; }
+    .report-controls > div { width: 100%; }
+    
+    input, select, textarea, .btn { font-size: 0.95rem; padding: 10px; }
+    .form-group label { font-size: 0.9rem; }
+    
+    /* Modal Responsiveness */
+    .admin-modal { padding: 15px; max-width: 95%; margin: 10px; }
+    .admin-actions { flex-direction: column; }
+    .btn-accept, .btn-reject, .btn-close { width: 100%; margin-bottom: 8px;}
+}

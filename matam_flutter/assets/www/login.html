@@ -1,0 +1,238 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>تسجيل الدخول - لوحة التحكم</title>
+    <!-- Google Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Tajawal:wght@400;500;700;800&display=swap" rel="stylesheet">
+    <!-- FontAwesome -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    <style>
+        :root {
+            --primary-dark: #112240;
+            --primary-grad: linear-gradient(135deg, #1E3C72 0%, #2A5298 100%);
+            --gold: #D4AF37;
+            --gold-light: #F3E5AB;
+            --text-light: #ffffff;
+        }
+        body {
+            margin: 0;
+            font-family: 'Tajawal', sans-serif;
+            background: var(--primary-dark);
+            height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            overflow: hidden;
+            position: relative;
+        }
+        
+        /* Background aesthetic */
+        body::before {
+            content: '';
+            position: absolute;
+            top: -50%; left: -50%; width: 200%; height: 200%;
+            background: radial-gradient(circle at center, rgba(30, 60, 114, 0.4) 0%, transparent 50%);
+            animation: pulseBg 15s infinite alternate;
+            z-index: 0;
+        }
+
+        @keyframes pulseBg {
+            0% { transform: scale(1); }
+            100% { transform: scale(1.1); }
+        }
+
+        .login-card {
+            background: rgba(255, 255, 255, 0.1);
+            backdrop-filter: blur(20px);
+            -webkit-backdrop-filter: blur(20px);
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            border-radius: 20px;
+            padding: 40px;
+            width: 100%;
+            max-width: 400px;
+            box-shadow: 0 25px 50px rgba(0, 0, 0, 0.5);
+            z-index: 1;
+            text-align: center;
+            animation: slideUp 0.8s cubic-bezier(0.16, 1, 0.3, 1) ease-out;
+        }
+
+        @keyframes slideUp {
+            from { opacity: 0; transform: translateY(30px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        .logo-icon {
+            font-size: 3rem;
+            color: var(--gold);
+            margin-bottom: 10px;
+            text-shadow: 0 4px 10px rgba(212, 175, 55, 0.3);
+        }
+
+        .login-title {
+            color: var(--text-light);
+            margin: 0 0 5px 0;
+            font-weight: 800;
+            font-size: 1.8rem;
+        }
+
+        .login-subtitle {
+            color: rgba(255, 255, 255, 0.7);
+            font-size: 0.9rem;
+            margin-bottom: 30px;
+        }
+
+        .input-group {
+            position: relative;
+            margin-bottom: 25px;
+            text-align: right;
+        }
+
+        .input-group i {
+            position: absolute;
+            right: 15px;
+            top: 50%;
+            transform: translateY(-50%);
+            color: rgba(255, 255, 255, 0.5);
+            transition: color 0.3s ease;
+        }
+
+        .login-input {
+            width: 100%;
+            padding: 15px 45px 15px 15px;
+            background: rgba(0, 0, 0, 0.2);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            border-radius: 10px;
+            color: white;
+            font-family: inherit;
+            font-size: 1rem;
+            box-sizing: border-box;
+            transition: all 0.3s ease;
+            outline: none;
+        }
+
+        .login-input:focus {
+            border-color: var(--gold);
+            background: rgba(0, 0, 0, 0.4);
+            box-shadow: 0 0 15px rgba(212, 175, 55, 0.2);
+        }
+
+        .login-input:focus + i {
+            color: var(--gold);
+        }
+
+        .login-btn {
+            width: 100%;
+            padding: 15px;
+            background: var(--gold);
+            border: none;
+            border-radius: 10px;
+            color: #fff;
+            font-size: 1.1rem;
+            font-weight: 700;
+            font-family: inherit;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            box-shadow: 0 10px 20px rgba(212, 175, 55, 0.3);
+        }
+
+        .login-btn:hover {
+            background: #e6bf45;
+            transform: translateY(-2px);
+            box-shadow: 0 15px 25px rgba(212, 175, 55, 0.4);
+        }
+
+        .error-msg {
+            color: #ff6b6b;
+            font-size: 0.9rem;
+            margin-top: -15px;
+            margin-bottom: 15px;
+            display: none;
+        }
+
+        .back-link {
+            display: inline-block;
+            margin-top: 20px;
+            color: rgba(255, 255, 255, 0.6);
+            text-decoration: none;
+            font-size: 0.9rem;
+            transition: color 0.3s;
+        }
+
+        .back-link:hover {
+            color: var(--gold);
+        }
+    </style>
+</head>
+<body>
+    <script>
+        if (localStorage.getItem('admin_token')) {
+            window.location.replace('dashboard.html');
+        }
+    </script>
+
+    <div class="login-card">
+        <i class="fas fa-shield-alt logo-icon"></i>
+        <h1 class="login-title">بوابة المأتم</h1>
+        <p class="login-subtitle">أدخل بيانات الدخول للوصول إلى النظام</p>
+
+        <form id="loginForm">
+            <div class="input-group">
+                <input type="text" id="username" class="login-input" placeholder="اسم المستخدم" required>
+                <i class="fas fa-user"></i>
+            </div>
+            <div class="input-group">
+                <input type="password" id="password" class="login-input" placeholder="كلمة المرور" required>
+                <i class="fas fa-lock"></i>
+            </div>
+            
+            <div class="error-msg" id="errorMsg">بيانات الدخول غير صحيحة!</div>
+
+            <button type="submit" class="login-btn" id="loginBtn">دخول أمن</button>
+        </form>
+
+        <!-- Back link removed -->
+    </div>
+
+    <script>
+        document.getElementById('loginForm').addEventListener('submit', async (e) => {
+            e.preventDefault();
+            const btn = document.getElementById('loginBtn');
+            const err = document.getElementById('errorMsg');
+            const user = document.getElementById('username').value;
+            const pass = document.getElementById('password').value;
+
+            btn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> جاري الدخول...';
+            btn.disabled = true;
+            err.style.display = 'none';
+
+            try {
+                const res = await fetch('/api/login', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ username: user, password: pass })
+                });
+
+                const data = await res.json();
+                
+                if (res.ok && data.status === 'success') {
+                    localStorage.setItem('admin_token', data.token);
+                    window.location.replace('dashboard.html');
+                } else {
+                    err.style.display = 'block';
+                    btn.innerHTML = 'دخول أمن';
+                    btn.disabled = false;
+                }
+            } catch (error) {
+                err.textContent = 'حدث خطأ في الاتصال بالخادم.';
+                err.style.display = 'block';
+                btn.innerHTML = 'دخول أمن';
+                btn.disabled = false;
+            }
+        });
+    </script>
+</body>
+</html>

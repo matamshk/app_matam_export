@@ -1,0 +1,31 @@
+# Credentials & Secrets (CRITICAL to ignore)
+service-account.json
+google-services.json
+database.json
+*.log
+.env
+secret.key
+
+# Python files
+__pycache__/
+*.py[cod]
+*$py.class
+.venv/
+venv/
+ENV/
+
+# Flutter/Dart build files
+.dart_tool/
+.flutter-plugins
+.flutter-plugins-dependencies
+.packages
+build/
+android/app/google-services.json
+
+# Local properties
+local.properties
+
+# OS files
+.DS_Store
+Thumbs.db
+._*

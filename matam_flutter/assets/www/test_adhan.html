@@ -1,0 +1,22 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <script src="js/adhan.js"></script>
+</head>
+<body>
+    <div id="output"></div>
+    <script>
+        const coordinates = new adhan.Coordinates(26.2285, 50.5860);
+        const params = adhan.CalculationMethod.Tehran();
+        params.adjustments.maghrib = 15;
+        const date = new Date();
+        const times = new adhan.PrayerTimes(coordinates, date, params);
+        
+        const out = document.getElementById('output');
+        out.innerHTML += "<p>Fajr: " + times.fajr.toString() + "</p>";
+        out.innerHTML += "<p>Dhuhr: " + times.dhuhr.toString() + "</p>";
+        out.innerHTML += "<p>Maghrib: " + times.maghrib.toString() + "</p>";
+        out.innerHTML += "<p>Timezone Offset: " + date.getTimezoneOffset() + "</p>";
+    </script>
+</body>
+</html>
