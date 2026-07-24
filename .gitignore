@@ -1,5 +1,5 @@
 # Credentials & Secrets (CRITICAL to ignore)
-service-account.json
+service-account*.json
 google-services.json
 database.json
 *.log
@@ -29,3 +29,4 @@ local.properties
 .DS_Store
 Thumbs.db
 ._*
+*.zip

@@ -2,6 +2,33 @@
  * Event Management System - Main Logic
  */
 
+// --- Authentication Guard ---
+(function() {
+    const path = window.location.pathname;
+    const isLogin = path.endsWith('login.html');
+    const token = localStorage.getItem('admin_token');
+    
+    // If not logged in and not on login page, redirect to login
+    if (!isLogin && !token) {
+        window.location.replace('login.html');
+    }
+    
+    // If logged in and on login page, redirect to main page
+    if (isLogin && token) {
+        window.location.replace('index.html');
+    }
+})();
+
+function escapeHTML(str) {
+    if (!str) return '';
+    return str.toString()
+        .replace(/&/g, '&amp;')
+        .replace(/</g, '&lt;')
+        .replace(/>/g, '&gt;')
+        .replace(/"/g, '&quot;')
+        .replace(/'/g, '&#39;');
+}
+
 // Navigation
 const pages = [
     { name: 'الرئيسية', url: 'index.html' },
@@ -26,6 +53,9 @@ document.addEventListener('DOMContentLoaded', async () => {
             }
             if (db.settings) {
                 localStorage.setItem('site_settings', JSON.stringify(db.settings));
+                if (typeof updatePrayerReferenceButton === 'function') {
+                    updatePrayerReferenceButton();
+                }
             }
         }
     } catch (e) {
@@ -67,17 +97,49 @@ function initNavbar() {
         { name: 'حجز خطيب', url: 'booking-speaker.html', icon: 'fa-microphone-alt' },
         { name: 'احتفالات', url: 'celebrations.html', icon: 'fa-star' },
         { name: 'المناسبات', url: 'occasions.html', icon: 'fa-calendar-alt' },
+        { name: 'مساهمة المرحومين', url: 'contribution.html', icon: 'fa-hand-holding-heart' },
         { name: 'أوقات الصلاة', url: 'awqaf.html', icon: 'fa-clock' },
-        { name: 'الإدارة والتقارير', url: 'login.html', icon: 'fa-cogs' }
+        { name: 'لوحة الإدارة', url: 'dashboard.html', icon: 'fa-cogs' },
+        { name: 'تسجيل الخروج', url: '#', icon: 'fa-sign-out-alt', isLogout: true }
     ];
+
+    let hiddenPages = [];
+    try {
+        const settings = JSON.parse(localStorage.getItem('site_settings') || '{}');
+        if (settings.hidden_pages) hiddenPages = settings.hidden_pages;
+    } catch(e) {}
 
     // 1. Render Top Nav (Desktop)
     pagesWithIcons.forEach(page => {
+        // Skip hidden pages
+        if (hiddenPages.includes(page.url)) return;
+
         const li = document.createElement('li');
         const a = document.createElement('a');
         a.href = page.url;
-        a.textContent = page.name;
-        if (page.url === currentPath) a.classList.add('active');
+        
+        if (page.isLogout) {
+            a.innerHTML = `<i class="fas ${page.icon}"></i> ${page.name}`;
+            a.style.background = 'rgba(220, 53, 69, 0.15)'; // Red tint for logout
+            a.style.color = '#ff6b6b';
+            a.style.padding = '8px 15px';
+            a.style.borderRadius = '20px';
+            a.style.border = '1px solid #ff6b6b';
+            a.style.fontWeight = 'bold';
+            a.style.display = 'flex';
+            a.style.alignItems = 'center';
+            a.style.gap = '8px';
+            a.style.marginLeft = '10px';
+            a.addEventListener('click', (e) => {
+                e.preventDefault();
+                localStorage.removeItem('admin_token');
+                window.location.replace('login.html');
+            });
+        } else {
+            a.textContent = page.name;
+            if (page.url === currentPath) a.classList.add('active');
+        }
+        
         li.appendChild(a);
         navContainer.appendChild(li);
     });
@@ -90,12 +152,20 @@ function initNavbar() {
         document.body.appendChild(bottomNav);
     }
 
-    bottomNav.innerHTML = pagesWithIcons.map(page => `
-        <a href="${page.url}" class="nav-item ${page.url === currentPath ? 'active' : ''}">
-            <i class="fas ${page.icon}"></i>
-            <span>${page.name}</span>
+    bottomNav.innerHTML = pagesWithIcons.filter(p => !hiddenPages.includes(p.url)).map(page => `
+        <a href="${page.url}" class="nav-item ${page.url === currentPath ? 'active' : ''}" ${page.isLogout ? 'onclick="localStorage.removeItem(\'admin_token\'); window.location.replace(\'login.html\');"' : ''}>
+            <i class="fas ${page.icon}" ${page.isLogout ? 'style="color:#ff6b6b;"' : ''}></i>
+            <span ${page.isLogout ? 'style="color:#ff6b6b;"' : ''}>${page.name}</span>
         </a>
     `).join('');
+
+    // Hide services cards if on home page
+    if (currentPath === 'index.html' || currentPath === '') {
+        hiddenPages.forEach(url => {
+            const card = document.querySelector(`.service-card[href="${url}"]`);
+            if (card) card.style.display = 'none';
+        });
+    }
 }
 
 function initWhatsApp() {
@@ -143,10 +213,275 @@ function saveBooking(booking) {
     }).catch(e => console.error("Could not sync booking to server", e));
 }
 
+// --- Date Collision & Conflict Checking ---
+
+function getHijriDateOfGregorian(gregDate) {
+    const offsetDate = new Date(gregDate.getTime() + hijriOffset * 86400000);
+    let hMonth = 0;
+    let hDay = 0;
+    try {
+        const formatter = new Intl.DateTimeFormat('en-u-ca-islamic-umalqura', { month: 'numeric', day: 'numeric' });
+        const hParts = formatter.formatToParts(offsetDate);
+        const hm = hParts.find(p => p.type === 'month');
+        const hd = hParts.find(p => p.type === 'day');
+        if (hm) hMonth = parseInt(hm.value);
+        if (hd) hDay = parseInt(hd.value);
+    } catch(e) {
+        console.warn("Intl Hijri formatting failed");
+    }
+    return { month: hMonth, day: hDay };
+}
+
+function checkDateConflict(dateStr) {
+    if (!dateStr) return null;
+    
+    // 1. Check bookings collision
+    const bookings = getBookings();
+    const bookingConflict = bookings.find(b => b.date === dateStr);
+    
+    // 2. Check occasions collision
+    const dateObj = new Date(dateStr);
+    const { month: hMonth, day: hDay } = getHijriDateOfGregorian(dateObj);
+    
+    let occasionConflict = null;
+    const isCelebration = window.location.pathname.includes('celebrations');
+    
+    if (hMonth > 0 && hDay > 0) {
+        const occasions = (typeof getCombinedEvents === 'function') ? getCombinedEvents(hMonth) : [];
+        const dayOccasions = occasions.filter(e => e.hijri.day === hDay);
+        
+        if (isCelebration) {
+            // Celebrations conflict with any religious, happy, or sad occasion
+            occasionConflict = dayOccasions[0] || null;
+        } else {
+            // Mourning (matam) and speaker bookings only conflict with sad occasions
+            occasionConflict = dayOccasions.find(e => e.type === 'sad') || null;
+        }
+    }
+    
+    if (bookingConflict || occasionConflict) {
+        return {
+            date: dateStr,
+            booking: bookingConflict,
+            occasion: occasionConflict,
+            isCelebration: isCelebration
+        };
+    }
+    
+    return null;
+}
+
+function findAlternativeDates(baseDateStr, isCelebration) {
+    const alternatives = [];
+    const baseDate = new Date(baseDateStr);
+    let checkDate = new Date(baseDate.getTime());
+    
+    // Check up to 60 days ahead
+    for (let i = 1; i <= 60; i++) {
+        checkDate.setDate(checkDate.getDate() + 1);
+        const checkStr = checkDate.toISOString().split('T')[0];
+        
+        // Check booking conflict
+        const bookings = getBookings();
+        const hasBooking = bookings.some(b => b.date === checkStr);
+        if (hasBooking) continue;
+        
+        // Check occasion conflict
+        const { month: hMonth, day: hDay } = getHijriDateOfGregorian(checkDate);
+        if (hMonth > 0 && hDay > 0) {
+            const occasions = (typeof getCombinedEvents === 'function') ? getCombinedEvents(hMonth) : [];
+            const dayOccasions = occasions.filter(e => e.hijri.day === hDay);
+            
+            if (isCelebration) {
+                if (dayOccasions.length > 0) continue;
+            } else {
+                const hasSad = dayOccasions.some(e => e.type === 'sad');
+                if (hasSad) continue;
+            }
+        }
+        
+        alternatives.push(new Date(checkDate.getTime()));
+        if (alternatives.length === 3) break;
+    }
+    return alternatives;
+}
+
+function formatDateArabic(dateObj) {
+    const gPart = new Intl.DateTimeFormat('ar-BH', { weekday: 'long', day: 'numeric', month: 'long' }).format(dateObj);
+    let hPart = "";
+    try {
+        const offsetDate = new Date(dateObj.getTime() + hijriOffset * 86400000);
+        hPart = new Intl.DateTimeFormat('ar-SA', { day: 'numeric', month: 'long', calendar: 'islamic-umalqura' }).format(offsetDate);
+    } catch(e) {}
+    return `${gPart} (${hPart})`;
+}
+
+function showConflictModal(conflict, callback) {
+    // Remove existing if any
+    const existing = document.getElementById('bookingConflictModal');
+    if (existing) existing.remove();
+    
+    // Format selected date
+    const selectedDateObj = new Date(conflict.date);
+    const selectedDateFormatted = formatDateArabic(selectedDateObj);
+    
+    // Build conflict message HTML
+    let messageHtml = `<p style="margin: 0 0 10px 0; font-size: 1.05rem; color: #fff;">التاريخ المحدد: <strong>${selectedDateFormatted}</strong></p>`;
+    
+    if (conflict.booking) {
+        messageHtml += `<div style="background: rgba(220, 53, 69, 0.15); border-right: 4px solid #dc3545; padding: 10px 15px; margin-bottom: 10px; border-radius: 4px; color: #ff8787;">
+            <i class="fas fa-calendar-times"></i> يوجد حجز مسبق مسجل في هذا التاريخ باسم: <strong>${conflict.booking.name}</strong> (${conflict.booking.type.replace('بوابة المأتم - ', '')})
+        </div>`;
+    }
+    
+    if (conflict.occasion) {
+        let occTypeStr = "مناسبة عامة";
+        let occColor = "#f1c40f";
+        let occBg = "rgba(241, 196, 15, 0.15)";
+        if (conflict.occasion.type === 'sad') {
+            occTypeStr = "مناسبة حزينة (عزاء/وفاة)";
+            occColor = "#dc3545";
+            occBg = "rgba(220, 53, 69, 0.15)";
+        } else if (conflict.occasion.type === 'happy') {
+            occTypeStr = "مناسبة سعيدة (مولد/عيد)";
+            occColor = "#28a745";
+            occBg = "rgba(40, 167, 69, 0.15)";
+        }
+        
+        messageHtml += `<div style="background: ${occBg}; border-right: 4px solid ${occColor}; padding: 10px 15px; border-radius: 4px; color: #fff;">
+            <i class="fas fa-info-circle" style="color: ${occColor};"></i> يتزامن هذا التاريخ مع: <strong>${conflict.occasion.title}</strong> (${occTypeStr})
+        </div>`;
+    }
+    
+    // Suggestions
+    const alternatives = findAlternativeDates(conflict.date, conflict.isCelebration);
+    let suggestionsHtml = "";
+    if (alternatives.length > 0) {
+        suggestionsHtml = alternatives.map(altDate => {
+            const altStr = altDate.toISOString().split('T')[0];
+            const altFormatted = formatDateArabic(altDate);
+            return `<button class="suggested-date-btn" data-date="${altStr}">
+                <span><i class="far fa-calendar-check" style="color: var(--gold-primary, #d4af37);"></i> ${altFormatted}</span>
+                <i class="fas fa-chevron-left" style="font-size: 0.8rem; opacity: 0.6;"></i>
+            </button>`;
+        }).join('');
+    } else {
+        suggestionsHtml = `<p style="color: #888; font-size: 0.9rem; text-align: center; margin: 10px 0;">لا توجد تواريخ بديلة مقترحة حالياً.</p>`;
+    }
+    
+    const modalHtml = `
+    <div id="bookingConflictModal" style="position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.85); z-index: 9999; display: flex; justify-content: center; align-items: center; padding: 20px; backdrop-filter: blur(8px);">
+        <style>
+            @keyframes pulse {
+                0% { transform: scale(1); }
+                50% { transform: scale(1.08); box-shadow: 0 0 15px rgba(220, 53, 69, 0.5); }
+                100% { transform: scale(1); }
+            }
+            .suggested-date-btn {
+                background: rgba(255,255,255,0.03) !important;
+                color: #fff !important;
+                border: 1px solid rgba(212,175,55,0.2) !important;
+                padding: 12px 15px !important;
+                border-radius: 8px !important;
+                text-align: right !important;
+                cursor: pointer !important;
+                font-family: 'Tajawal', sans-serif !important;
+                font-weight: 500 !important;
+                transition: all 0.3s ease !important;
+                display: flex !important;
+                justify-content: space-between !important;
+                align-items: center !important;
+                width: 100% !important;
+                margin-bottom: 8px !important;
+            }
+            .suggested-date-btn:hover {
+                background: rgba(212,175,55,0.1) !important;
+                border-color: var(--gold-primary, #d4af37) !important;
+                transform: translateX(-5px) !important;
+            }
+        </style>
+        <div style="background: #111111; color: #fff; border-radius: 16px; padding: 30px; width: 100%; max-width: 550px; text-align: center; border: 2px solid var(--gold-primary, #d4af37); box-shadow: 0 10px 30px rgba(0,0,0,0.8); max-height: 95vh; overflow-y: auto; direction: rtl; font-family: 'Tajawal', sans-serif;">
+            <div style="width: 70px; height: 70px; background: rgba(220, 53, 69, 0.1); color: #dc3545; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 2.5rem; margin: 0 auto 15px; animation: pulse 2s infinite;">
+                <i class="fas fa-exclamation-triangle"></i>
+            </div>
+            <h3 style="color: var(--gold-primary, #d4af37); margin-bottom: 15px; font-weight: bold; font-size: 1.4rem;">تنبيه بوجود تعارض!</h3>
+            
+            <div style="background: rgba(255, 255, 255, 0.02); border: 1px solid rgba(255,255,255,0.05); border-radius: 12px; padding: 15px; margin-bottom: 20px; text-align: right;">
+                ${messageHtml}
+            </div>
+            
+            <div style="text-align: right; margin-bottom: 20px;">
+                <h4 style="color: var(--gold-primary, #d4af37); margin-bottom: 12px; font-size: 0.95rem; font-weight: bold;"><i class="fas fa-calendar-alt"></i> التواريخ البديلة المقترحة (المتاحة):</h4>
+                <div style="display: flex; flex-direction: column;">
+                    ${suggestionsHtml}
+                </div>
+            </div>
+
+            <div style="display: flex; gap: 15px; flex-wrap: wrap; margin-top: 10px;">
+                <button id="btnOverrideBooking" style="flex: 1; background: #dc3545; color: white; border: none; padding: 12px; border-radius: 8px; font-weight: bold; cursor: pointer; font-family: 'Tajawal', sans-serif; font-size: 0.95rem; transition: background 0.3s; min-width: 150px;">
+                    تجاوز وإتمام الحجز
+                </button>
+                <button id="btnCancelBooking" style="flex: 1; background: #444; color: white; border: none; padding: 12px; border-radius: 8px; font-weight: bold; cursor: pointer; font-family: 'Tajawal', sans-serif; font-size: 0.95rem; transition: background 0.3s; min-width: 150px;">
+                    اختيار تاريخ آخر
+                </button>
+            </div>
+        </div>
+    </div>
+    `;
+    
+    document.body.insertAdjacentHTML('beforeend', modalHtml);
+    
+    // Event listeners
+    const modal = document.getElementById('bookingConflictModal');
+    
+    modal.querySelectorAll('.suggested-date-btn').forEach(btn => {
+        btn.addEventListener('click', () => {
+            const chosenDate = btn.getAttribute('data-date');
+            modal.remove();
+            callback(chosenDate);
+        });
+    });
+    
+    document.getElementById('btnOverrideBooking').addEventListener('click', () => {
+        modal.remove();
+        callback('override');
+    });
+    
+    document.getElementById('btnCancelBooking').addEventListener('click', () => {
+        modal.remove();
+        callback('change');
+    });
+}
+
 // Form Handling
 function initBookingForm() {
     const form = document.querySelector('form');
     if (!form) return;
+
+    const dateInput = form.querySelector('input[type="date"]');
+    if (dateInput) {
+        dateInput.addEventListener('change', () => {
+            const val = dateInput.value;
+            if (val) {
+                const conflict = checkDateConflict(val);
+                if (conflict) {
+                    showConflictModal(conflict, (choice) => {
+                        if (choice === 'override') {
+                            dateInput.dataset.override = 'true';
+                        } else if (choice === 'change') {
+                            dateInput.value = '';
+                            delete dateInput.dataset.override;
+                        } else {
+                            dateInput.value = choice;
+                            delete dateInput.dataset.override;
+                        }
+                    });
+                } else {
+                    delete dateInput.dataset.override;
+                }
+            }
+        });
+    }
 
     form.addEventListener('submit', (e) => {
         e.preventDefault();
@@ -155,6 +490,31 @@ function initBookingForm() {
         if (!form.checkValidity()) {
             alert('يرجى ملء جميع الحقول المطلوبة');
             return;
+        }
+
+        // Final Conflict Check before submit if not overridden
+        if (dateInput && dateInput.value && dateInput.dataset.override !== 'true') {
+            const conflict = checkDateConflict(dateInput.value);
+            if (conflict) {
+                showConflictModal(conflict, (choice) => {
+                    if (choice === 'override') {
+                        dateInput.dataset.override = 'true';
+                        const submitBtn = form.querySelector('button[type="submit"]');
+                        if (submitBtn) {
+                            submitBtn.click();
+                        } else {
+                            form.dispatchEvent(new Event('submit'));
+                        }
+                    } else if (choice === 'change') {
+                        dateInput.value = '';
+                        delete dateInput.dataset.override;
+                    } else {
+                        dateInput.value = choice;
+                        delete dateInput.dataset.override;
+                    }
+                });
+                return;
+            }
         }
 
         const formData = new FormData(form);
@@ -269,8 +629,14 @@ function showSuccessModal(booking) {
     if(booking.details.other_services) plainSummary += `- الملاحظات الإضافية: ${booking.details.other_services}\n`;
     plainSummary += `\nنسألكم الدعاء!`;
 
-    const waLink = "https://wa.me/?text=" + encodeURIComponent(plainSummary);
-    const emailLink = "mailto:?subject=" + encodeURIComponent("تأكيد تفاصيل الحجز - مأتم أبو صيبع الشرقي") + "&body=" + encodeURIComponent(plainSummary);
+    let phone = '97317595063';
+    try {
+        const settings = JSON.parse(localStorage.getItem('site_settings') || '{}');
+        if (settings.whatsapp_phone) phone = settings.whatsapp_phone;
+    } catch(e) {}
+
+    const waLink = `https://wa.me/${phone}?text=` + encodeURIComponent(plainSummary);
+    const emailLink = "mailto:alshrkymat@gmail.com?subject=" + encodeURIComponent("تأكيد تفاصيل الحجز - مأتم أبو صيبع الشرقي") + "&body=" + encodeURIComponent(plainSummary);
 
     const modalHtml = `
     <div id="bookingSuccessModal" style="position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.85); z-index: 9999; display: flex; justify-content: center; align-items: center; padding: 20px;">
@@ -340,13 +706,13 @@ function renderDashboard() {
     list.innerHTML = bookings.map(b => `
         <div class="booking-item" style="background: #fdfcf8; padding: 15px; border-radius: 12px; border: 1px solid rgba(212,175,55,0.2); box-shadow: 0 4px 10px rgba(0,0,0,0.02);">
             <div class="booking-header" style="display: flex; justify-content: space-between; border-bottom: 1px solid rgba(0,0,0,0.05); padding-bottom: 8px; margin-bottom: 8px;">
-                <span class="booking-date" style="font-weight: bold; color: var(--gold-primary); font-size: 0.9em;"><i class="fas fa-calendar-day"></i> ${b.date}</span>
-                <span class="status-badge" style="background: rgba(212,175,55,0.15); padding: 4px 10px; border-radius: 20px; font-size: 0.75em; color: var(--text-gold); font-weight: bold;">${b.type.replace('بوابة المأتم - ', '')}</span>
+                <span class="booking-date" style="font-weight: bold; color: var(--gold-primary); font-size: 0.9em;"><i class="fas fa-calendar-day"></i> ${escapeHTML(b.date)}</span>
+                <span class="status-badge" style="background: rgba(212,175,55,0.15); padding: 4px 10px; border-radius: 20px; font-size: 0.75em; color: var(--text-gold); font-weight: bold;">${escapeHTML(b.type.replace('بوابة المأتم - ', ''))}</span>
             </div>
             <div class="booking-details" style="font-size: 0.85em; line-height: 1.6; color: var(--text-dark);">
-                <p style="margin: 0; margin-bottom: 3px;"><strong>الاسم:</strong> ${b.name}</p>
-                <p style="margin: 0; margin-bottom: 3px;"><strong>المناسبة/الخدمة:</strong> ${b.details.service || b.details.occasion || b.type}</p>
-                ${b.details.time ? `<p style="margin: 0;"><strong>الوقت:</strong> ${b.details.time}</p>` : ''}
+                <p style="margin: 0; margin-bottom: 3px;"><strong>الاسم:</strong> ${escapeHTML(b.name)}</p>
+                <p style="margin: 0; margin-bottom: 3px;"><strong>المناسبة/الخدمة:</strong> ${escapeHTML(b.details.service || b.details.occasion || b.type)}</p>
+                ${b.details.time ? `<p style="margin: 0;"><strong>الوقت:</strong> ${escapeHTML(b.details.time)}</p>` : ''}
             </div>
         </div>
     `).join('');
@@ -382,13 +748,33 @@ function renderOccasions() {
                             if (e.type === 'sad') targetUrl = `booking-speaker.html?type=sad&occ=${encodeURIComponent(e.title)}`;
                             else if (e.type === 'happy') targetUrl = `celebrations.html?type=happy&occ=${encodeURIComponent(e.title)}`;
                             
+                            // Get date object
+                            let gDateObj = getGregorianDateObj(currentHijriYear, e.hijri.month, e.hijri.day);
+                            let gDateStr = new Intl.DateTimeFormat('ar-BH', { weekday: 'long', day: 'numeric', month: 'long', year: 'numeric' }).format(gDateObj);
+                            
+                            // Calculate Maghrib Time
+                            let maghribTimeStr = "--:--";
+                            if (typeof adhan !== 'undefined') {
+                                const coords = new adhan.Coordinates(26.2285, 50.5860);
+                                const params = adhan.CalculationMethod.Tehran();
+                                params.madhab = adhan.Madhab.Shafi;
+                                params.adjustments.maghrib = 15;
+                                params.timezone = 3;
+                                const pTimes = new adhan.PrayerTimes(coords, gDateObj, params);
+                                let mt = pTimes.maghrib;
+                                let h = mt.getHours() % 12 || 12;
+                                let m = mt.getMinutes().toString().padStart(2, '0');
+                                maghribTimeStr = `${h}:${m}`;
+                            }
+                            
                             return `
                             <a href="${targetUrl}" style="text-decoration: none; color: inherit; display: block;">
                                 <div class="occasion-card ${e.type || ''}" style="cursor: pointer; position: relative;">
                                     <div class="occasion-day">${e.hijri.day}</div>
                                     <div class="occasion-content">
                                         <div class="occasion-name">${e.title}</div>
-                                        <div class="occasion-desc" style="font-size: 0.85em; opacity: 0.8; margin-top: 4px; color: var(--primary-color);">الموافق ميلادياً تقريباً: ${getGregorianDate(currentHijriYear, e.hijri.month, e.hijri.day)}</div>
+                                        <div class="occasion-desc" style="font-size: 0.85em; opacity: 0.8; margin-top: 4px; color: var(--primary-color);">الموافق ميلادياً تقريباً: ${gDateStr}</div>
+                                        <div class="occasion-desc" style="font-size: 0.85em; opacity: 0.9; margin-top: 4px; color: #17a2b8;"><i class="fas fa-moon"></i> وقت صلاة المغرب (ليلة المناسبة): ${maghribTimeStr}</div>
                                         <div class="occasion-desc" style="font-size: 0.85em; opacity: 0.8; margin-top: 4px;">${e.description || ''}</div>
                                         ${targetUrl !== '#' ? `<div style="font-size: 0.75em; margin-top: 10px; color: ${e.type === 'sad' ? '#ff6b6b' : '#28a745'}; font-weight: bold;"><i class="fas fa-hand-pointer"></i> اضغط هنا للحجز</div>` : ''}
                                     </div>
@@ -427,8 +813,17 @@ function setupYearSelector() {
     const select = document.getElementById('hijriYearSelect');
     if (!select) return;
 
-    // Fixed start for 2026-2027 which corresponds to 1448
-    const startYear = 1448;
+    // Dynamically calculate the current Hijri year
+    let startYear = 1447; // fallback
+    try {
+        const today = new Date();
+        const parts = new Intl.DateTimeFormat('en-u-ca-islamic-umalqura', { year: 'numeric' }).formatToParts(today);
+        const yPart = parts.find(p => p.type === 'year');
+        if (yPart) startYear = parseInt(yPart.value);
+    } catch(e) {
+        console.warn("Intl Ca Islamic not supported, falling back to 1447");
+    }
+
     currentHijriYear = startYear;
 
     select.innerHTML = '';
@@ -508,14 +903,12 @@ function getCombinedEvents(monthIndex) {
 }
 
 // 3. Hijri to Gregorian Conversion (Approximation using Intl)
-function getGregorianDate(hijriYear, month, day) {
-    // Kuwaiti Algorithm approximation for standalone conversion
+function getGregorianDateObj(hijriYear, month, day) {
     var jd = Math.floor((11 * hijriYear + 3) / 30) +
              354 * hijriYear + 
              30 * month -
              Math.floor((month - 1) / 2) + day + 1948440 - 385;
 
-    // Convert JD to Gregorian
     var l = jd + 68569;
     var n = Math.floor((4 * l) / 146097);
     l = l - Math.floor((146097 * n + 3) / 4);
@@ -527,8 +920,11 @@ function getGregorianDate(hijriYear, month, day) {
     var m = j + 2 - 12 * l;
     var y = 100 * (n - 49) + i + l;
 
-    // Return localized formatted date string
-    var date = new Date(y, m - 1, d);
+    return new Date(y, m - 1, d);
+}
+
+function getGregorianDate(hijriYear, month, day) {
+    var date = getGregorianDateObj(hijriYear, month, day);
     return new Intl.DateTimeFormat('ar-BH', { weekday: 'long', day: 'numeric', month: 'long', year: 'numeric' }).format(date);
 }
 
@@ -609,7 +1005,9 @@ function renderHomePrayerTimes() {
     params.adjustments.dhuhr = 2;
     params.adjustments.maghrib = 15;
     params.adjustments.sunrise = 0;
+    params.adjustments.dhuhr = 0; // Zuhr is usually solar noon
     params.adjustments.asr = 0;
+    params.adjustments.maghrib = 15; // 15 min after sunset for full disk disappearance (cautionary)
     params.adjustments.isha = 0;
 
     // FORCE BAHRAIN TIMEZONE (UTC+3)
@@ -754,8 +1152,23 @@ function renderHomeOccasions() {
                     bgColor = '#e8f5e9';
                 }
 
+                // Calculate Maghrib Time for this date
+                let maghribTimeStr = "";
+                if (typeof adhan !== 'undefined') {
+                    const coords = new adhan.Coordinates(26.2285, 50.5860);
+                    const params = adhan.CalculationMethod.Tehran();
+                    params.madhab = adhan.Madhab.Shafi;
+                    params.adjustments.maghrib = 15;
+                    params.timezone = 3;
+                    const pTimes = new adhan.PrayerTimes(coords, date, params);
+                    let mt = pTimes.maghrib;
+                    let h = mt.getHours() % 12 || 12;
+                    let m = mt.getMinutes().toString().padStart(2, '0');
+                    maghribTimeStr = `<div style="font-size: 0.75rem; color: #17a2b8; margin-top: 3px;"><i class="fas fa-moon"></i> صلاة المغرب: ${h}:${m}</div>`;
+                }
+
                 monthEventsHTML += `
-                    <div class="occasion-item" style="padding: 10px 0; border-right: 3px solid ${accentColor}; padding-right: 12px;">
+                    <div class="occasion-item" style="padding: 10px 0; border-right: 3px solid ${accentColor}; padding-right: 12px; margin-bottom: 8px;">
                         <div class="occasion-date-box" style="padding: 5px; min-width: 50px; background: ${bgColor}; border-color: ${accentColor};">
                             <span class="occasion-date-day" style="font-size: 1rem; color: ${accentColor};">${day}</span>
                             <span class="occasion-date-month" style="font-size: 0.7rem;">${monthNamesAr[currentMonth]}</span>
@@ -763,6 +1176,7 @@ function renderHomeOccasions() {
                         <div class="occasion-details">
                             <div class="occasion-title" style="font-size: 0.9rem;">${e.title}</div>
                             <div class="occasion-desc" style="font-size: 0.75rem; color: #888;">يوافق ${hDay} ${typeof hijriMonths !== 'undefined' ? hijriMonths[hMonth - 1] : ''}</div>
+                            ${maghribTimeStr}
                         </div>
                     </div>
                 `;
@@ -802,8 +1216,16 @@ function updateHeaderTime() {
     // Hijri part with Offset
     let hParts = "";
     try {
-        const hDate = new Date(now.getTime() + hijriOffset * 86400000);
-        hParts = new Intl.DateTimeFormat('ar-SA', { day: 'numeric', month: 'long', year: 'numeric', calendar: 'islamic-umalqura' }).format(hDate);
+        if (typeof adhan !== 'undefined' && typeof adhan.getHijriDate === 'function') {
+            const hInfo = adhan.getHijriDate(now, hijriOffset);
+            if (hInfo) {
+                hParts = `${hInfo.day} ${hInfo.monthName} ${hInfo.year}`;
+            }
+        }
+        if (!hParts) {
+            const hDate = new Date(now.getTime() + hijriOffset * 86400000);
+            hParts = new Intl.DateTimeFormat('ar-SA', { day: 'numeric', month: 'long', year: 'numeric', calendar: 'islamic-umalqura' }).format(hDate);
+        }
     } catch(e) {}
     
     el.innerHTML = `<div><i class="fas fa-calendar-alt"></i> ${gParts}</div>

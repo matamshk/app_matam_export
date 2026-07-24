@@ -133,13 +133,45 @@
             color: #000;
         }
         @media print {
-            body * { visibility: hidden; }
-            #printCalendarArea, #printCalendarArea * { visibility: visible; color: black; }
-            #printCalendarArea { position: absolute; left: 0; top: 0; width: 100%; display: block; border: none; padding: 0; }
-            #printCalendarArea button { display: none !important; }
-            table { border-collapse: collapse; width: 100%; border: 1px solid #333; }
-            th, td { border: 1px solid #333 !important; padding: 8px !important; color: black !important; }
-            th { background-color: #eee !important; }
+            @page {
+                size: A4 portrait;
+                margin: 8mm 10mm;
+            }
+            body {
+                background: white !important;
+                color: black !important;
+                -webkit-print-color-adjust: exact;
+                print-color-adjust: exact;
+            }
+            body * {
+                display: none !important;
+            }
+            .print-layout-a4, .print-layout-a4 * {
+                display: block !important;
+            }
+            .print-layout-a4 table {
+                display: table !important;
+            }
+            .print-layout-a4 thead {
+                display: table-header-group !important;
+            }
+            .print-layout-a4 tbody {
+                display: table-row-group !important;
+            }
+            .print-layout-a4 tr {
+                display: table-row !important;
+            }
+            .print-layout-a4 th, .print-layout-a4 td {
+                display: table-cell !important;
+            }
+            .print-layout-a4 img {
+                display: inline-block !important;
+            }
+            .print-layout-a4 i {
+                display: inline-block !important;
+                font-family: "Font Awesome 6 Free", "Font Awesome 5 Free", sans-serif !important;
+                font-weight: 900 !important;
+            }
         }
     </style>
 </head>
@@ -201,7 +233,23 @@
 
         <div class="monthly-calendar-section" id="printCalendarArea" style="margin-top: 40px; background: linear-gradient(145deg, #162444, #0f172a); border: 1px solid rgba(255,255,255,0.05); border-radius: 20px; padding: 30px; box-shadow: 0 10px 30px rgba(0,0,0,0.5);">
             <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 25px; flex-wrap: wrap; gap: 15px;">
-                <h3 style="color: #e2e8f0; font-size: 1.5rem; margin: 0; font-weight: bold;"><i class="fas fa-calendar-alt" style="color: var(--gold-primary); margin-left: 8px;"></i> تقويم أوقات الصلاة للشهر الحالي</h3>
+                <div style="display: flex; align-items: center; gap: 15px; flex-wrap: wrap;">
+                    <h3 style="color: #e2e8f0; font-size: 1.5rem; margin: 0; font-weight: bold;"><i class="fas fa-calendar-alt" style="color: var(--gold-primary); margin-left: 8px;"></i> تقويم أوقات الصلاة:</h3>
+                    <select id="hijriMonthSelect" style="background: #111b30; color: #fff; border: 1px solid var(--gold-primary); border-radius: 8px; padding: 8px 15px; font-family: 'Tajawal', sans-serif; font-size: 1rem; cursor: pointer;" onchange="changeHijriMonth()">
+                        <option value="1">1. محرم الحرام</option>
+                        <option value="2">2. صفر</option>
+                        <option value="3">3. ربيع الأول</option>
+                        <option value="4">4. ربيع الثاني</option>
+                        <option value="5">5. جمادى الأولى</option>
+                        <option value="6">6. جمادى الآخرة</option>
+                        <option value="7">7. رجب</option>
+                        <option value="8">8. شعبان</option>
+                        <option value="9">9. رمضان</option>
+                        <option value="10">10. شوال</option>
+                        <option value="11">11. ذو القعدة</option>
+                        <option value="12">12. ذو الحجة</option>
+                    </select>
+                </div>
                 <div style="display: flex; gap: 10px; align-items: center;">
                     <a id="prayerRefDownloadBtn" href="#" target="_blank" class="btn" style="display: none; background: rgba(46, 204, 113, 0.15); color: #2ecc71; border: 1px solid rgba(46, 204, 113, 0.3); border-radius: 12px; padding: 10px 15px; text-decoration: none; align-items: center; gap: 5px; font-weight: bold; transition: all 0.3s ease;" onmouseover="this.style.background='#2ecc71'; this.style.color='#fff';" onmouseout="this.style.background='rgba(46, 204, 113, 0.15)'; this.style.color='#2ecc71';"><i class="fas fa-file-download"></i> تحميل جدول الأوقات المعتمد (PDF/صورة)</a>
                     <button class="btn" style="background: rgba(212, 175, 55, 0.15); color: var(--gold-primary); border: 1px solid rgba(212, 175, 55, 0.3); border-radius: 12px; transition: all 0.3s ease;" onmouseover="this.style.background='var(--gold-primary)'; this.style.color='#000';" onmouseout="this.style.background='rgba(212, 175, 55, 0.15)'; this.style.color='var(--gold-primary)';" onclick="printMonthlyCalendar()"><i class="fas fa-print"></i> تحميل / طباعة التقويم</button>
@@ -212,8 +260,8 @@
                 <table style="width: 100%; border-collapse: collapse; text-align: center; font-size: 0.95rem; background: rgba(0,0,0,0.2);">
                     <thead>
                         <tr style="background: rgba(255,255,255,0.05); color: #ffffff; border-bottom: 1px solid rgba(255,255,255,0.1);">
-                            <th style="padding: 16px 8px; font-weight: bold; width: 60px;">اليوم</th>
-                            <th style="padding: 16px 8px; font-weight: bold; width: 60px;">الميلادي</th>
+                            <th style="padding: 16px 8px; font-weight: bold; width: 80px;">اليوم</th>
+                            <th style="padding: 16px 8px; font-weight: bold; width: 100px;">الميلادي</th>
                             <th style="padding: 16px 8px; font-weight: bold; width: 60px;">الهجري</th>
                             <th style="padding: 16px 8px; font-weight: bold; color: var(--gold-primary);">الإمساك</th>
                             <th style="padding: 16px 8px; font-weight: bold;">الفجر</th>
@@ -223,12 +271,127 @@
                             <th style="padding: 16px 8px; font-weight: bold;">المغرب</th>
                             <th style="padding: 16px 8px; font-weight: bold;">العشاء</th>
                             <th style="padding: 16px 8px; font-weight: bold; color: #94a3b8;">المنتصف</th>
+                            <th style="padding: 16px 8px; font-weight: bold; width: 60px;">الزواج</th>
+                            <th style="padding: 16px 8px; font-weight: bold; text-align: right; padding-right: 15px;">المناسبات</th>
                         </tr>
                     </thead>
                     <tbody id="monthlyPrayerTableBody">
-                        <tr><td colspan="7" style="padding: 20px;">جاري التحميل...</td></tr>
+                        <tr><td colspan="13" style="padding: 20px;">جاري التحميل...</td></tr>
                     </tbody>
                 </table>
+            </div>
+        </div>
+    </div>
+
+    <!-- Footer Section -->
+    <footer style="margin-top: 50px; background: #0b1329; border-top: 1px solid rgba(255,255,255,0.05); padding: 35px 20px; text-align: center; font-family: 'Tajawal', sans-serif;">
+        <div class="container">
+            <div style="margin-bottom: 20px;">
+                <img src="uploads/matam_logo_calligraphy.png" alt="مأتم أبو صيبع" style="height: 50px; filter: brightness(0) invert(1); object-fit: contain;">
+            </div>
+            
+            <div style="display: flex; justify-content: center; gap: 20px; flex-wrap: wrap; margin-bottom: 25px;">
+                <a href="https://instagram.com/matam_abusaiba" target="_blank" style="color: #e1306c; font-size: 1.5rem; transition: transform 0.3s;" onmouseover="this.style.transform='scale(1.2)'" onmouseout="this.style.transform='scale(1)'"><i class="fab fa-instagram"></i></a>
+                <a href="https://api.whatsapp.com/send/?phone=97334195510&text&type=phone_number&app_absent=0" target="_blank" style="color: #25d366; font-size: 1.5rem; transition: transform 0.3s;" onmouseover="this.style.transform='scale(1.2)'" onmouseout="this.style.transform='scale(1)'"><i class="fab fa-whatsapp"></i></a>
+                <a href="https://facebook.com/profile.php?id=100078783154048" target="_blank" style="color: #1877f2; font-size: 1.5rem; transition: transform 0.3s;" onmouseover="this.style.transform='scale(1.2)'" onmouseout="this.style.transform='scale(1)'"><i class="fab fa-facebook-f"></i></a>
+                <a href="https://t.me/matam_abusaiba" target="_blank" style="color: #0088cc; font-size: 1.5rem; transition: transform 0.3s;" onmouseover="this.style.transform='scale(1.2)'" onmouseout="this.style.transform='scale(1)'"><i class="fab fa-telegram-plane"></i></a>
+                <a href="https://tiktok.com/@matam_abusaiba?is_from_webapp=1&sender_device=pc" target="_blank" style="color: #ff0050; font-size: 1.5rem; transition: transform 0.3s;" onmouseover="this.style.transform='scale(1.2)'" onmouseout="this.style.transform='scale(1)'"><i class="fab fa-tiktok"></i></a>
+            </div>
+            
+            <p style="color: #888; font-size: 0.9rem; margin: 0;">جميع الحقوق محفوظة © مأتم أبو صيبع الشرقي 1448 هـ - 2026 م</p>
+        </div>
+    </footer>
+
+    <!-- Dedicated A4 Print Layout -->
+    <div id="a4PrintLayout" class="print-layout-a4" style="display: none; direction: rtl; padding: 10px; background: #fff; color: #000; font-family: 'Tajawal', sans-serif;">
+        <!-- Header -->
+        <div style="display: flex; justify-content: space-between; align-items: center; border-bottom: 2px solid #000; padding-bottom: 10px; margin-bottom: 15px;">
+            <!-- Right Column: Logo and Matam Name -->
+            <div style="display: flex; align-items: center; gap: 10px; width: 38%; justify-content: flex-start; text-align: right;">
+                <img src="uploads/matam_logo_circle_red.png" alt="شعار المأتم" style="height: 60px; object-fit: contain;">
+                <div>
+                    <div style="font-weight: bold; font-size: 1.2rem; color: #000; font-family: 'Tajawal', sans-serif; line-height: 1.2;">مأتم أبو صيبع الشرقي</div>
+                    <div style="font-size: 0.8rem; color: #555; margin-top: 2px;">مملكة البحرين - أبو صيبع</div>
+                </div>
+            </div>
+            <!-- Middle Column: Hijri and Gregorian Months -->
+            <div style="text-align: center; width: 38%;">
+                <h2 id="printMonthNameHijri" style="margin: 0; font-size: 1.5rem; font-weight: bold; color: #111; font-family: 'Tajawal', sans-serif;">--</h2>
+                <h4 id="printMonthNameGregorian" style="margin: 5px 0 0 0; font-size: 1.05rem; color: #555; font-weight: normal; font-family: 'Tajawal', sans-serif;">--</h4>
+            </div>
+            <!-- Left Column: Year Info -->
+            <div style="text-align: left; width: 24%; font-size: 0.9rem; color: #000; font-weight: bold; font-family: 'Tajawal', sans-serif;">
+                التقويم السنوي 1448 هـ
+            </div>
+        </div>
+
+        <!-- Table -->
+        <table style="width: 100%; border-collapse: collapse; text-align: center; font-size: 0.82rem; line-height: 1.4;">
+            <thead>
+                <tr style="background: #f5f5f5; border: 1.5px solid #000;">
+                    <th style="border: 1px solid #000; padding: 5px; font-weight: bold;">اليوم</th>
+                    <th style="border: 1px solid #000; padding: 5px; font-weight: bold; width: 80px;">الميلادي</th>
+                    <th style="border: 1px solid #000; padding: 5px; font-weight: bold; width: 45px;">الهجري</th>
+                    <th style="border: 1px solid #000; padding: 5px; font-weight: bold; color: #a0522d;">الإمساك</th>
+                    <th style="border: 1px solid #000; padding: 5px; font-weight: bold;">الفجر</th>
+                    <th style="border: 1px solid #000; padding: 5px; font-weight: bold;">الشروق</th>
+                    <th style="border: 1px solid #000; padding: 5px; font-weight: bold;">الظهر</th>
+                    <th style="border: 1px solid #000; padding: 5px; font-weight: bold;">المغرب</th>
+                    <th style="border: 1px solid #000; padding: 5px; font-weight: bold; color: #555;">المنتصف</th>
+                    <th style="border: 1px solid #000; padding: 5px; font-weight: bold; width: 45px;">الزواج</th>
+                    <th style="border: 1px solid #000; padding: 5px; font-weight: bold; text-align: right; padding-right: 10px;">المناسبات الدينية والوطنية</th>
+                </tr>
+            </thead>
+            <tbody id="printTableBody">
+                <!-- Injected dynamically -->
+            </tbody>
+        </table>
+
+        <!-- Legend -->
+        <div style="display: flex; justify-content: space-between; align-items: center; margin-top: 10px; font-size: 0.72rem; border-top: 1px solid #eee; padding-top: 5px;">
+            <div style="text-align: right;">
+                <strong>رموز الزواج:</strong>
+                <span style="margin-right: 10px;">✓ صالح للزواج (العقد والدخلة)</span>
+                <span style="margin-right: 15px;">× مكروه للزواج (العقد والدخلة)</span>
+                <span style="margin-right: 15px;">& صالح للعقد ومكروه للزواج</span>
+            </div>
+            <div style="text-align: left; color: #666;">
+                * الأوقات تقديرية وفق المصدر المعتمد.
+            </div>
+        </div>
+
+        <!-- Footer -->
+        <div style="display: flex; justify-content: space-between; align-items: center; border-top: 2px solid #000; margin-top: 15px; padding-top: 10px;">
+            <!-- Social media on the left -->
+            <div style="display: flex; flex-direction: column; align-items: flex-start; gap: 4px; font-size: 0.75rem; width: 33%;">
+                <div style="display: flex; gap: 8px; align-items: center;">
+                    <a href="https://facebook.com/profile.php?id=100078783154048" target="_blank" style="color: inherit; display: flex; align-items: center;">
+                        <svg viewBox="0 0 24 24" style="width: 14px; height: 14px; fill: #000;"><path d="M24 12.073c0-6.627-5.373-12-12-12s-12 5.373-12 12c0 5.99 4.388 10.954 10.125 11.854v-8.385H7.078v-3.47h3.047V9.43c0-3.007 1.792-4.669 4.533-4.669 1.312 0 2.686.235 2.686.235v2.953H15.83c-1.491 0-1.956.925-1.956 1.874v2.25h3.328l-.532 3.47h-2.796v8.385C19.612 23.027 24 18.062 24 12.073z"/></svg>
+                    </a>
+                    <a href="https://instagram.com/matam_abusaiba" target="_blank" style="color: inherit; display: flex; align-items: center;">
+                        <svg viewBox="0 0 24 24" style="width: 14px; height: 14px; fill: #000;"><path d="M12 2.163c3.204 0 3.584.012 4.85.07 3.252.148 4.771 1.691 4.919 4.919.058 1.265.069 1.645.069 4.849 0 3.205-.012 3.584-.069 4.849-.149 3.225-1.664 4.771-4.919 4.919-1.266.058-1.644.07-4.85.07-3.204 0-3.584-.012-4.849-.07-3.26-.149-4.771-1.699-4.919-4.92-.058-1.265-.07-1.644-.07-4.849 0-3.204.013-3.583.07-4.849.149-3.227 1.664-4.771 4.919-4.919 1.266-.057 1.645-.069 4.849-.069zM12 0C8.741 0 8.333.014 7.053.072 2.695.272.273 2.69.073 7.051.014 8.333 0 8.741 0 12c0 3.259.014 3.668.072 4.948.2 4.358 2.618 6.78 6.98 6.98 1.281.058 1.689.072 4.948.072 3.259 0 3.668-.014 4.948-.072 4.354-.2 6.782-2.618 6.979-6.98.059-1.28.073-1.689.073-4.948 0-3.259-.014-3.667-.072-4.947-.196-4.354-2.617-6.78-6.979-6.98C15.668.014 15.259 0 12 0zm0 5.838a6.162 6.162 0 100 12.324 6.162 6.162 0 000-12.324zM12 16a4 4 0 110-8 4 4 0 010 8zm6.406-11.845a1.44 1.44 0 100 2.881 1.44 1.44 0 000-2.881z"/></svg>
+                    </a>
+                    <a href="https://t.me/matam_abusaiba" target="_blank" style="color: inherit; display: flex; align-items: center;">
+                        <svg viewBox="0 0 24 24" style="width: 14px; height: 14px; fill: #000;"><path d="M12 0C5.373 0 0 5.373 0 12s5.373 12 12 12 12-5.373 12-12S18.627 0 12 0zm5.562 8.161c-.18.717-.962 4.084-1.362 5.761-.17.71-.43 1.07-.68 1.1-.55.05-1.03-.36-1.57-.71-.84-.55-1.31-.89-2.13-1.43-.95-.62-.33-.96.21-1.52.14-.15 2.59-2.38 2.64-2.59.01-.03.01-.14-.05-.2-.06-.06-.15-.04-.22-.02-.1.02-1.68 1.07-4.75 3.14-.45.31-.86.46-1.23.45-.41-.01-1.2-.23-1.78-.42-.72-.24-1.29-.36-1.24-.77.03-.21.32-.43.88-.67 3.44-1.5 5.74-2.49 6.89-2.96 3.28-1.35 3.96-1.59 4.41-1.6.1 0 .32.02.46.14.12.1.15.24.16.34.01.07.02.23.01.32z"/></svg>
+                    </a>
+                    <a href="https://tiktok.com/@matam_abusaiba?is_from_webapp=1&sender_device=pc" target="_blank" style="color: inherit; display: flex; align-items: center;">
+                        <svg viewBox="0 0 24 24" style="width: 14px; height: 14px; fill: #000;"><path d="M12.525.02c1.31-.02 2.61-.01 3.91-.02.08 1.53.63 3.02 1.63 4.13.97 1.07 2.33 1.77 3.79 1.98v3.83c-1.85-.01-3.62-.64-5.07-1.77-.07-.05-.12-.12-.22-.22v6.62c.03 2.92-1.78 5.67-4.57 6.55-2.88.93-6.13-.25-7.66-2.73-1.61-2.58-1.07-6.11 1.2-8.08 1.95-1.69 4.88-1.92 7.07-.63v3.91c-1.36-.88-3.23-.62-4.29.58-.96 1.09-1.04 2.76-.17 3.92.93 1.27 2.78 1.66 4.14.88 1.13-.63 1.83-1.83 1.82-3.13-.01-4.22.02-8.44-.02-12.66-.02-.1-.05-.2-.11-.27-.08-.07-.18-.11-.28-.11-.84.02-1.68-.01-2.52.02V.02z"/></svg>
+                    </a>
+                </div>
+                <div style="font-weight: bold; font-family: monospace; color: #111;">matam_abusaiba</div>
+            </div>
+            
+            <!-- Calligraphy logo in the center -->
+            <div style="text-align: center; width: 33%;">
+                <img src="uploads/matam_logo_calligraphy.png" alt="مأتم أبو صيبع" style="height: 42px; object-fit: contain;">
+            </div>
+
+            <!-- WhatsApp on the right -->
+            <div style="display: flex; align-items: center; gap: 6px; font-size: 0.8rem; font-weight: bold; justify-content: flex-end; width: 33%; color: #25d366;">
+                <a href="https://api.whatsapp.com/send/?phone=97334195510&text&type=phone_number&app_absent=0" target="_blank" style="color: #25d366; text-decoration: none; display: flex; align-items: center; gap: 5px;">
+                    <span>خدمة الواتس أب: 34195510</span>
+                    <svg viewBox="0 0 24 24" style="width: 15px; height: 15px; fill: #25d366; vertical-align: middle;"><path d="M.057 24l1.687-6.163c-1.041-1.804-1.588-3.849-1.587-5.946C.06 5.348 5.397.01 12.008.01c3.202.001 6.212 1.246 8.477 3.514 2.266 2.268 3.507 5.28 3.505 8.484-.004 6.657-5.34 11.997-11.953 11.997-2.005-.001-3.973-.502-5.724-1.458L0 24zm6.59-4.846c1.6.95 3.178 1.449 4.747 1.451 5.436.002 9.852-4.411 9.855-9.85.002-2.634-1.02-5.11-2.881-6.974-1.862-1.863-4.337-2.889-6.976-2.89-5.438 0-9.854 4.413-9.858 9.853-.002 1.761.464 3.479 1.349 5.025l-.973 3.551 3.638-.954zm10.933-5.051c-.265-.133-1.567-.773-1.809-.861-.242-.088-.419-.133-.596.133-.177.265-.684.861-.838 1.038-.155.177-.31.199-.575.066-.265-.133-1.12-.413-2.133-1.317-.788-.703-1.32-1.572-1.474-1.838-.155-.265-.017-.409.116-.541.12-.119.265-.31.398-.465.133-.155.177-.265.265-.442.088-.177.044-.332-.022-.465-.066-.133-.596-1.438-.817-1.97-.215-.519-.43-.448-.596-.456-.155-.008-.332-.01-.508-.01-.177 0-.464.066-.707.332-.242.265-.928.907-.928 2.212 0 1.305.95 2.566 1.084 2.743.133.177 1.87 2.854 4.529 4.001.633.273 1.127.436 1.513.559.636.202 1.215.174 1.673.105.51-.077 1.567-.641 1.789-1.261.221-.619.221-1.151.155-1.261-.066-.109-.242-.177-.508-.31z"/></svg>
+                </a>
             </div>
         </div>
     </div>
@@ -238,6 +401,7 @@
     <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf-autotable/3.5.31/jspdf.plugin.autotable.min.js"></script>
     <script src="js/adhan_fixed.js"></script>
+    <script src="js/prayer-calendar-db.js"></script>
 
     <script src="js/main.js?v=2026"></script>
     <script src="js/awqaf.js?v=3"></script>

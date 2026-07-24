@@ -4,6 +4,16 @@
 
 let allBookingsCache = [];
 
+function escapeHTML(str) {
+    if (!str) return '';
+    return str.toString()
+        .replace(/&/g, '&amp;')
+        .replace(/</g, '&lt;')
+        .replace(/>/g, '&gt;')
+        .replace(/"/g, '&quot;')
+        .replace(/'/g, '&#39;');
+}
+
 document.addEventListener('DOMContentLoaded', () => {
     verifyAuth();
 });
@@ -69,6 +79,58 @@ function logout() {
     window.location.href = 'login.html';
 }
 
+let reminderShownThisSession = false;
+
+function showBookingsReminder(force = false) {
+    if (reminderShownThisSession && !force) return;
+    
+    const container = document.getElementById('reminderBookingsContainer');
+    const overlay = document.getElementById('reminderModalOverlay');
+    if (!container || !overlay) return;
+    
+    // Sort and get the top 3 latest bookings (priority to date, then ID)
+    const latest = [...allBookingsCache]
+        .sort((a, b) => {
+            const dateA = a.date || '';
+            const dateB = b.date || '';
+            if (dateA !== dateB) return dateB.localeCompare(dateA);
+            return (b.id || 0) - (a.id || 0);
+        })
+        .slice(0, 3);
+        
+    if (latest.length === 0) return;
+    
+    container.innerHTML = latest.map(b => {
+        let detailsHtml = '';
+        if (b.details) {
+            detailsHtml = `
+                <div style="font-size: 0.8rem; color: #888; margin-top: 5px; background: rgba(255,255,255,0.02); padding: 6px; border-radius: 6px; border: 1px solid rgba(255,255,255,0.05);">
+                    <strong>الخدمة/القاعة:</strong> ${escapeHTML(b.details.service || b.type || '')} / ${escapeHTML(b.details.hall || '')}
+                    ${b.details.time ? `<br><strong>الوقت:</strong> ${escapeHTML(b.details.time)}` : ''}
+                </div>
+            `;
+        }
+        return `
+            <div style="background: rgba(255,255,255,0.03); border: 1px solid rgba(212,175,55,0.25); border-radius: 10px; padding: 12px; text-align: right; direction: rtl;">
+                <div style="display: flex; justify-content: space-between; align-items: center; border-bottom: 1px solid rgba(255,255,255,0.08); padding-bottom: 8px; margin-bottom: 8px;">
+                    <span style="font-weight: bold; color: var(--primary-color); font-size: 0.95rem;"><i class="fas fa-calendar-day"></i> ${escapeHTML(b.date || '')}</span>
+                    <span style="background: ${b.status === 'confirmed' ? 'rgba(40, 167, 69, 0.15)' : 'rgba(255, 193, 7, 0.15)'}; color: ${b.status === 'confirmed' ? '#28a745' : '#ffc107'}; font-size: 0.75rem; padding: 3px 10px; border-radius: 12px; font-weight: bold;">
+                        ${b.status === 'confirmed' ? 'مؤكد' : 'قيد الانتظار'}
+                    </span>
+                </div>
+                <div style="font-size: 0.88rem; line-height: 1.5; color: #eee;">
+                    <strong>الاسم:</strong> ${escapeHTML(b.name || '')}<br>
+                    <strong>الهاتف:</strong> ${escapeHTML(b.phone || '')}
+                    ${detailsHtml}
+                </div>
+            </div>
+        `;
+    }).join('');
+    
+    overlay.style.display = 'flex';
+    reminderShownThisSession = true;
+}
+
 function showSection(sectionId) {
     // Hide all
     ['bookingsViewer', 'contributionsViewer', 'reportsViewer', 'usersViewer', 'occasionsViewer', 'prayerSettingsViewer', 'settingsViewer'].forEach(id => {
@@ -93,6 +155,10 @@ function showSection(sectionId) {
         'settingsViewer': 'إعدادات النظام'
     };
     document.getElementById('pageTitle').textContent = titles[sectionId];
+
+    if (sectionId === 'bookingsViewer') {
+        showBookingsReminder();
+    }
 }
 
 async function loadDashboardData() {
@@ -222,10 +288,10 @@ function renderBookingsTable(bookings) {
         return `
             <tr>
                 <td style="font-family: monospace;">#${b.id.toString().slice(-6)}</td>
-                <td><strong>${b.name || 'غير معروف'}</strong></td>
-                <td style="direction: ltr;">${b.phone || '-'}</td>
-                <td>${b.date}</td>
-                <td>${details}</td>
+                <td><strong>${escapeHTML(b.name || 'غير معروف')}</strong></td>
+                <td style="direction: ltr;">${escapeHTML(b.phone || '-')}</td>
+                <td>${escapeHTML(b.date)}</td>
+                <td>${escapeHTML(details)}</td>
                 <td>${statusBadge}</td>
                 <td>${actionBtns}</td>
             </tr>
@@ -258,14 +324,14 @@ function renderContributionsTable(contributions) {
         
         return `
             <tr>
-                <td>${c.date}</td>
-                <td><strong>${c.sender_name || 'غير معروف'}</strong></td>
-                <td style="direction: ltr;">${c.sender_phone || '-'}</td>
+                <td>${escapeHTML(c.date)}</td>
+                <td><strong>${escapeHTML(c.sender_name || 'غير معروف')}</strong></td>
+                <td style="direction: ltr;">${escapeHTML(c.sender_phone || '-')}</td>
                 <td>${count} أسماء</td>
                 <td style="color:var(--gold-primary); font-weight:bold;">${c.total_amount || 0} د.ب</td>
                 <td>${statusBadge}</td>
                 <td>
-                    <button class="btn-view" onclick="openContributionModal('${c.id}')"><i class="fas fa-eye"></i> عرض التفاصيل</button>
+                    <button class="btn-view" onclick="openContributionModal('${escapeHTML(c.id)}')"><i class="fas fa-eye"></i> عرض التفاصيل</button>
                 </td>
             </tr>
         `;
@@ -279,8 +345,8 @@ function openContributionModal(id) {
     let deceasedHTML = '<ul style="margin:0; padding-right:15px; font-size:1rem; list-style-type:square; line-height: 1.8;">';
     if(c.deceased_list) {
         c.deceased_list.forEach((dec, idx) => {
-            let photoLink = dec.photo ? `<a href="${dec.photo}" target="_blank" style="color:var(--primary-color); font-size:0.9em;">[عرض صورة المرحوم]</a>` : '';
-            deceasedHTML += `<li>${dec.name} ${photoLink}</li>`;
+            let photoLink = dec.photo ? `<a href="${escapeHTML(dec.photo)}" target="_blank" style="color:var(--primary-color); font-size:0.9em;">[عرض صورة المرحوم]</a>` : '';
+            deceasedHTML += `<li>${escapeHTML(dec.name)} ${photoLink}</li>`;
         });
     }
     deceasedHTML += '</ul>';
@@ -288,12 +354,12 @@ function openContributionModal(id) {
     const modalHtml = `
         <h3 style="color: var(--primary-color); margin-bottom: 20px; border-bottom: 1px solid #ccc; padding-bottom: 10px;">تفاصيل المساهمة</h3>
         <div style="display:flex; justify-content:space-between; margin-bottom: 15px; color: #000;">
-            <div><strong>الاسم:</strong> ${c.sender_name}</div>
-            <div style="direction:ltr;"><strong>الهاتف:</strong> ${c.sender_phone}</div>
+            <div><strong>الاسم:</strong> ${escapeHTML(c.sender_name)}</div>
+            <div style="direction:ltr;"><strong>الهاتف:</strong> ${escapeHTML(c.sender_phone)}</div>
         </div>
         <div style="display:flex; justify-content:space-between; margin-bottom: 15px; color: #555;">
-            <div><strong>الشهر الهجري:</strong> ${c.hijri_month || '-'}</div>
-            <div><strong>المناسبة:</strong> ${c.occasion || '-'}</div>
+            <div><strong>الشهر الهجري:</strong> ${escapeHTML(c.hijri_month || '-')}</div>
+            <div><strong>المناسبة:</strong> ${escapeHTML(c.occasion || '-')}</div>
         </div>
         <div style="background: #fdfdfd; border: 1px solid #ddd; border-radius: 8px; padding: 15px; margin-bottom: 20px; color: #000;">
             <p style="margin-top:0; font-weight:bold;">أسماء المرحومين:</p>
@@ -304,7 +370,7 @@ function openContributionModal(id) {
         </div>
         <div style="margin-bottom: 20px;">
             <strong>صورة إيصال التحويل (بنفت):</strong>
-            ${c.receipt_image ? `<div style="margin-top:10px; text-align:center;"><a href="${c.receipt_image}" target="_blank"><img src="${c.receipt_image}" style="max-width:100%; border-radius:8px; border:1px solid #ddd;"></a></div>` : '<p>لم يتم إرفاق صورة.</p>'}
+            ${c.receipt_image ? `<div style="margin-top:10px; text-align:center;"><a href="${escapeHTML(c.receipt_image)}" target="_blank"><img src="${escapeHTML(c.receipt_image)}" style="max-width:100%; border-radius:8px; border:1px solid #ddd;"></a></div>` : '<p>لم يتم إرفاق صورة.</p>'}
         </div>
         <button class="btn-primary" style="background: #666; width: 100%; margin-top: 10px;" onclick="document.getElementById('viewModalOverlay').style.display='none'">إغلاق</button>
     `;
@@ -350,7 +416,7 @@ function renderOccasionsTable(occasions) {
         <tr>
             <td>${mapMonth[o.hijri.month]}</td>
             <td>${o.hijri.day}</td>
-            <td>${o.title}</td>
+            <td>${escapeHTML(o.title)}</td>
             <td>${mapType[o.type] || o.type}</td>
         </tr>
     `).join('');
@@ -497,26 +563,26 @@ function generateReport() {
         if(statusStr === 'rejected') { statusLabel = 'مرفوض ❌'; statusClass = 'status-rejected'; }
 
         let trId = b.id.toString().substring(b.id.toString().length - 5);
-        let typeBadge = '<span class="status-badge" style="background: rgba(212,175,55,0.1); color: var(--primary-color); border-radius: 4px; padding: 4px 8px;">' + (b.type || '').replace('بوابة المأتم - ', '') + '</span>';
+        let typeBadge = '<span class="status-badge" style="background: rgba(212,175,55,0.1); color: var(--primary-color); border-radius: 4px; padding: 4px 8px;">' + escapeHTML((b.type || '').replace('بوابة المأتم - ', '')) + '</span>';
         
         const role = localStorage.getItem('admin_role');
         const perms = JSON.parse(localStorage.getItem('admin_permissions') || '{}');
         const canWrite = role === 'superadmin' || perms.reports === 'write';
 
-        let detailsBtn = `<button class="btn-view" onclick="openViewModal('${b.id}')" title="عرض التفاصيل"><i class="fas fa-eye"></i> عرض</button>`;
-        let editBtn = canWrite ? `<button class="btn-edit" onclick="openEditModal('${b.id}')" title="تعديل"><i class="fas fa-edit"></i> تعديل</button>` : '';
+        let detailsBtn = `<button class="btn-view" onclick="openViewModal('${escapeHTML(b.id)}')" title="عرض التفاصيل"><i class="fas fa-eye"></i> عرض</button>`;
+        let editBtn = canWrite ? `<button class="btn-edit" onclick="openEditModal('${escapeHTML(b.id)}')" title="تعديل"><i class="fas fa-edit"></i> تعديل</button>` : '';
         let deleteBtn = '';
         if (role === 'superadmin') {
-            deleteBtn = `<button class="btn-delete" onclick="deleteBooking('${b.id}')" title="حذف"><i class="fas fa-trash"></i> حذف</button>`;
+            deleteBtn = `<button class="btn-delete" onclick="deleteBooking('${escapeHTML(b.id)}')" title="حذف"><i class="fas fa-trash"></i> حذف</button>`;
         }
 
         return `
         <tr>
-            <td>#${trId}</td>
-            <td style="font-weight:bold;">${b.date}</td>
+            <td>#${escapeHTML(trId)}</td>
+            <td style="font-weight:bold;">${escapeHTML(b.date)}</td>
             <td>${typeBadge}</td>
-            <td>${b.name}</td>
-            <td style="direction:ltr;">${b.phone}</td>
+            <td>${escapeHTML(b.name)}</td>
+            <td style="direction:ltr;">${escapeHTML(b.phone)}</td>
             <td><span class="status-badge ${statusClass}">${statusLabel}</span></td>
             <td class="action-btns" style="display:flex; gap: 8px; justify-content:center; flex-wrap:wrap;">
                 ${detailsBtn} ${editBtn} ${deleteBtn}
@@ -531,17 +597,17 @@ function openViewModal(id) {
     if(!b) return;
 
     let detailsHTML = '<ul style="margin:0; padding-right:15px; font-size:1rem; list-style-type:square; line-height: 1.8;">';
-    if(b.details && b.details.time) detailsHTML += `<li><strong>الوقت:</strong> ${b.details.time}</li>`;
-    if(b.details && b.details.service) detailsHTML += `<li><strong>الخدمة/المناسبة:</strong> ${b.details.service}</li>`;
-    if(b.details && b.details.hall) detailsHTML += `<li><strong>الموقع:</strong> ${b.details.hall}</li>`;
-    if(b.details && b.details.package) detailsHTML += `<li><strong>الباقة:</strong> ${b.details.package}</li>`;
+    if(b.details && b.details.time) detailsHTML += `<li><strong>الوقت:</strong> ${escapeHTML(b.details.time)}</li>`;
+    if(b.details && b.details.service) detailsHTML += `<li><strong>الخدمة/المناسبة:</strong> ${escapeHTML(b.details.service)}</li>`;
+    if(b.details && b.details.hall) detailsHTML += `<li><strong>الموقع:</strong> ${escapeHTML(b.details.hall)}</li>`;
+    if(b.details && b.details.package) detailsHTML += `<li><strong>الباقة:</strong> ${escapeHTML(b.details.package)}</li>`;
     
     // Addons
-    if(b.details && b.details.has_tables) detailsHTML += `<li><strong>طاولات:</strong> ${b.details.tables_count || 1}</li>`;
-    if(b.details && b.details.has_chairs) detailsHTML += `<li><strong>كراسي:</strong> ${b.details.chairs_count || 1}</li>`;
+    if(b.details && b.details.has_tables) detailsHTML += `<li><strong>طاولات:</strong> ${escapeHTML(b.details.tables_count || 1)}</li>`;
+    if(b.details && b.details.has_chairs) detailsHTML += `<li><strong>كراسي:</strong> ${escapeHTML(b.details.chairs_count || 1)}</li>`;
     if(b.details && b.details.has_tea) detailsHTML += `<li><strong>شاي</strong></li>`;
     if(b.details && b.details.has_coffee) detailsHTML += `<li><strong>قهوة</strong></li>`;
-    if(b.details && b.details.other_services) detailsHTML += `<li><strong>ملاحظات:</strong> ${b.details.other_services}</li>`;
+    if(b.details && b.details.other_services) detailsHTML += `<li><strong>ملاحظات:</strong> ${escapeHTML(b.details.other_services)}</li>`;
     detailsHTML += '</ul>';
 
     let statusStr = b.status || 'pending';
@@ -553,19 +619,19 @@ function openViewModal(id) {
     const modalHtml = `
         <h3 style="color: var(--primary-color); margin-bottom: 20px; border-bottom: 1px solid #ccc; padding-bottom: 10px;">تفاصيل الطلب: #${formattedId}</h3>
         <div style="display:flex; justify-content:space-between; margin-bottom: 15px; color: #000;">
-            <div><strong>الاسم:</strong> ${b.name}</div>
-            <div style="direction:ltr;"><strong>الهاتف:</strong> ${b.phone}</div>
+            <div><strong>الاسم:</strong> ${escapeHTML(b.name)}</div>
+            <div style="direction:ltr;"><strong>الهاتف:</strong> ${escapeHTML(b.phone)}</div>
         </div>
         <div style="display:flex; justify-content:space-between; margin-bottom: 15px; color: #555;">
-            <div><strong>تاريخ الحجز:</strong> ${b.date}</div>
+            <div><strong>تاريخ الحجز:</strong> ${escapeHTML(b.date)}</div>
             <div><strong>الحالة:</strong> ${statusLabel}</div>
         </div>
         <div style="background: #fdfdfd; border: 1px solid #ddd; border-radius: 8px; padding: 15px; margin-bottom: 20px; color: #000;">
             ${detailsHTML}
         </div>
         <div style="display:flex; gap: 10px; margin-top: 20px;">
-            <button class="btn-primary" onclick="updateStatus('${b.id}', 'approved')" style="flex:1; background: #28a745;"><i class="fas fa-check"></i> قبول</button>
-            <button class="btn-primary" onclick="updateStatus('${b.id}', 'rejected')" style="flex:1; background: #dc3545;"><i class="fas fa-times"></i> رفض</button>
+            <button class="btn-primary" onclick="updateStatus('${escapeHTML(b.id)}', 'approved')" style="flex:1; background: #28a745;"><i class="fas fa-check"></i> قبول</button>
+            <button class="btn-primary" onclick="updateStatus('${escapeHTML(b.id)}', 'rejected')" style="flex:1; background: #dc3545;"><i class="fas fa-times"></i> رفض</button>
         </div>
         <button class="btn-primary" style="background: #666; width: 100%; margin-top: 10px;" onclick="document.getElementById('viewModalOverlay').style.display='none'">إغلاق</button>
     `;

@@ -4,6 +4,16 @@
 
 let allBookingsCache = [];
 
+function escapeHTML(str) {
+    if (!str) return '';
+    return str.toString()
+        .replace(/&/g, '&amp;')
+        .replace(/</g, '&lt;')
+        .replace(/>/g, '&gt;')
+        .replace(/"/g, '&quot;')
+        .replace(/'/g, '&#39;');
+}
+
 document.addEventListener('DOMContentLoaded', () => {
     verifyAuth();
 });
@@ -29,12 +39,28 @@ async function verifyAuth() {
             
             document.getElementById('loggedInUser').innerHTML = `<i class="fas fa-user-circle"></i> ${data.name || 'مدير'}`;
             localStorage.setItem('admin_role', data.role);
+            localStorage.setItem('admin_permissions', JSON.stringify(data.permissions || {}));
             
+            // Apply Permissions to Menu
             if (data.role === 'superadmin') {
+                document.getElementById('menu-reports').style.display = 'block';
                 document.getElementById('menu-users').style.display = 'block';
-                document.getElementById('menu-occasions').style.display = 'block';
                 document.getElementById('menu-settings').style.display = 'block';
+                document.getElementById('menu-prayer-settings').style.display = 'block';
+                document.getElementById('menu-contributions').style.display = 'block';
                 loadUsersData();
+            } else if (data.permissions) {
+                // Bookings (Default visible, hide if none)
+                document.querySelector('[onclick="showSection(\'bookingsViewer\')"]').parentElement.style.display = (data.permissions.bookings && data.permissions.bookings !== 'none') ? 'block' : 'none';
+                
+                // Occasions (Default visible, hide if none)
+                document.querySelector('[onclick="showSection(\'occasionsViewer\')"]').parentElement.style.display = (data.permissions.occasions && data.permissions.occasions !== 'none') ? 'block' : 'none';
+                
+                // Others (Default hidden, show if not none)
+                document.getElementById('menu-reports').style.display = (data.permissions.reports && data.permissions.reports !== 'none') ? 'block' : 'none';
+                document.getElementById('menu-settings').style.display = (data.permissions.settings && data.permissions.settings !== 'none') ? 'block' : 'none';
+                document.getElementById('menu-prayer-settings').style.display = (data.permissions.prayer && data.permissions.prayer !== 'none') ? 'block' : 'none';
+                document.getElementById('menu-contributions').style.display = (data.permissions.contributions && data.permissions.contributions !== 'none') ? 'block' : 'none';
             }
             
             loadDashboardData();
@@ -55,7 +81,7 @@ function logout() {
 
 function showSection(sectionId) {
     // Hide all
-    ['bookingsViewer', 'reportsViewer', 'usersViewer', 'occasionsViewer', 'settingsViewer'].forEach(id => {
+    ['bookingsViewer', 'contributionsViewer', 'reportsViewer', 'usersViewer', 'occasionsViewer', 'prayerSettingsViewer', 'settingsViewer'].forEach(id => {
         const el = document.getElementById(id);
         if (el) el.style.display = 'none';
     });
@@ -69,9 +95,11 @@ function showSection(sectionId) {
 
     const titles = {
         'bookingsViewer': 'إدارة الحجوزات',
+        'contributionsViewer': 'مساهمات المرحومين',
         'reportsViewer': 'التقارير المتقدمة',
         'usersViewer': 'إدارة المستخدمين',
         'occasionsViewer': 'المناسبات المخصصة',
+        'prayerSettingsViewer': 'إعدادات الصلاة',
         'settingsViewer': 'إعدادات النظام'
     };
     document.getElementById('pageTitle').textContent = titles[sectionId];
@@ -84,16 +112,72 @@ async function loadDashboardData() {
         const db = await res.json();
 
         allBookingsCache = db.bookings || [];
+        allContributionsCache = db.contributions || [];
+        
         renderBookingsTable(allBookingsCache);
+        renderContributionsTable(allContributionsCache);
         generateReport();
         
         renderOccasionsTable(db.custom_occasions || []);
         if (db.hijri_offset !== undefined) {
             document.getElementById('hijriOffsetInput').value = db.hijri_offset;
         }
-        if (db.settings && db.settings.whatsapp_phone) {
-            const waInput = document.getElementById('whatsappPhoneInput');
-            if (waInput) waInput.value = db.settings.whatsapp_phone;
+        if (db.settings) {
+            if (db.settings.whatsapp_phone) {
+                const waInput = document.getElementById('whatsappPhoneInput');
+                if (waInput) waInput.value = db.settings.whatsapp_phone;
+            }
+            if (db.settings.google_webapp_url) {
+                const gUrlInput = document.getElementById('googleWebAppUrlInput');
+                if (gUrlInput) gUrlInput.value = db.settings.google_webapp_url;
+            }
+            if (db.settings.contribution_price) {
+                const cpInput = document.getElementById('contributionPriceInput');
+                if (cpInput) cpInput.value = db.settings.contribution_price;
+            }
+            if (db.settings.hidden_pages) {
+                document.querySelectorAll('input[name="hiddenPages"]').forEach(cb => {
+                    if (db.settings.hidden_pages.includes(cb.value)) cb.checked = true;
+                });
+            }
+            if (db.settings.hidden_prayers) {
+                document.querySelectorAll('input[name="hiddenPrayers"]').forEach(cb => {
+                    if (db.settings.hidden_prayers.includes(cb.value)) cb.checked = true;
+                });
+            }
+            if (db.settings.prayer_reference_url) {
+                const container = document.getElementById('currentPrayerRefContainer');
+                const link = document.getElementById('currentPrayerRefLink');
+                if (container && link) {
+                    container.style.display = 'block';
+                    link.href = db.settings.prayer_reference_url;
+                }
+            }
+            if (db.settings.prayer_reference_option) {
+                const optRadio = document.querySelector(`input[name="refUpdateOption"][value="${db.settings.prayer_reference_option}"]`);
+                if (optRadio) optRadio.checked = true;
+            }
+        }
+
+        // Apply read-only constraints to forms
+        const role = localStorage.getItem('admin_role');
+        const perms = JSON.parse(localStorage.getItem('admin_permissions') || '{}');
+
+        if (role !== 'superadmin') {
+            if (perms.occasions !== 'write') {
+                const f = document.getElementById('adminOccasionForm');
+                if (f) f.style.display = 'none';
+            }
+            if (perms.settings !== 'write') {
+                const b = document.querySelector('#generalSettingsForm button[type="submit"]');
+                if (b) b.style.display = 'none';
+            }
+            if (perms.prayer !== 'write') {
+                const b1 = document.querySelector('#offsetForm button[type="submit"]');
+                const b2 = document.querySelector('#prayerSettingsForm button[type="submit"]');
+                if (b1) b1.style.display = 'none';
+                if (b2) b2.style.display = 'none';
+            }
         }
 
     } catch (e) {
@@ -113,6 +197,10 @@ function renderBookingsTable(bookings) {
 
     let pendingCount = 0;
     let approvedCount = 0;
+    
+    const role = localStorage.getItem('admin_role');
+    const perms = JSON.parse(localStorage.getItem('admin_permissions') || '{}');
+    const canWrite = role === 'superadmin' || perms.bookings === 'write';
 
     tbody.innerHTML = bookings.map(b => {
         const status = b.status || 'pending';
@@ -122,17 +210,21 @@ function renderBookingsTable(bookings) {
         if (status === 'pending') {
             pendingCount++;
             statusBadge = '<span class="status-badge status-pending">قيد الانتظار</span>';
-            actionBtns = `
-                <button class="action-btn btn-approve" onclick="updateStatus(${b.id}, 'approved')"><i class="fas fa-check"></i></button>
-                <button class="action-btn btn-reject" onclick="updateStatus(${b.id}, 'rejected')"><i class="fas fa-times"></i></button>
-            `;
+            if (canWrite) {
+                actionBtns = `
+                    <button class="action-btn btn-approve" onclick="updateStatus(${b.id}, 'approved')"><i class="fas fa-check"></i></button>
+                    <button class="action-btn btn-reject" onclick="updateStatus(${b.id}, 'rejected')"><i class="fas fa-times"></i></button>
+                `;
+            } else {
+                actionBtns = '<span style="color:#aaa; font-size:0.8em;">للقراءة فقط</span>';
+            }
         } else if (status === 'approved') {
             approvedCount++;
             statusBadge = '<span class="status-badge status-approved">مؤكد</span>';
-            actionBtns = `<button class="action-btn btn-reject" onclick="updateStatus(${b.id}, 'rejected')"><i class="fas fa-times"></i></button>`;
+            actionBtns = canWrite ? `<button class="action-btn btn-reject" onclick="updateStatus(${b.id}, 'rejected')"><i class="fas fa-times"></i></button>` : '';
         } else if (status === 'rejected') {
             statusBadge = '<span class="status-badge status-rejected">مرفوض</span>';
-            actionBtns = `<button class="action-btn btn-approve" onclick="updateStatus(${b.id}, 'approved')"><i class="fas fa-check"></i></button>`;
+            actionBtns = canWrite ? `<button class="action-btn btn-approve" onclick="updateStatus(${b.id}, 'approved')"><i class="fas fa-check"></i></button>` : '';
         }
 
         const details = b.details?.service || b.details?.event_type || 'غير محدد';
@@ -140,10 +232,10 @@ function renderBookingsTable(bookings) {
         return `
             <tr>
                 <td style="font-family: monospace;">#${b.id.toString().slice(-6)}</td>
-                <td><strong>${b.name || 'غير معروف'}</strong></td>
-                <td style="direction: ltr;">${b.phone || '-'}</td>
-                <td>${b.date}</td>
-                <td>${details}</td>
+                <td><strong>${escapeHTML(b.name || 'غير معروف')}</strong></td>
+                <td style="direction: ltr;">${escapeHTML(b.phone || '-')}</td>
+                <td>${escapeHTML(b.date)}</td>
+                <td>${escapeHTML(details)}</td>
                 <td>${statusBadge}</td>
                 <td>${actionBtns}</td>
             </tr>
@@ -155,7 +247,90 @@ function renderBookingsTable(bookings) {
     document.getElementById('statApprovedBooks').textContent = approvedCount;
 }
 
+// --- Contributions Management ---
+let allContributionsCache = [];
+
+function renderContributionsTable(contributions) {
+    const tbody = document.getElementById('contributionsTableBody');
+    if (!tbody) return;
+    
+    if (!contributions.length) {
+        tbody.innerHTML = '<tr><td colspan="7" style="text-align: center;">لا توجد طلبات مساهمة</td></tr>';
+        return;
+    }
+
+    tbody.innerHTML = contributions.map(c => {
+        const status = c.status || 'pending';
+        let statusBadge = '<span class="status-badge status-pending">قيد الانتظار</span>';
+        if (status === 'approved') statusBadge = '<span class="status-badge status-approved">مؤكد</span>';
+        
+        const count = c.deceased_list ? c.deceased_list.length : 0;
+        
+        return `
+            <tr>
+                <td>${escapeHTML(c.date)}</td>
+                <td><strong>${escapeHTML(c.sender_name || 'غير معروف')}</strong></td>
+                <td style="direction: ltr;">${escapeHTML(c.sender_phone || '-')}</td>
+                <td>${count} أسماء</td>
+                <td style="color:var(--gold-primary); font-weight:bold;">${c.total_amount || 0} د.ب</td>
+                <td>${statusBadge}</td>
+                <td>
+                    <button class="btn-view" onclick="openContributionModal('${escapeHTML(c.id)}')"><i class="fas fa-eye"></i> عرض التفاصيل</button>
+                </td>
+            </tr>
+        `;
+    }).join('');
+}
+
+function openContributionModal(id) {
+    const c = allContributionsCache.find(x => x.id === id);
+    if(!c) return;
+
+    let deceasedHTML = '<ul style="margin:0; padding-right:15px; font-size:1rem; list-style-type:square; line-height: 1.8;">';
+    if(c.deceased_list) {
+        c.deceased_list.forEach((dec, idx) => {
+            let photoLink = dec.photo ? `<a href="${escapeHTML(dec.photo)}" target="_blank" style="color:var(--primary-color); font-size:0.9em;">[عرض صورة المرحوم]</a>` : '';
+            deceasedHTML += `<li>${escapeHTML(dec.name)} ${photoLink}</li>`;
+        });
+    }
+    deceasedHTML += '</ul>';
+
+    const modalHtml = `
+        <h3 style="color: var(--primary-color); margin-bottom: 20px; border-bottom: 1px solid #ccc; padding-bottom: 10px;">تفاصيل المساهمة</h3>
+        <div style="display:flex; justify-content:space-between; margin-bottom: 15px; color: #000;">
+            <div><strong>الاسم:</strong> ${escapeHTML(c.sender_name)}</div>
+            <div style="direction:ltr;"><strong>الهاتف:</strong> ${escapeHTML(c.sender_phone)}</div>
+        </div>
+        <div style="display:flex; justify-content:space-between; margin-bottom: 15px; color: #555;">
+            <div><strong>الشهر الهجري:</strong> ${escapeHTML(c.hijri_month || '-')}</div>
+            <div><strong>المناسبة:</strong> ${escapeHTML(c.occasion || '-')}</div>
+        </div>
+        <div style="background: #fdfdfd; border: 1px solid #ddd; border-radius: 8px; padding: 15px; margin-bottom: 20px; color: #000;">
+            <p style="margin-top:0; font-weight:bold;">أسماء المرحومين:</p>
+            ${deceasedHTML}
+            <div style="margin-top: 15px; border-top: 1px dashed #ccc; padding-top: 10px;">
+                <strong>المجموع الكلي:</strong> <span style="color:green; font-weight:bold;">${c.total_amount} د.ب</span>
+            </div>
+        </div>
+        <div style="margin-bottom: 20px;">
+            <strong>صورة إيصال التحويل (بنفت):</strong>
+            ${c.receipt_image ? `<div style="margin-top:10px; text-align:center;"><a href="${escapeHTML(c.receipt_image)}" target="_blank"><img src="${escapeHTML(c.receipt_image)}" style="max-width:100%; border-radius:8px; border:1px solid #ddd;"></a></div>` : '<p>لم يتم إرفاق صورة.</p>'}
+        </div>
+        <button class="btn-primary" style="background: #666; width: 100%; margin-top: 10px;" onclick="document.getElementById('viewModalOverlay').style.display='none'">إغلاق</button>
+    `;
+    
+    document.getElementById('viewModalContent').innerHTML = modalHtml;
+    document.getElementById('viewModalOverlay').style.display = 'flex';
+}
+
 async function updateStatus(id, status) {
+    const role = localStorage.getItem('admin_role');
+    const perms = JSON.parse(localStorage.getItem('admin_permissions') || '{}');
+    if (role !== 'superadmin' && perms.bookings !== 'write') {
+        alert('ليس لديك صلاحية لتعديل الحجوزات!');
+        return;
+    }
+
     if(!confirm(`هل أنت متأكد من تغيير حالة الطلب؟`)) return;
 
     try {
@@ -185,7 +360,7 @@ function renderOccasionsTable(occasions) {
         <tr>
             <td>${mapMonth[o.hijri.month]}</td>
             <td>${o.hijri.day}</td>
-            <td>${o.title}</td>
+            <td>${escapeHTML(o.title)}</td>
             <td>${mapType[o.type] || o.type}</td>
         </tr>
     `).join('');
@@ -193,6 +368,13 @@ function renderOccasionsTable(occasions) {
 
 async function saveAdminOccasion(e) {
     e.preventDefault();
+    const role = localStorage.getItem('admin_role');
+    const perms = JSON.parse(localStorage.getItem('admin_permissions') || '{}');
+    if (role !== 'superadmin' && perms.occasions !== 'write') {
+        alert('ليس لديك صلاحية لإضافة مناسبات!');
+        return;
+    }
+    
     const token = localStorage.getItem('admin_token');
     
     const newEvent = {
@@ -245,7 +427,17 @@ async function saveOffset(e) {
 async function saveGeneralSettings(e) {
     e.preventDefault();
     const token = localStorage.getItem('admin_token');
-    const phoneInput = document.getElementById('whatsappPhoneInput').value;
+    const phoneInputElem = document.getElementById('whatsappPhoneInput');
+    const phoneInput = phoneInputElem ? phoneInputElem.value : '';
+
+    const gUrlInputElem = document.getElementById('googleWebAppUrlInput');
+    const googleWebAppUrl = gUrlInputElem ? gUrlInputElem.value : '';
+
+    const priceInputElem = document.getElementById('contributionPriceInput');
+    const contributionPrice = priceInputElem ? parseInt(priceInputElem.value) || 5 : 5;
+
+    const hiddenPages = Array.from(document.querySelectorAll('input[name="hiddenPages"]:checked')).map(cb => cb.value);
+    const hiddenPrayers = Array.from(document.querySelectorAll('input[name="hiddenPrayers"]:checked')).map(cb => cb.value);
 
     try {
         const res = await fetch('/api/save_settings', {
@@ -254,16 +446,33 @@ async function saveGeneralSettings(e) {
             body: JSON.stringify({ 
                 token, 
                 settings: {
-                    whatsapp_phone: phoneInput
+                    whatsapp_phone: phoneInput,
+                    google_webapp_url: googleWebAppUrl,
+                    contribution_price: contributionPrice,
+                    hidden_pages: hiddenPages,
+                    hidden_prayers: hiddenPrayers
                 }
             })
         });
         if(res.ok) {
             alert('تم حفظ الإعدادات العامة بنجاح!');
+            // Update local storage so it reflects immediately
+            const currentSettings = JSON.parse(localStorage.getItem('site_settings') || '{}');
+            currentSettings.whatsapp_phone = phoneInput;
+            currentSettings.google_webapp_url = googleWebAppUrl;
+            currentSettings.contribution_price = contributionPrice;
+            currentSettings.hidden_pages = hiddenPages;
+            currentSettings.hidden_prayers = hiddenPrayers;
+            localStorage.setItem('site_settings', JSON.stringify(currentSettings));
         }
     } catch(err) {
         alert("فشل التعديل");
     }
+}
+
+async function savePrayerSettings(e) {
+    // Both forms use the same logic because they read the DOM globally.
+    return saveGeneralSettings(e);
 }
 
 // --- Reports & Actions ---
@@ -298,19 +507,26 @@ function generateReport() {
         if(statusStr === 'rejected') { statusLabel = 'مرفوض ❌'; statusClass = 'status-rejected'; }
 
         let trId = b.id.toString().substring(b.id.toString().length - 5);
-        let typeBadge = '<span class="status-badge" style="background: rgba(212,175,55,0.1); color: var(--primary-color); border-radius: 4px; padding: 4px 8px;">' + (b.type || '').replace('بوابة المأتم - ', '') + '</span>';
+        let typeBadge = '<span class="status-badge" style="background: rgba(212,175,55,0.1); color: var(--primary-color); border-radius: 4px; padding: 4px 8px;">' + escapeHTML((b.type || '').replace('بوابة المأتم - ', '')) + '</span>';
         
-        let detailsBtn = `<button class="btn-view" onclick="openViewModal('${b.id}')" title="عرض التفاصيل"><i class="fas fa-eye"></i> عرض</button>`;
-        let editBtn = `<button class="btn-edit" onclick="openEditModal('${b.id}')" title="تعديل"><i class="fas fa-edit"></i> تعديل</button>`;
-        let deleteBtn = `<button class="btn-delete" onclick="deleteBooking('${b.id}')" title="حذف"><i class="fas fa-trash"></i> حذف</button>`;
+        const role = localStorage.getItem('admin_role');
+        const perms = JSON.parse(localStorage.getItem('admin_permissions') || '{}');
+        const canWrite = role === 'superadmin' || perms.reports === 'write';
+
+        let detailsBtn = `<button class="btn-view" onclick="openViewModal('${escapeHTML(b.id)}')" title="عرض التفاصيل"><i class="fas fa-eye"></i> عرض</button>`;
+        let editBtn = canWrite ? `<button class="btn-edit" onclick="openEditModal('${escapeHTML(b.id)}')" title="تعديل"><i class="fas fa-edit"></i> تعديل</button>` : '';
+        let deleteBtn = '';
+        if (role === 'superadmin') {
+            deleteBtn = `<button class="btn-delete" onclick="deleteBooking('${escapeHTML(b.id)}')" title="حذف"><i class="fas fa-trash"></i> حذف</button>`;
+        }
 
         return `
         <tr>
-            <td>#${trId}</td>
-            <td style="font-weight:bold;">${b.date}</td>
+            <td>#${escapeHTML(trId)}</td>
+            <td style="font-weight:bold;">${escapeHTML(b.date)}</td>
             <td>${typeBadge}</td>
-            <td>${b.name}</td>
-            <td style="direction:ltr;">${b.phone}</td>
+            <td>${escapeHTML(b.name)}</td>
+            <td style="direction:ltr;">${escapeHTML(b.phone)}</td>
             <td><span class="status-badge ${statusClass}">${statusLabel}</span></td>
             <td class="action-btns" style="display:flex; gap: 8px; justify-content:center; flex-wrap:wrap;">
                 ${detailsBtn} ${editBtn} ${deleteBtn}
@@ -325,17 +541,17 @@ function openViewModal(id) {
     if(!b) return;
 
     let detailsHTML = '<ul style="margin:0; padding-right:15px; font-size:1rem; list-style-type:square; line-height: 1.8;">';
-    if(b.details && b.details.time) detailsHTML += `<li><strong>الوقت:</strong> ${b.details.time}</li>`;
-    if(b.details && b.details.service) detailsHTML += `<li><strong>الخدمة/المناسبة:</strong> ${b.details.service}</li>`;
-    if(b.details && b.details.hall) detailsHTML += `<li><strong>الموقع:</strong> ${b.details.hall}</li>`;
-    if(b.details && b.details.package) detailsHTML += `<li><strong>الباقة:</strong> ${b.details.package}</li>`;
+    if(b.details && b.details.time) detailsHTML += `<li><strong>الوقت:</strong> ${escapeHTML(b.details.time)}</li>`;
+    if(b.details && b.details.service) detailsHTML += `<li><strong>الخدمة/المناسبة:</strong> ${escapeHTML(b.details.service)}</li>`;
+    if(b.details && b.details.hall) detailsHTML += `<li><strong>الموقع:</strong> ${escapeHTML(b.details.hall)}</li>`;
+    if(b.details && b.details.package) detailsHTML += `<li><strong>الباقة:</strong> ${escapeHTML(b.details.package)}</li>`;
     
     // Addons
-    if(b.details && b.details.has_tables) detailsHTML += `<li><strong>طاولات:</strong> ${b.details.tables_count || 1}</li>`;
-    if(b.details && b.details.has_chairs) detailsHTML += `<li><strong>كراسي:</strong> ${b.details.chairs_count || 1}</li>`;
+    if(b.details && b.details.has_tables) detailsHTML += `<li><strong>طاولات:</strong> ${escapeHTML(b.details.tables_count || 1)}</li>`;
+    if(b.details && b.details.has_chairs) detailsHTML += `<li><strong>كراسي:</strong> ${escapeHTML(b.details.chairs_count || 1)}</li>`;
     if(b.details && b.details.has_tea) detailsHTML += `<li><strong>شاي</strong></li>`;
     if(b.details && b.details.has_coffee) detailsHTML += `<li><strong>قهوة</strong></li>`;
-    if(b.details && b.details.other_services) detailsHTML += `<li><strong>ملاحظات:</strong> ${b.details.other_services}</li>`;
+    if(b.details && b.details.other_services) detailsHTML += `<li><strong>ملاحظات:</strong> ${escapeHTML(b.details.other_services)}</li>`;
     detailsHTML += '</ul>';
 
     let statusStr = b.status || 'pending';
@@ -347,19 +563,19 @@ function openViewModal(id) {
     const modalHtml = `
         <h3 style="color: var(--primary-color); margin-bottom: 20px; border-bottom: 1px solid #ccc; padding-bottom: 10px;">تفاصيل الطلب: #${formattedId}</h3>
         <div style="display:flex; justify-content:space-between; margin-bottom: 15px; color: #000;">
-            <div><strong>الاسم:</strong> ${b.name}</div>
-            <div style="direction:ltr;"><strong>الهاتف:</strong> ${b.phone}</div>
+            <div><strong>الاسم:</strong> ${escapeHTML(b.name)}</div>
+            <div style="direction:ltr;"><strong>الهاتف:</strong> ${escapeHTML(b.phone)}</div>
         </div>
         <div style="display:flex; justify-content:space-between; margin-bottom: 15px; color: #555;">
-            <div><strong>تاريخ الحجز:</strong> ${b.date}</div>
+            <div><strong>تاريخ الحجز:</strong> ${escapeHTML(b.date)}</div>
             <div><strong>الحالة:</strong> ${statusLabel}</div>
         </div>
         <div style="background: #fdfdfd; border: 1px solid #ddd; border-radius: 8px; padding: 15px; margin-bottom: 20px; color: #000;">
             ${detailsHTML}
         </div>
         <div style="display:flex; gap: 10px; margin-top: 20px;">
-            <button class="btn-primary" onclick="updateStatus('${b.id}', 'approved')" style="flex:1; background: #28a745;"><i class="fas fa-check"></i> قبول</button>
-            <button class="btn-primary" onclick="updateStatus('${b.id}', 'rejected')" style="flex:1; background: #dc3545;"><i class="fas fa-times"></i> رفض</button>
+            <button class="btn-primary" onclick="updateStatus('${escapeHTML(b.id)}', 'approved')" style="flex:1; background: #28a745;"><i class="fas fa-check"></i> قبول</button>
+            <button class="btn-primary" onclick="updateStatus('${escapeHTML(b.id)}', 'rejected')" style="flex:1; background: #dc3545;"><i class="fas fa-times"></i> رفض</button>
         </div>
         <button class="btn-primary" style="background: #666; width: 100%; margin-top: 10px;" onclick="document.getElementById('viewModalOverlay').style.display='none'">إغلاق</button>
     `;
@@ -467,7 +683,7 @@ function renderUsersTable(users) {
     }
     
     tbody.innerHTML = users.map(u => {
-        const roleName = u.role === 'superadmin' ? 'مدير عام <i class="fas fa-star" style="color:var(--gold);"></i>' : 'مدير حجوزات';
+        const roleName = u.role === 'superadmin' ? 'مدير عام <i class="fas fa-star" style="color:var(--gold);"></i>' : 'مخصص <i class="fas fa-user-cog" style="color:var(--primary-color);"></i>';
         return `
         <tr>
             <td>${u.username}</td>
@@ -492,6 +708,20 @@ function editSystemUser(id) {
     document.getElementById('userRole').value = u.role;
     document.getElementById('userPassword').value = '';
     
+    // permissions
+    if (typeof togglePermissionsGrid === 'function') togglePermissionsGrid();
+    
+    if (u.role !== 'superadmin' && u.permissions) {
+        ['bookings', 'contributions', 'reports', 'occasions', 'prayer', 'settings'].forEach(key => {
+            let val = u.permissions[key] || 'none';
+            const r = document.querySelector(`input[name="perm_${key}"][value="${val}"]`);
+            if (r) r.checked = true;
+        });
+    } else {
+        // Reset to default none
+        document.querySelectorAll('input[type="radio"][value="none"]').forEach(r => r.checked = true);
+    }
+    
     // scroll to form
     document.getElementById('userForm').scrollIntoView({behavior: 'smooth'});
 }
@@ -504,12 +734,21 @@ async function saveUserSubmit(e) {
         return;
     }
     
+    let perms = {};
+    if (document.getElementById('userRole').value !== 'superadmin') {
+        ['bookings', 'contributions', 'reports', 'occasions', 'prayer', 'settings'].forEach(key => {
+            const checked = document.querySelector(`input[name="perm_${key}"]:checked`);
+            perms[key] = checked ? checked.value : 'none';
+        });
+    }
+
     const userData = {
         id: document.getElementById('userIdInput').value,
         username: document.getElementById('userUsername').value,
         name: document.getElementById('userName').value,
         role: document.getElementById('userRole').value,
-        password: document.getElementById('userPassword').value
+        password: document.getElementById('userPassword').value,
+        permissions: perms
     };
     
     try {
@@ -550,4 +789,87 @@ async function deleteSystemUser(id) {
     } catch(err) {
         alert("فشل الاتصال بالخادم");
     }
+}
+
+async function exportFullDatabaseToGoogle() {
+    const token = localStorage.getItem('admin_token');
+    if(!confirm("هل أنت متأكد من رغبتك في تصدير قاعدة البيانات بالكامل إلى Google Sheets؟ سيتم إنشاء أوراق عمل مخصصة ومنعزلة لكل جدول.")) return;
+    
+    const btn = event.currentTarget;
+    const oldText = btn.innerHTML;
+    btn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> جاري تصدير البيانات...';
+    btn.disabled = true;
+    
+    try {
+        const res = await fetch('/api/export_full_database', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ token })
+        });
+        const data = await res.json();
+        if (res.ok && data.status === 'success') {
+            alert('تم تصدير قاعدة البيانات بالكامل بنجاح إلى ملف Google Sheets!');
+        } else {
+            alert(data.message || 'فشل التصدير. يرجى التأكد من إدخال وحفظ رابط Google Web App URL أولاً في الإعدادات.');
+        }
+    } catch(e) {
+        alert('حدث خطأ في الاتصال بالخادم.');
+    } finally {
+        btn.innerHTML = oldText;
+        btn.disabled = false;
+    }
+}
+
+async function savePrayerReference(e) {
+    e.preventDefault();
+    const token = localStorage.getItem('admin_token');
+    const fileInput = document.getElementById('prayerRefFile');
+    const file = fileInput.files[0];
+    const option = document.querySelector('input[name="refUpdateOption"]:checked').value;
+    
+    if (!file) {
+        alert("الرجاء اختيار ملف أولاً");
+        return;
+    }
+    
+    const btn = e.target.querySelector('button[type="submit"]');
+    const oldText = btn.innerHTML;
+    btn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> جاري رفع وحفظ الجدول...';
+    btn.disabled = true;
+    
+    const reader = new FileReader();
+    reader.onload = async function() {
+        const base64Data = reader.result;
+        try {
+            const res = await fetch('/api/upload_prayer_reference', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({
+                    token,
+                    file_data: base64Data,
+                    filename: file.name,
+                    update_option: option
+                })
+            });
+            const data = await res.json();
+            if (res.ok && data.status === 'success') {
+                alert('تم رفع وحفظ جدول مواقيت الصلاة المرجعي بنجاح!');
+                const container = document.getElementById('currentPrayerRefContainer');
+                const link = document.getElementById('currentPrayerRefLink');
+                if (container && link) {
+                    container.style.display = 'block';
+                    link.href = data.file_url;
+                }
+                loadDashboardData();
+            } else {
+                alert(data.message || 'فشل الرفع');
+            }
+        } catch(err) {
+            alert('خطأ في الاتصال بالخادم أثناء رفع الملف');
+        } finally {
+            btn.innerHTML = oldText;
+            btn.disabled = false;
+        }
+    };
+    reader.readAsDataURL(file);
 }

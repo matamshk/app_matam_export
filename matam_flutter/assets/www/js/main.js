@@ -19,6 +19,16 @@
     }
 })();
 
+function escapeHTML(str) {
+    if (!str) return '';
+    return str.toString()
+        .replace(/&/g, '&amp;')
+        .replace(/</g, '&lt;')
+        .replace(/>/g, '&gt;')
+        .replace(/"/g, '&quot;')
+        .replace(/'/g, '&#39;');
+}
+
 // Navigation
 const pages = [
     { name: 'الرئيسية', url: 'index.html' },
@@ -45,6 +55,9 @@ document.addEventListener('DOMContentLoaded', async () => {
                 localStorage.setItem('site_settings', JSON.stringify(db.settings));
                 if (typeof updatePrayerReferenceButton === 'function') {
                     updatePrayerReferenceButton();
+                }
+                if (typeof generateMonthlyCalendar === 'function') {
+                    generateMonthlyCalendar();
                 }
             }
         }
@@ -619,8 +632,14 @@ function showSuccessModal(booking) {
     if(booking.details.other_services) plainSummary += `- الملاحظات الإضافية: ${booking.details.other_services}\n`;
     plainSummary += `\nنسألكم الدعاء!`;
 
-    const waLink = "https://wa.me/?text=" + encodeURIComponent(plainSummary);
-    const emailLink = "mailto:?subject=" + encodeURIComponent("تأكيد تفاصيل الحجز - مأتم أبو صيبع الشرقي") + "&body=" + encodeURIComponent(plainSummary);
+    let phone = '97317595063';
+    try {
+        const settings = JSON.parse(localStorage.getItem('site_settings') || '{}');
+        if (settings.whatsapp_phone) phone = settings.whatsapp_phone;
+    } catch(e) {}
+
+    const waLink = `https://wa.me/${phone}?text=` + encodeURIComponent(plainSummary);
+    const emailLink = "mailto:alshrkymat@gmail.com?subject=" + encodeURIComponent("تأكيد تفاصيل الحجز - مأتم أبو صيبع الشرقي") + "&body=" + encodeURIComponent(plainSummary);
 
     const modalHtml = `
     <div id="bookingSuccessModal" style="position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.85); z-index: 9999; display: flex; justify-content: center; align-items: center; padding: 20px;">
@@ -676,7 +695,6 @@ function renderDashboard() {
     renderNextMonthOccasions();
 
     const list = document.querySelector('.bookings-list');
-    // ... rest for bookings list
 
     if (!list) return;
 
@@ -687,19 +705,97 @@ function renderDashboard() {
         return;
     }
 
-    list.innerHTML = bookings.map(b => `
-        <div class="booking-item" style="background: #fdfcf8; padding: 15px; border-radius: 12px; border: 1px solid rgba(212,175,55,0.2); box-shadow: 0 4px 10px rgba(0,0,0,0.02);">
-            <div class="booking-header" style="display: flex; justify-content: space-between; border-bottom: 1px solid rgba(0,0,0,0.05); padding-bottom: 8px; margin-bottom: 8px;">
-                <span class="booking-date" style="font-weight: bold; color: var(--gold-primary); font-size: 0.9em;"><i class="fas fa-calendar-day"></i> ${b.date}</span>
-                <span class="status-badge" style="background: rgba(212,175,55,0.15); padding: 4px 10px; border-radius: 20px; font-size: 0.75em; color: var(--text-gold); font-weight: bold;">${b.type.replace('بوابة المأتم - ', '')}</span>
+    // Inject pulse animation stylesheet dynamically if not present
+    if (!document.getElementById('booking-highlight-styles')) {
+        const style = document.createElement('style');
+        style.id = 'booking-highlight-styles';
+        style.innerHTML = `
+            @keyframes pulse-reminder {
+                0% { transform: scale(1); opacity: 1; }
+                50% { transform: scale(1.03); opacity: 0.9; }
+                100% { transform: scale(1); opacity: 1; }
+            }
+        `;
+        document.head.appendChild(style);
+    }
+
+    const today = new Date();
+    today.setHours(0,0,0,0);
+
+    // Sort bookings: priority to the date (closest upcoming first, then past descending)
+    const sortedBookings = [...bookings].sort((a, b) => {
+        const dateA = new Date(a.date);
+        const dateB = new Date(b.date);
+        const timeA = isNaN(dateA.getTime()) ? 0 : dateA.getTime();
+        const timeB = isNaN(dateB.getTime()) ? 0 : dateB.getTime();
+        
+        const todayTime = today.getTime();
+        const isUpcomingA = timeA >= todayTime;
+        const isUpcomingB = timeB >= todayTime;
+        
+        if (isUpcomingA && !isUpcomingB) return -1;
+        if (!isUpcomingA && isUpcomingB) return 1;
+        
+        if (isUpcomingA && isUpcomingB) {
+            return timeA - timeB; // Closest upcoming first
+        } else {
+            return timeB - timeA; // Most recent past first
+        }
+    });
+
+    list.innerHTML = sortedBookings.slice(0, 6).map(b => {
+        const bookingDate = new Date(b.date);
+        bookingDate.setHours(0,0,0,0);
+        const diffTime = bookingDate.getTime() - today.getTime();
+        const diffDays = Math.ceil(diffTime / (1000 * 60 * 60 * 24));
+
+        let isClose = false;
+        let cardBorderColor = 'rgba(212,175,55,0.2)';
+        let cardBg = '#fdfcf8';
+        let dateColor = 'var(--gold-primary)';
+        let badgeHtml = '';
+
+        if (diffDays >= 0 && diffDays <= 3) {
+            isClose = true;
+            cardBorderColor = '#e74c3c';
+            cardBg = '#fffaf9';
+            dateColor = '#e74c3c';
+            badgeHtml = `<span style="background: #e74c3c; color: white; padding: 3px 8px; border-radius: 12px; font-size: 0.7rem; font-weight: bold; display: inline-flex; align-items: center; gap: 4px; animation: pulse-reminder 1.5s infinite;"><i class="fas fa-exclamation-circle"></i> قريب جداً (${diffDays === 0 ? 'اليوم' : diffDays === 1 ? 'غداً' : `بعد ${diffDays} أيام`})</span>`;
+        } else if (diffDays > 3 && diffDays <= 7) {
+            isClose = true;
+            cardBorderColor = '#e67e22';
+            cardBg = '#fffdf9';
+            dateColor = '#e67e22';
+            badgeHtml = `<span style="background: #e67e22; color: white; padding: 3px 8px; border-radius: 12px; font-size: 0.7rem; font-weight: bold; display: inline-flex; align-items: center; gap: 4px;"><i class="fas fa-hourglass-half"></i> قريباً (${diffDays} أيام)</span>`;
+        } else if (diffDays < 0) {
+            cardBorderColor = 'rgba(0,0,0,0.08)';
+            cardBg = '#f9f9f9';
+            dateColor = '#888';
+            badgeHtml = `<span style="background: #888; color: white; padding: 3px 8px; border-radius: 12px; font-size: 0.7rem; font-weight: bold;">سابق</span>`;
+        } else {
+            badgeHtml = `<span style="background: rgba(212,175,55,0.15); color: var(--text-gold); padding: 3px 8px; border-radius: 12px; font-size: 0.7rem; font-weight: bold;">مجدول</span>`;
+        }
+
+        return `
+            <div class="booking-item" style="background: ${cardBg}; padding: 18px; border-radius: 14px; border: 1.5px solid ${cardBorderColor}; box-shadow: 0 6px 15px rgba(0,0,0,0.03); text-align: right; direction: rtl;">
+                <div class="booking-header" style="display: flex; justify-content: space-between; align-items: center; border-bottom: 1px solid rgba(0,0,0,0.06); padding-bottom: 10px; margin-bottom: 12px;">
+                    <span class="booking-date" style="font-weight: 800; color: ${dateColor}; font-size: 1.1rem; display: flex; align-items: center; gap: 6px;">
+                        <i class="fas fa-calendar-day"></i> ${escapeHTML(b.date)}
+                    </span>
+                    ${badgeHtml}
+                </div>
+                <div class="booking-details" style="font-size: 0.88rem; line-height: 1.6; color: var(--text-dark);">
+                    <div style="display: flex; justify-content: space-between; margin-bottom: 6px; align-items: center;">
+                        <span><strong>الاسم:</strong> ${escapeHTML(b.name)}</span>
+                        <span style="background: rgba(30, 60, 114, 0.08); padding: 2px 8px; border-radius: 6px; font-size: 0.75rem; color: #1E3C72; font-weight: bold;">${escapeHTML(b.type.replace('بوابة المأتم - ', ''))}</span>
+                    </div>
+                    <p style="margin: 0; margin-bottom: 4px;"><strong>الخدمة/المناسبة:</strong> ${escapeHTML(b.details.service || b.details.occasion || b.type)}</p>
+                    ${b.details.hall ? `<p style="margin: 0; margin-bottom: 4px;"><strong>القاعة/الموقع:</strong> ${escapeHTML(b.details.hall)}</p>` : ''}
+                    ${b.details.time ? `<p style="margin: 0;"><strong>الوقت:</strong> ${escapeHTML(b.details.time)}</p>` : ''}
+                </div>
             </div>
-            <div class="booking-details" style="font-size: 0.85em; line-height: 1.6; color: var(--text-dark);">
-                <p style="margin: 0; margin-bottom: 3px;"><strong>الاسم:</strong> ${b.name}</p>
-                <p style="margin: 0; margin-bottom: 3px;"><strong>المناسبة/الخدمة:</strong> ${b.details.service || b.details.occasion || b.type}</p>
-                ${b.details.time ? `<p style="margin: 0;"><strong>الوقت:</strong> ${b.details.time}</p>` : ''}
-            </div>
-        </div>
-    `).join('');
+        `;
+    }).join('');
 }
 
 function renderOccasions() {

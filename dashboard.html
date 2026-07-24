@@ -116,7 +116,10 @@
                     <div class="card-panel">
                         <div class="card-header">
                             <h3>أحدث الطلبات</h3>
-                            <button class="btn-primary" onclick="loadDashboardData()"><i class="fas fa-sync"></i> تحديث</button>
+                            <div style="display: flex; gap: 10px;">
+                                <button class="btn-primary" style="background: var(--primary-color); border-color: var(--primary-color);" onclick="showBookingsReminder(true)"><i class="fas fa-bell"></i> تذكير المتابعة</button>
+                                <button class="btn-primary" onclick="loadDashboardData()"><i class="fas fa-sync"></i> تحديث</button>
+                            </div>
                         </div>
                         <div style="overflow-x: auto;">
                             <table>
@@ -565,6 +568,25 @@
     <div class="modal-overlay" id="viewModalOverlay">
         <div class="modal-box" id="viewModalContent" style="max-width: 600px; background: #fff; color: #000;">
             <!-- Populated dynamically -->
+        </div>
+    </div>
+
+    <!-- Bookings Reminder Modal -->
+    <div class="modal-overlay" id="reminderModalOverlay" style="display: none;">
+        <div class="modal-box" style="max-width: 600px; background: #121212; color: #fff; border: 1.5px solid var(--primary-color); text-align: right; direction: rtl;">
+            <h3 style="color: var(--primary-color); margin-bottom: 15px; display: flex; align-items: center; gap: 10px; font-size: 1.3rem;">
+                <i class="fas fa-bell" style="color: var(--primary-color);"></i>
+                تذكير بمتابعة الحجوزات الأحدث
+            </h3>
+            <p style="font-size: 0.9rem; margin-bottom: 20px; line-height: 1.6; color: #ccc;">
+                يرجى مراجعة وتأكيد سلامة أحدث الحجوزات المذكورة أدناه والمتابعة مع القائمين على إدارتها لضمان التنسيق التام.
+            </p>
+            <div id="reminderBookingsContainer" style="display: flex; flex-direction: column; gap: 12px; max-height: 50vh; overflow-y: auto; margin-bottom: 25px; padding-left: 5px;">
+                <!-- Populated dynamically -->
+            </div>
+            <div style="display: flex; gap: 10px; justify-content: center;">
+                <button type="button" class="btn-primary" style="padding: 10px 40px; cursor: pointer; font-weight: bold;" onclick="document.getElementById('reminderModalOverlay').style.display='none'">فهمت ومتابعة</button>
+            </div>
         </div>
     </div>
 
