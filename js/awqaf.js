@@ -339,16 +339,30 @@ function generateMonthlyCalendar(selectedMonthNum = null) {
             const gregMonthYearText = getGregMonthYearAr(days);
 
             const printMonthHijriEl = document.getElementById('printMonthNameHijri');
-            const printMonthGregEl = document.getElementById('printMonthNameGregorian');
             if (printMonthHijriEl) {
-                printMonthHijriEl.textContent = `${hijriMonthsNames[selectedMonthNum - 1]} 1448 هـ`;
+                printMonthHijriEl.textContent = `تقويم شهر ${hijriMonthsNames[selectedMonthNum - 1]} 1448هـ`;
             }
-            if (printMonthGregEl) {
-                printMonthGregEl.textContent = gregMonthYearText;
+
+            const printHijriColHeader = document.getElementById('printHijriColHeader');
+            const printGregColHeader = document.getElementById('printGregColHeader');
+            if (printHijriColHeader) {
+                printHijriColHeader.textContent = hijriMonthsNames[selectedMonthNum - 1].split(' ')[0];
+            }
+            if (printGregColHeader && days.length > 0) {
+                const parts = days[0].gregDate.split('-');
+                const d = new Date(parts[0], parts[1]-1, parts[2]);
+                const monthIdx = d.getMonth();
+                const gregMonthsNamesAr = [
+                    'يناير (1)', 'فبراير (2)', 'مارس (3)', 'أبريل (4)',
+                    'مايو (5)', 'يونيو (6)', 'يوليو (7)', 'أغسطس (8)',
+                    'سبتمبر (9)', 'أكتوبر (10)', 'نوفمبر (11)', 'ديسمبر (12)'
+                ];
+                printGregColHeader.textContent = gregMonthsNamesAr[monthIdx];
             }
 
             let screenHtml = '';
             let printHtml = '';
+            let lastSeenMonth = null;
 
             days.forEach((day, idx) => {
                 const parts = day.gregDate.split('-');
@@ -403,6 +417,7 @@ function generateMonthlyCalendar(selectedMonthNum = null) {
                     </tr>
                 `;
 
+                // Print row preparation
                 const printRowBg = isToday ? "#e8f4fd" : (idx % 2 === 0 ? "#f9f9f9" : "#ffffff");
                 const printMarriageText = day.marriage || '';
                 
@@ -417,18 +432,29 @@ function generateMonthlyCalendar(selectedMonthNum = null) {
                     }
                 }
 
+                // Gregorian day display text
+                const currentMonthIdx = dateObj.getMonth();
+                const dayNum = dateObj.getDate();
+                let gregCellText = '';
+                if (lastSeenMonth !== null && lastSeenMonth !== currentMonthIdx) {
+                    const mShortName = new Intl.DateTimeFormat('ar-BH', { month: 'long' }).format(dateObj);
+                    // Match formatting of screenshots (e.g. 1أغسطس) without spaces
+                    gregCellText = `1${mShortName}`;
+                } else {
+                    gregCellText = dayNum.toString();
+                }
+                lastSeenMonth = currentMonthIdx;
+
                 printHtml += `
-                    <tr style="background: ${printRowBg}; border-bottom: 1px solid #ddd; height: 21px;">
-                        <td style="border: 1px solid #000; padding: 2px 4px; font-weight: ${isToday ? 'bold' : 'normal'};">${day.day_name_ar}</td>
-                        <td style="border: 1px solid #000; padding: 2px 4px; font-weight: ${isToday ? 'bold' : 'normal'};">${formatDateAr(day.gregDate)}</td>
-                        <td style="border: 1px solid #000; padding: 2px 4px; font-weight: ${isToday ? 'bold' : 'normal'}; font-family: monospace;">${day.hijri_day}</td>
-                        <td style="border: 1px solid #000; padding: 2px 4px; font-family: monospace; color: #a0522d; font-weight: bold;">${imsak}</td>
+                    <tr style="background: ${printRowBg}; border-bottom: 1px solid #000; height: 22px; font-weight: ${isToday ? 'bold' : 'normal'};">
+                        <td style="border: 1px solid #000; padding: 2px 4px; font-weight: bold; font-size: 0.9rem;">${printMarriageText}</td>
+                        <td style="border: 1px solid #000; padding: 2px 4px;">${day.day_name_ar}</td>
+                        <td style="border: 1px solid #000; padding: 2px 4px; font-family: monospace; font-size: 0.9rem;">${day.hijri_day}</td>
+                        <td style="border: 1px solid #000; padding: 2px 4px; font-weight: bold;">${gregCellText}</td>
                         <td style="border: 1px solid #000; padding: 2px 4px; font-family: monospace;">${day.fajr}</td>
                         <td style="border: 1px solid #000; padding: 2px 4px; font-family: monospace;">${day.sunrise}</td>
                         <td style="border: 1px solid #000; padding: 2px 4px; font-family: monospace;">${day.dhuhr}</td>
                         <td style="border: 1px solid #000; padding: 2px 4px; font-family: monospace; font-weight: bold; color: #a0522d;">${day.maghrib}</td>
-                        <td style="border: 1px solid #000; padding: 2px 4px; font-family: monospace; color: #555;">${midnight}</td>
-                        <td style="border: 1px solid #000; padding: 2px 4px; font-weight: bold;">${printMarriageText}</td>
                         <td style="border: 1px solid #000; padding: 2px 6px; text-align: right; font-size: 0.74rem;">${printOccasionHtml}</td>
                     </tr>
                 `;

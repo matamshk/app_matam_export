@@ -305,41 +305,37 @@
     <!-- Dedicated A4 Print Layout -->
     <div id="a4PrintLayout" class="print-layout-a4" style="display: none; direction: rtl; padding: 10px; background: #fff; color: #000; font-family: 'Tajawal', sans-serif;">
         <!-- Header -->
-        <div style="display: flex; justify-content: space-between; align-items: center; border-bottom: 2px solid #000; padding-bottom: 10px; margin-bottom: 15px;">
-            <!-- Right Column: Logo and Matam Name -->
-            <div style="display: flex; align-items: center; gap: 10px; width: 38%; justify-content: flex-start; text-align: right;">
-                <img src="uploads/matam_logo_circle_red.png" alt="شعار المأتم" style="height: 60px; object-fit: contain;">
-                <div>
-                    <div style="font-weight: bold; font-size: 1.2rem; color: #000; font-family: 'Tajawal', sans-serif; line-height: 1.2;">مأتم أبو صيبع الشرقي</div>
-                    <div style="font-size: 0.8rem; color: #555; margin-top: 2px;">مملكة البحرين - أبو صيبع</div>
+        <div style="display: flex; justify-content: space-between; align-items: center; padding-bottom: 8px;">
+            <!-- Right Column: Text Info -->
+            <div style="text-align: right; width: 70%;">
+                <h1 style="margin: 0; font-size: 2rem; color: #0f5132; font-family: 'Tajawal', sans-serif; font-weight: bold; letter-spacing: 0.5px;">مأتم أبو صيبع الشرقي</h1>
+                <h2 id="printMonthNameHijri" style="margin: 4px 0 0 0; font-size: 1.4rem; font-weight: bold; color: #000; font-family: 'Tajawal', sans-serif;">--</h2>
+                <div id="printMonthNameGregorian" style="margin-top: 4px; font-size: 0.85rem; color: #666; font-family: 'Tajawal', sans-serif;">تقويم هجري رسمي - مملكة البحرين</div>
+            </div>
+            <!-- Left Column: Circular Green Logo -->
+            <div style="width: 30%; display: flex; justify-content: flex-end; align-items: center;">
+                <div style="width: 70px; height: 70px; background: #0f5132; border-radius: 50%; display: flex; justify-content: center; align-items: center; box-shadow: 0 2px 5px rgba(0,0,0,0.15);">
+                    <img src="uploads/matam_logo_calligraphy.png" alt="شعار المأتم" style="height: 45px; filter: brightness(0) invert(1); object-fit: contain;">
                 </div>
             </div>
-            <!-- Middle Column: Hijri and Gregorian Months -->
-            <div style="text-align: center; width: 38%;">
-                <h2 id="printMonthNameHijri" style="margin: 0; font-size: 1.5rem; font-weight: bold; color: #111; font-family: 'Tajawal', sans-serif;">--</h2>
-                <h4 id="printMonthNameGregorian" style="margin: 5px 0 0 0; font-size: 1.05rem; color: #555; font-weight: normal; font-family: 'Tajawal', sans-serif;">--</h4>
-            </div>
-            <!-- Left Column: Year Info -->
-            <div style="text-align: left; width: 24%; font-size: 0.9rem; color: #000; font-weight: bold; font-family: 'Tajawal', sans-serif;">
-                التقويم السنوي 1448 هـ
-            </div>
         </div>
+        
+        <!-- Brown/Gold Divider Line -->
+        <div style="height: 3px; background: #c5a880; margin-bottom: 12px; width: 100%;"></div>
 
         <!-- Table -->
-        <table style="width: 100%; border-collapse: collapse; text-align: center; font-size: 0.82rem; line-height: 1.4;">
+        <table style="width: 100%; border-collapse: collapse; text-align: center; font-size: 0.82rem; line-height: 1.4; border: 1.5px solid #000;">
             <thead>
-                <tr style="background: #f5f5f5; border: 1.5px solid #000;">
-                    <th style="border: 1px solid #000; padding: 5px; font-weight: bold;">اليوم</th>
-                    <th style="border: 1px solid #000; padding: 5px; font-weight: bold; width: 80px;">الميلادي</th>
-                    <th style="border: 1px solid #000; padding: 5px; font-weight: bold; width: 45px;">الهجري</th>
-                    <th style="border: 1px solid #000; padding: 5px; font-weight: bold; color: #a0522d;">الإمساك</th>
-                    <th style="border: 1px solid #000; padding: 5px; font-weight: bold;">الفجر</th>
-                    <th style="border: 1px solid #000; padding: 5px; font-weight: bold;">الشروق</th>
-                    <th style="border: 1px solid #000; padding: 5px; font-weight: bold;">الظهر</th>
-                    <th style="border: 1px solid #000; padding: 5px; font-weight: bold;">المغرب</th>
-                    <th style="border: 1px solid #000; padding: 5px; font-weight: bold; color: #555;">المنتصف</th>
-                    <th style="border: 1px solid #000; padding: 5px; font-weight: bold; width: 45px;">الزواج</th>
-                    <th style="border: 1px solid #000; padding: 5px; font-weight: bold; text-align: right; padding-right: 10px;">المناسبات الدينية والوطنية</th>
+                <tr style="background: #f5f5f5; border-bottom: 2px solid #000;">
+                    <th style="border: 1px solid #000; padding: 5px; font-weight: bold; width: 35px;">الزواج</th>
+                    <th style="border: 1px solid #000; padding: 5px; font-weight: bold; width: 65px;">اليوم</th>
+                    <th id="printHijriColHeader" style="border: 1px solid #000; padding: 5px; font-weight: bold; width: 55px;">الهجري</th>
+                    <th id="printGregColHeader" style="border: 1px solid #000; padding: 5px; font-weight: bold; width: 85px;">الميلادي</th>
+                    <th style="border: 1px solid #000; padding: 5px; font-weight: bold; width: 50px;">فجر</th>
+                    <th style="border: 1px solid #000; padding: 5px; font-weight: bold; width: 50px;">شروق</th>
+                    <th style="border: 1px solid #000; padding: 5px; font-weight: bold; width: 50px;">ظهر</th>
+                    <th style="border: 1px solid #000; padding: 5px; font-weight: bold; width: 50px;">مغرب</th>
+                    <th style="border: 1px solid #000; padding: 5px; font-weight: bold; text-align: right; padding-right: 10px;">الـمــنـاســـــــــــــــــــــــــــــــــــــــــــــــــــــــبـات</th>
                 </tr>
             </thead>
             <tbody id="printTableBody">
@@ -348,15 +344,18 @@
         </table>
 
         <!-- Legend -->
-        <div style="display: flex; justify-content: space-between; align-items: center; margin-top: 10px; font-size: 0.72rem; border-top: 1px solid #eee; padding-top: 5px;">
-            <div style="text-align: right;">
-                <strong>رموز الزواج:</strong>
-                <span style="margin-right: 10px;">✓ صالح للزواج (العقد والدخلة)</span>
-                <span style="margin-right: 15px;">× مكروه للزواج (العقد والدخلة)</span>
-                <span style="margin-right: 15px;">& صالح للعقد ومكروه للزواج</span>
+        <div style="display: flex; flex-direction: column; gap: 4px; margin-top: 10px; font-size: 0.72rem; border-top: 1px solid #000; padding-top: 5px; text-align: right; line-height: 1.5; font-family: 'Tajawal', sans-serif;">
+            <div>
+                <strong>• رموز الزواج:</strong>
+                <span style="margin-right: 8px;"><strong>✓</strong> صالحة للزواج (العقد والدخلة)</span>
+                <span style="margin-right: 15px;"><strong>×</strong> تدل على أن اليوم وليلتة مكروه فيه الزواج (العقد والدخلة)</span>
+                <span style="margin-right: 15px;"><strong>&</strong> صالحة للعقد ومكروه فيه الزواج</span>
             </div>
-            <div style="text-align: left; color: #666;">
-                * الأوقات تقديرية وفق المصدر المعتمد.
+            <div>
+                <strong>• الأوقات التقديرية للصلاة</strong> على حسب تقويم العجيري، وينبغي الاحتياط لصلاة الصبح بعد الفجر لاختلاف التقاويم.
+            </div>
+            <div>
+                <strong>• ثبوت الهلال</strong> يعتمد حسب الرؤية الشرعية.
             </div>
         </div>
 
