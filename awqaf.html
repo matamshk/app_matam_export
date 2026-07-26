@@ -14,8 +14,8 @@
     
     <style>
         :root {
-            --emerald-primary: #315F66;
-            --emerald-dark: #234A50;
+            --emerald-primary: #1E3C72; /* Blue Primary */
+            --emerald-dark: #112240; /* Blue Dark */
             --gold-primary: #B79A5B;
             --gold-light: #D4AF37;
             --bg-page: #F8F9F7;
@@ -239,8 +239,11 @@
         }
 
         .today-row td {
-            background: rgba(212, 175, 55, 0.08) !important;
-            font-weight: bold;
+            background: linear-gradient(90deg, rgba(30,60,114,0.08) 0%, rgba(212,175,55,0.12) 100%) !important;
+            font-weight: 800 !important;
+            color: #112240 !important;
+            border-top: 2px solid var(--gold-primary) !important;
+            border-bottom: 2px solid var(--gold-primary) !important;
         }
 
         .friday-row td {
@@ -323,11 +326,16 @@
 
         /* Print styles */
         @media print {
+            @page {
+                size: A4 portrait;
+                margin: 10mm 12mm;
+            }
             body {
                 background: #ffffff !important;
                 color: #000000 !important;
+                font-size: 10pt !important;
             }
-            .navbar, .control-bar, .admin-panel, .legend-card, #whatsapp-float, footer {
+            .navbar, .control-bar, .admin-panel, .legend-card, #whatsapp-float, footer, .today-card {
                 display: none !important;
             }
             .calendar-container {
@@ -335,8 +343,22 @@
                 padding: 0 !important;
                 max-width: 100% !important;
             }
-            .today-card {
-                display: none !important;
+            .calendar-table-card {
+                border: none !important;
+                box-shadow: none !important;
+                margin: 0 !important;
+            }
+            .calendar-table-header {
+                background: none !important;
+                color: #000000 !important;
+                border-bottom: 2px solid #1E3C72 !important;
+                padding: 8px 0 !important;
+                text-align: center !important;
+            }
+            .calendar-table-header h3 {
+                color: #1E3C72 !important;
+                font-size: 14pt !important;
+                margin: 0 0 5px 0 !important;
             }
             .desktop-table-container {
                 display: block !important;
@@ -344,11 +366,25 @@
             .mobile-calendar-list {
                 display: none !important;
             }
-            table, th, td {
-                border: 1px solid #000000 !important;
+            table {
+                width: 100% !important;
+                border-collapse: collapse !important;
+            }
+            th, td {
+                border: 1px solid #aaaaaa !important;
+                padding: 5px 3px !important;
+                font-size: 8.5pt !important;
+                text-align: center !important;
             }
             th {
-                background: #f0f0f0 !important;
+                background: #f5f5f5 !important;
+                color: #1E3C72 !important;
+                font-weight: bold !important;
+            }
+            .today-row td {
+                background: none !important;
+                font-weight: bold !important;
+                border: 1.5px solid #000000 !important;
             }
         }
     </style>
@@ -396,6 +432,16 @@
                 <select id="monthSelect"></select>
                 <select id="yearSelect">
                     <option value="1448">1448 هـ</option>
+                    <option value="1449">1449 هـ</option>
+                    <option value="1450">1450 هـ</option>
+                    <option value="1451">1451 هـ</option>
+                    <option value="1452">1452 هـ</option>
+                    <option value="1453">1453 هـ</option>
+                    <option value="1454">1454 هـ</option>
+                    <option value="1455">1455 هـ</option>
+                    <option value="1456">1456 هـ</option>
+                    <option value="1457">1457 هـ</option>
+                    <option value="1458">1458 هـ</option>
                 </select>
                 <button class="btn-action" onclick="window.print()"><i class="fas fa-print"></i> طباعة الشهر</button>
             </div>
@@ -521,6 +567,11 @@
                 renderCalendar();
             });
 
+            document.getElementById('yearSelect').addEventListener('change', (e) => {
+                selectedYear = parseInt(e.target.value);
+                renderCalendar();
+            });
+
             document.getElementById('prevMonthBtn').addEventListener('click', () => {
                 if (selectedMonth > 1) {
                     selectedMonth--;
@@ -583,14 +634,44 @@
         function renderCalendar() {
             if (!calendarData) return;
 
-            const monthData = calendarData.months.find(m => m.monthNumber === selectedMonth);
-            if (!monthData) return;
+            let monthData = null;
+            let daysList = [];
+            let occasionsList = [];
+
+            if (selectedYear === 1448) {
+                monthData = calendarData.months.find(m => m.monthNumber === selectedMonth);
+                if (!monthData) return;
+                daysList = monthData.days;
+                occasionsList = monthData.occasions;
+            } else {
+                // Generate calendar days dynamically for selected year and month
+                daysList = generateDynamicCalendar(selectedYear, selectedMonth);
+                // Load occasions for the selected month
+                const customOccasions = JSON.parse(localStorage.getItem('custom_occasions') || '[]');
+                const monthCustom = customOccasions.filter(o => o.hijri && o.hijri.month === selectedMonth);
+                
+                // Get static occasions from 1448 template for the same month
+                const templateMonth = calendarData.months.find(m => m.monthNumber === selectedMonth);
+                const templateOccasions = templateMonth ? templateMonth.occasions : [];
+                
+                occasionsList = [...templateOccasions, ...monthCustom.map(c => ({
+                    title: c.title,
+                    hijriDay: c.hijri.day,
+                    eventType: c.type === 'sad' ? 'MARTYRDOM' : 'BIRTH'
+                }))];
+                
+                monthData = {
+                    monthNameAr: hijriMonthsNames[selectedMonth - 1],
+                    days: daysList,
+                    occasions: occasionsList
+                };
+            }
 
             document.getElementById('tableMonthTitle').textContent = `جدول شهر ${monthData.monthNameAr} ${selectedYear}هـ`;
             
             // Calc greg range for header
-            if (monthData.days.length > 0) {
-                const firstDay = monthData.days[0].gregorianDate.split("-");
+            if (daysList.length > 0) {
+                const firstDay = daysList[0].gregorianDate.split("-");
                 const mIdx = parseInt(firstDay[1]) - 1;
                 document.getElementById('tableGregRange').textContent = `المطابق لـ: ${gregMonthsNamesAr[mIdx]}`;
             }
@@ -599,7 +680,7 @@
 
             // Populate Desktop Table
             let tbodyHTML = '';
-            monthData.days.forEach(day => {
+            daysList.forEach(day => {
                 const isFriday = day.dayNameAr === "الجمعة";
                 const isToday = day.gregorianDate === bhTime.dateString;
                 
@@ -646,7 +727,7 @@
 
             // Populate Mobile view
             let mobileHTML = '';
-            monthData.days.forEach(day => {
+            daysList.forEach(day => {
                 const isToday = day.gregorianDate === bhTime.dateString;
                 const originalHijriDay = day.hijriDay;
                 const adjustedHijriDay = originalHijriDay + hijri_offset;
@@ -703,7 +784,7 @@
                 }
             } else {
                 // If not found, use first day of month
-                const firstDay = monthData.days[0];
+                const firstDay = daysList[0];
                 const adjustedFirstHijri = firstDay.hijriDay + hijri_offset;
                 document.getElementById('todayHijriTitle').textContent = `اليوم: ${firstDay.dayNameAr} | ${adjustedFirstHijri} ${monthData.monthNameAr} 1448هـ`;
                 document.getElementById('todayGregTitle').textContent = `الموافق: ${firstDay.gregorianDate}`;
@@ -713,6 +794,82 @@
             }
         }
 
+        function getGregorianDateObj(hijriYear, month, day) {
+            var jd = Math.floor((11 * hijriYear + 3) / 30) +
+                     354 * hijriYear + 
+                     30 * month -
+                     Math.floor((month - 1) / 2) + day + 1948440 - 385;
+
+            var l = jd + 68569;
+            var n = Math.floor((4 * l) / 146097);
+            l = l - Math.floor((146097 * n + 3) / 4);
+            var i = Math.floor((4000 * (l + 1)) / 1461001);
+            l = l - Math.floor((1461 * i) / 4) + 31;
+            var j = Math.floor((80 * l) / 2447);
+            var d = l - Math.floor((2447 * j) / 80);
+            l = Math.floor(j / 11);
+            var m = j + 2 - 12 * l;
+            var y = 100 * (n - 49) + i + l;
+
+            return new Date(y, m - 1, d);
+        }
+
+        function generateDynamicCalendar(year, month) {
+            const days = [];
+            const dayNamesAr = ["الأحد", "الاثنين", "الثلاثاء", "الأربعاء", "الخميس", "الجمعة", "السبت"];
+            
+            const coords = { latitude: 26.2285, longitude: 50.5860 };
+            const coordinates = new adhan.Coordinates(coords.latitude, coords.longitude);
+            
+            const params = adhan.CalculationMethod.Tehran();
+            params.madhab = adhan.Madhab.Shafi;
+            params.adjustments.fajr = 13;
+            params.adjustments.dhuhr = 2;
+            params.adjustments.maghrib = 15;
+            params.timezone = 3;
+
+            const timeFormat = (t) => {
+                const hours = t.getHours().toString().padStart(2, '0');
+                const minutes = t.getMinutes().toString().padStart(2, '0');
+                return `${hours}:${minutes}`;
+            };
+
+            for (let d = 1; d <= 30; d++) {
+                const gDate = getGregorianDateObj(year, month, d);
+                
+                if (d === 30) {
+                    try {
+                        const parts = new Intl.DateTimeFormat('en-u-ca-islamic-umalqura', { day: 'numeric' }).formatToParts(gDate);
+                        const convertedDay = parseInt(parts.find(p => p.type === 'day').value);
+                        if (convertedDay === 1) {
+                            break;
+                        }
+                    } catch(e) {}
+                }
+
+                const prayerTimes = new adhan.PrayerTimes(coordinates, gDate, params);
+                
+                const y = gDate.getFullYear();
+                const mStr = (gDate.getMonth() + 1).toString().padStart(2, '0');
+                const dayVal = gDate.getDate().toString().padStart(2, '0');
+                const dateStr = `${y}-${mStr}-${dayVal}`;
+
+                days.push({
+                    hijriDay: d,
+                    gregorianDate: dateStr,
+                    dayNameAr: dayNamesAr[gDate.getDay()],
+                    fajr: timeFormat(prayerTimes.fajr),
+                    sunrise: timeFormat(prayerTimes.sunrise),
+                    dhuhr: timeFormat(prayerTimes.dhuhr),
+                    maghrib: timeFormat(prayerTimes.maghrib),
+                    moonStatus: "",
+                    marriageCode: "",
+                    notes: ""
+                });
+            }
+            return days;
+        }
+
         function startCountdown() {
             setInterval(() => {
                 if (!calendarData) return;
@@ -720,7 +877,7 @@
                 if (!monthData) return;
 
                 const bhTime = getBahrainTime();
-                const dayObj = monthData.days.find(d => d.gregorianDate === bhTime.dateString) || monthData.days[0];
+                const dayObj = monthData.days.find(d => d.gregorianDate === bhTime.dateString) || daysList[0];
 
                 const now = new Date();
                 const options = { timeZone: "Asia/Bahrain", hour: "2-digit", minute: "2-digit", second: "2-digit", hour12: false };
@@ -772,7 +929,8 @@
         }
     </script>
     
-    <!-- Include main.js from template -->
+    <!-- Include adhan.js and main.js -->
+    <script src="js/adhan.js"></script>
     <script src="js/main.js"></script>
 
 </body>
