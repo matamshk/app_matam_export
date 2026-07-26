@@ -408,59 +408,89 @@
                 <section id="occasionsViewer" style="display: none;">
                     <div class="card-panel">
                         <div class="card-header">
-                            <h3>إضافة مناسبة جديدة</h3>
+                            <h3 id="occFormTitle">إضافة / تعديل مناسبة على التقويم</h3>
                         </div>
                         <form id="adminOccasionForm" class="grid-form" onsubmit="saveAdminOccasion(event)">
+                            <input type="hidden" id="adminOccId">
                             <div class="form-group">
                                 <label>عنوان المناسبة</label>
-                                <input type="text" id="occTitle" required>
+                                <input type="text" id="occTitle" required placeholder="مثال: وفاة الإمام الباقر (ع)">
                             </div>
                             <div class="form-group">
                                 <label>نوع المناسبة</label>
                                 <select id="occType">
-                                    <option value="religious">ديني (عام)</option>
-                                    <option value="happy">ميلاد / عيد (سعيد)</option>
-                                    <option value="sad">وفاة / استشهاد (حزين)</option>
+                                    <option value="GENERAL">عامة / دينية</option>
+                                    <option value="BIRTH">ولادة / فرح</option>
+                                    <option value="MARTYRDOM">وفاة / حزن</option>
                                 </select>
                             </div>
                             <div class="form-group">
                                 <label>الشهر الهجري</label>
                                 <select id="occMonth">
-                                    <option value="1">محرم</option><option value="2">صفر</option><option value="3">ربيع الأول</option><option value="4">ربيع الآخر</option>
-                                    <option value="5">جمادى الأولى</option><option value="6">جمادى الآخرة</option><option value="7">رجب</option><option value="8">شعبان</option>
-                                    <option value="9">رمضان</option><option value="10">شوال</option><option value="11">ذو القعدة</option><option value="12">ذو الحجة</option>
+                                    <option value="1">محرم الحرام</option>
+                                    <option value="2">صفر</option>
+                                    <option value="3">ربيع الأول</option>
+                                    <option value="4">ربيع الآخر</option>
+                                    <option value="5">جمادى الأولى</option>
+                                    <option value="6">جمادى الآخرة</option>
+                                    <option value="7">رجب الأصب</option>
+                                    <option value="8">شعبان المعظم</option>
+                                    <option value="9">شهر رمضان</option>
+                                    <option value="10">شوال المكرّم</option>
+                                    <option value="11">ذو القعدة</option>
+                                    <option value="12">ذو الحجة</option>
                                 </select>
                             </div>
                             <div class="form-group">
-                                <label>اليوم</label>
+                                <label>اليوم الهجري</label>
                                 <input type="number" id="occDay" min="1" max="30" required>
                             </div>
                             <div class="form-group" style="grid-column: 1 / -1;">
-                                <label>وصف إضافي</label>
+                                <label>وصف إضافي (اختياري)</label>
                                 <textarea id="occDesc" rows="2"></textarea>
                             </div>
-                            <div class="form-group" style="grid-column: 1 / -1;">
-                                <button type="submit" class="btn-primary" style="width: auto;"><i class="fas fa-plus"></i> إضافة المناسبة للإرشيف</button>
+                            <div style="grid-column: 1 / -1; margin-top: 10px; display: flex; gap: 10px;">
+                                <button type="submit" id="submitOccBtn" class="btn-primary" style="width: auto;"><i class="fas fa-plus"></i> إضافة مناسبة</button>
+                                <button type="button" id="cancelOccEditBtn" class="btn-primary" style="width: auto; background: rgba(0,0,0,0.1); border: 1px solid #ccc; color: #555; display: none;" onclick="cancelOccasionEdit()"><i class="fas fa-times"></i> إلغاء التعديل</button>
                             </div>
                         </form>
                     </div>
 
                     <div class="card-panel">
-                        <div class="card-header">
-                            <h3>قائمة المناسبات المخصصة</h3>
+                        <div class="card-header" style="display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 15px;">
+                            <h3>إدارة وتصحيح المناسبات الرسمية حسب الشهر</h3>
+                            <div style="display: flex; align-items: center; gap: 10px;">
+                                <label style="font-size: 0.85rem; font-weight: bold; color: var(--text-dark);">اختر الشهر:</label>
+                                <select id="adminOccasionMonthSelect" onchange="loadOccasionsForAdminMonth()" style="background: var(--card-bg); color: var(--text-dark); border: 1px solid var(--border); padding: 5px 10px; border-radius: 6px;">
+                                    <option value="1">محرم الحرام</option>
+                                    <option value="2">صفر</option>
+                                    <option value="3">ربيع الأول</option>
+                                    <option value="4">ربيع الآخر</option>
+                                    <option value="5">جمادى الأولى</option>
+                                    <option value="6">جمادى الآخرة</option>
+                                    <option value="7">رجب الأصب</option>
+                                    <option value="8">شعبان المعظم</option>
+                                    <option value="9">شهر رمضان</option>
+                                    <option value="10">شوال المكرّم</option>
+                                    <option value="11">ذو القعدة</option>
+                                    <option value="12">ذو الحجة</option>
+                                </select>
+                            </div>
                         </div>
-                        <div style="overflow-x: auto;">
+                        <div class="table-responsive">
                             <table>
                                 <thead>
                                     <tr>
-                                        <th>الشهر</th>
-                                        <th>اليوم</th>
-                                        <th>العنوان</th>
-                                        <th>النوع</th>
+                                        <th style="width: 10%;">اليوم</th>
+                                        <th style="text-align: right; padding-right: 20px;">المناسبة</th>
+                                        <th style="width: 20%;">التصنيف</th>
+                                        <th style="width: 25%;">الإجراءات</th>
                                     </tr>
                                 </thead>
                                 <tbody id="occasionsTableBody">
-                                    <tr><td colspan="4" style="text-align: center;">جاري التحميل...</td></tr>
+                                    <tr>
+                                        <td colspan="4" style="text-align: center; color: #888;"><i class="fas fa-spinner fa-spin"></i> جاري تحميل المناسبات...</td>
+                                    </tr>
                                 </tbody>
                             </table>
                         </div>

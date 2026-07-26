@@ -187,7 +187,7 @@ async function loadDashboardData() {
         renderContributionsTable(allContributionsCache);
         generateReport();
         
-        renderOccasionsTable(db.custom_occasions || []);
+        loadOccasionsForAdminMonth();
         if (db.hijri_offset !== undefined) {
             document.getElementById('hijriOffsetInput').value = db.hijri_offset;
         }
@@ -415,81 +415,147 @@ async function updateStatus(id, status) {
     }
 }
 
-function renderOccasionsTable(occasions) {
+let adminCalendarData = null;
+let currentAdminOccasionMonth = 1;
+
+async function loadOccasionsForAdminMonth() {
+    const monthSelect = document.getElementById('adminOccasionMonthSelect');
+    if (!monthSelect) return;
+    currentAdminOccasionMonth = parseInt(monthSelect.value);
+
+    if (!adminCalendarData) {
+        try {
+            const res = await fetch('/uploads/structured-calendar-1448.json');
+            if (res.ok) {
+                adminCalendarData = await res.json();
+            }
+        } catch(e) {
+            console.error("Failed to load calendar data for admin:", e);
+        }
+    }
+
     const tbody = document.getElementById('occasionsTableBody');
-    if (!occasions.length) {
-        tbody.innerHTML = '<tr><td colspan="4" style="text-align: center;">لا توجد مناسبات مخصصة</td></tr>';
+    if (!tbody || !adminCalendarData) return;
+
+    const monthData = adminCalendarData.months.find(m => m.monthNumber === currentAdminOccasionMonth);
+    if (!monthData) {
+        tbody.innerHTML = '<tr><td colspan="4" style="color: #888; text-align: center;">لا توجد مناسبات لهذا الشهر.</td></tr>';
         return;
     }
 
-    const mapMonth = ["-","محرم","صفر","ربيع الأول","ربيع الآخر","جمادى الأولى","جمادى الآخرة","رجب","شعبان","رمضان","شوال","ذو القعدة","ذو الحجة"];
-    const mapType = { 'religious': 'ديني', 'happy': 'سعيد', 'sad': 'حزين' };
+    const occasions = monthData.occasions || [];
+    if (occasions.length === 0) {
+        tbody.innerHTML = '<tr><td colspan="4" style="color: #888; text-align: center;">لا توجد مناسبات مسجلة لهذا الشهر.</td></tr>';
+        return;
+    }
+
+    const mapType = { 'BIRTH': 'ولادة / فرح', 'MARTYRDOM': 'وفاة / حزن', 'GENERAL': 'عامة' };
 
     tbody.innerHTML = occasions.map(o => `
         <tr>
-            <td>${mapMonth[o.hijri.month]}</td>
-            <td>${o.hijri.day}</td>
-            <td>${escapeHTML(o.title)}</td>
-            <td>${mapType[o.type] || o.type}</td>
+            <td style="font-weight: bold; font-size: 1.1rem; color: var(--primary);">${o.hijriDay}</td>
+            <td style="text-align: right; padding-right: 20px; font-weight: 600;">${escapeHTML(o.title)}</td>
+            <td style="color: ${o.eventType === 'MARTYRDOM' ? '#dc3645' : o.eventType === 'BIRTH' ? '#2ecc71' : 'var(--text-dark)'};">${mapType[o.eventType] || o.eventType || 'عامة'}</td>
+            <td>
+                <button class="btn-edit" style="padding: 4px 10px; font-size: 0.8rem;" onclick="editCalendarOccasionClick('${o.id}', ${o.hijriDay}, '${escapeJS(o.title)}', '${o.eventType}')"><i class="fas fa-edit"></i> تعديل</button>
+                <button class="btn-delete" style="padding: 4px 10px; font-size: 0.8rem;" onclick="deleteCalendarOccasionClick(${o.hijriDay}, '${o.id}')"><i class="fas fa-trash-alt"></i> حذف</button>
+            </td>
         </tr>
     `).join('');
 }
 
-async function saveAdminOccasion(e) {
-    e.preventDefault();
-    const role = localStorage.getItem('admin_role');
-    const perms = JSON.parse(localStorage.getItem('admin_permissions') || '{}');
-    if (role !== 'superadmin' && perms.occasions !== 'write') {
-        alert('ليس لديك صلاحية لإضافة مناسبات!');
-        return;
-    }
+function escapeJS(str) {
+    if (!str) return '';
+    return str.replace(/'/g, "\'").replace(/"/g, '\"');
+}
+
+function editCalendarOccasionClick(id, day, title, type) {
+    document.getElementById('adminOccId').value = id;
+    document.getElementById('occDay').value = day;
+    document.getElementById('occTitle').value = title;
+    
+    const selectType = document.getElementById('occType');
+    selectType.value = type || 'GENERAL';
+    
+    const btn = document.getElementById('submitOccBtn');
+    if (btn) btn.innerHTML = '<i class="fas fa-save"></i> تحديث المناسبة';
+    
+    const cancelBtn = document.getElementById('cancelOccEditBtn');
+    if (cancelBtn) cancelBtn.style.display = 'inline-block';
+}
+
+function cancelOccasionEdit() {
+    document.getElementById('adminOccId').value = '';
+    document.getElementById('adminOccasionForm').reset();
+    
+    const btn = document.getElementById('submitOccBtn');
+    if (btn) btn.innerHTML = '<i class="fas fa-plus"></i> إضافة مناسبة';
+    
+    const cancelBtn = document.getElementById('cancelOccEditBtn');
+    if (cancelBtn) cancelBtn.style.display = 'none';
+}
+
+async function deleteCalendarOccasionClick(day, id) {
+    if (!confirm("هل أنت متأكد من رغبتك في حذف هذه المناسبة من التقويم؟")) return;
     
     const token = localStorage.getItem('admin_token');
-    
-    const newEvent = {
-        id: 'admin_custom_' + Date.now(),
-        hijri: {
-            month: parseInt(document.getElementById('occMonth').value),
-            day: parseInt(document.getElementById('occDay').value)
-        },
-        title: document.getElementById('occTitle').value,
-        type: document.getElementById('occType').value,
-        description: document.getElementById('occDesc').value,
-        isCustom: true
-    };
-
     try {
-        const res = await fetch('/api/save_custom_occasion', {
+        const res = await fetch('/api/delete_calendar_occasion', {
             method: 'POST',
             headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify({ token, ...newEvent })
+            body: JSON.stringify({ token, monthNumber: currentAdminOccasionMonth, occasionId: id })
         });
-        if(res.ok) {
-            alert('تم الحفظ بنجاح');
-            e.target.reset();
-            loadDashboardData();
+        if (res.ok) {
+            alert("✅ تم حذف المناسبة بنجاح!");
+            adminCalendarData = null; // force reload
+            loadOccasionsForAdminMonth();
+        } else {
+            alert("❌ فشل حذف المناسبة.");
         }
-    } catch(err) {
-        alert("فشل الحفظ");
+    } catch(e) {
+        alert("❌ خطأ أثناء الاتصال بالخادم.");
     }
 }
 
-async function saveOffset(e) {
+async function saveAdminOccasion(e) {
     e.preventDefault();
     const token = localStorage.getItem('admin_token');
-    const offset = parseInt(document.getElementById('hijriOffsetInput').value);
+    const occId = document.getElementById('adminOccId').value;
+    const month = parseInt(document.getElementById('occMonth').value);
+    const day = parseInt(document.getElementById('occDay').value);
+    const title = document.getElementById('occTitle').value;
+    const type = document.getElementById('occType').value;
+
+    let url = '/api/add_calendar_occasion';
+    let payload = { token, monthNumber: month, hijriDay: day, title, eventType: type };
+
+    if (occId) {
+        url = '/api/edit_calendar_occasion';
+        payload.occasionId = occId;
+    }
 
     try {
-        const res = await fetch('/api/save_offset', {
+        const res = await fetch(url, {
             method: 'POST',
             headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify({ token, offset })
+            body: JSON.stringify(payload)
         });
-        if(res.ok) {
-            alert('تم تعديل الإزاحة بنجاح!');
+        if (res.ok) {
+            alert(occId ? "✅ تم تحديث المناسبة بنجاح!" : "✅ تم إضافة المناسبة بنجاح!");
+            cancelOccasionEdit();
+            adminCalendarData = null; // force reload
+            
+            // Sync current list view month to the month we edited
+            const filterMonth = document.getElementById('adminOccasionMonthSelect');
+            if (filterMonth) {
+                filterMonth.value = month;
+            }
+            loadOccasionsForAdminMonth();
+        } else {
+            alert("❌ فشل حفظ المناسبة.");
         }
-    } catch(err) {
-        alert("فشل التعديل");
+    } catch(e) {
+        alert("❌ خطأ في الاتصال بالخادم.");
     }
 }
 

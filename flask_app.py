@@ -332,6 +332,137 @@ def upload_prayer_reference():
     file_url = db_helper.save_prayer_reference(file_data, filename, update_option, DB_FILE)
     return jsonify({"status": "success", "file_url": file_url})
 
+
+@app.route('/api/add_calendar_occasion', methods=['POST'])
+def add_calendar_occasion():
+    import time
+    db = load_db()
+    payload = request.json
+    token = payload.get('token')
+    
+    is_authorized = True
+    if token and 'sessions' in db:
+        session = db['sessions'].get(token)
+        if not session:
+            is_authorized = False
+            
+    if not is_authorized:
+        return jsonify({"status": "error", "message": "Unauthorized"}), 403
+        
+    month_num = int(payload.get('monthNumber'))
+    title = payload.get('title')
+    hijri_day = int(payload.get('hijriDay'))
+    event_type = payload.get('eventType', 'GENERAL')
+    
+    json_path = os.path.join(os.path.dirname(__file__), "uploads", "structured-calendar-1448.json")
+    if not os.path.exists(json_path):
+        return jsonify({"status": "error", "message": "Calendar JSON file not found"}), 404
+        
+    with open(json_path, 'r', encoding='utf-8') as f:
+        data = json.load(f)
+        
+    target_month = next((m for m in data.get('months', []) if m.get('monthNumber') == month_num), None)
+    if not target_month:
+        return jsonify({"status": "error", "message": "Month not found"}), 404
+        
+    new_occ = {
+        "id": "occ_" + str(int(time.time() * 1000)),
+        "title": title,
+        "hijriDay": hijri_day,
+        "eventType": event_type
+    }
+    
+    if "occasions" not in target_month:
+        target_month["occasions"] = []
+    target_month["occasions"].append(new_occ)
+    
+    with open(json_path, 'w', encoding='utf-8') as f:
+        json.dump(data, f, ensure_ascii=False, indent=2)
+        
+    return jsonify({"status": "success"})
+
+@app.route('/api/edit_calendar_occasion', methods=['POST'])
+def edit_calendar_occasion():
+    db = load_db()
+    payload = request.json
+    token = payload.get('token')
+    
+    is_authorized = True
+    if token and 'sessions' in db:
+        session = db['sessions'].get(token)
+        if not session:
+            is_authorized = False
+            
+    if not is_authorized:
+        return jsonify({"status": "error", "message": "Unauthorized"}), 403
+        
+    month_num = int(payload.get('monthNumber'))
+    occ_id = payload.get('occasionId')
+    title = payload.get('title')
+    hijri_day = int(payload.get('hijriDay'))
+    event_type = payload.get('eventType')
+    
+    json_path = os.path.join(os.path.dirname(__file__), "uploads", "structured-calendar-1448.json")
+    if not os.path.exists(json_path):
+        return jsonify({"status": "error", "message": "Calendar JSON file not found"}), 404
+        
+    with open(json_path, 'r', encoding='utf-8') as f:
+        data = json.load(f)
+        
+    target_month = next((m for m in data.get('months', []) if m.get('monthNumber') == month_num), None)
+    if not target_month:
+        return jsonify({"status": "error", "message": "Month not found"}), 404
+        
+    occ = next((o for o in target_month.get('occasions', []) if o.get('id') == occ_id), None)
+    if not occ:
+        return jsonify({"status": "error", "message": "Occasion not found"}), 404
+        
+    occ["title"] = title
+    occ["hijriDay"] = hijri_day
+    if event_type:
+        occ["eventType"] = event_type
+        
+    with open(json_path, 'w', encoding='utf-8') as f:
+        json.dump(data, f, ensure_ascii=False, indent=2)
+        
+    return jsonify({"status": "success"})
+
+@app.route('/api/delete_calendar_occasion', methods=['POST'])
+def delete_calendar_occasion():
+    db = load_db()
+    payload = request.json
+    token = payload.get('token')
+    
+    is_authorized = True
+    if token and 'sessions' in db:
+        session = db['sessions'].get(token)
+        if not session:
+            is_authorized = False
+            
+    if not is_authorized:
+        return jsonify({"status": "error", "message": "Unauthorized"}), 403
+        
+    month_num = int(payload.get('monthNumber'))
+    occ_id = payload.get('occasionId')
+    
+    json_path = os.path.join(os.path.dirname(__file__), "uploads", "structured-calendar-1448.json")
+    if not os.path.exists(json_path):
+        return jsonify({"status": "error", "message": "Calendar JSON file not found"}), 404
+        
+    with open(json_path, 'r', encoding='utf-8') as f:
+        data = json.load(f)
+        
+    target_month = next((m for m in data.get('months', []) if m.get('monthNumber') == month_num), None)
+    if not target_month:
+        return jsonify({"status": "error", "message": "Month not found"}), 404
+        
+    target_month["occasions"] = [o for o in target_month.get('occasions', []) if o.get('id') != occ_id]
+    
+    with open(json_path, 'w', encoding='utf-8') as f:
+        json.dump(data, f, ensure_ascii=False, indent=2)
+        
+    return jsonify({"status": "success"})
+
 if __name__ == '__main__':
     app.run(port=5000, debug=True)
 
