@@ -333,5 +333,5 @@ def upload_prayer_reference():
     return jsonify({"status": "success", "file_url": file_url})
 
 if __name__ == '__main__':
-    app.run(port=8080, debug=True)
+    app.run(port=5000, debug=True)
 
