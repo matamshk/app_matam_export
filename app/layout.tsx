@@ -51,21 +51,21 @@ export default async function RootLayout({
 
             {/* Center: Navigation Links */}
             <nav className="hidden md:flex items-center gap-6 text-sm font-medium">
-              <Link href="/" className="hover:text-gold-light transition">الرئيسية</Link>
-              <Link href="/#calendar-section" className="hover:text-gold-light transition">التقويم الهجري</Link>
-              <Link href="/#occasions-section" className="hover:text-gold-light transition">المناسبات</Link>
+              <a href="/index.html" className="hover:text-gold-light transition">الرئيسية</a>
+              <a href="/awqaf.html" className="hover:text-gold-light transition">التقويم الهجري</a>
+              <a href="/occasions.html" className="hover:text-gold-light transition">المناسبات</a>
             </nav>
 
             {/* Left: Admin Action */}
             <div>
               {isLoggedIn ? (
-                <Link href="/admin" className="bg-gold-primary hover:bg-gold-primary/90 text-white font-bold py-1.5 px-4 rounded-lg text-sm transition">
+                <a href="/dashboard.html" className="bg-gold-primary hover:bg-gold-primary/90 text-white font-bold py-1.5 px-4 rounded-lg text-sm transition">
                   لوحة التحكم
-                </Link>
+                </a>
               ) : (
-                <Link href="/admin/login" className="bg-emerald-dark hover:bg-emerald-dark/80 text-white font-bold py-1.5 px-4 rounded-lg text-sm transition">
+                <a href="/login.html" className="bg-emerald-dark hover:bg-emerald-dark/80 text-white font-bold py-1.5 px-4 rounded-lg text-sm transition">
                   دخول الإدارة
-                </Link>
+                </a>
               )}
             </div>
           </div>
