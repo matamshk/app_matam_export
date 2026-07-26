@@ -385,40 +385,6 @@
             </div>
         </div>
 
-        <!-- Today Card -->
-        <section class="today-card">
-            <div class="today-header">
-                <div>
-                    <span style="color: var(--emerald-primary); font-size: 0.85rem; font-weight: 700;">مواقيت الصلاة لمملكة البحرين - مأتم أبو صيبع الشرقي</span>
-                    <h2 class="today-title" id="todayHijriTitle">جاري تحميل التاريخ اليومي...</h2>
-                    <span class="today-greg" id="todayGregTitle">الموافق: --/--/----</span>
-                </div>
-                <div id="todayNotesBadge" style="display: none; background: rgba(212,175,55,0.15); color: #8a6d1c; padding: 6px 12px; border-radius: 8px; font-weight: bold; font-size: 0.85rem;"></div>
-            </div>
-
-            <!-- Prayer cards (Subuh, Zohor, Maghrib) -->
-            <div class="prayer-cards-grid">
-                <div class="prayer-card-item">
-                    <span class="prayer-card-name">صلاة الصبح</span>
-                    <span class="prayer-card-time" id="todayFajr">--:--</span>
-                </div>
-                <div class="prayer-card-item">
-                    <span class="prayer-card-name">صلاة الظهرين</span>
-                    <span class="prayer-card-time" id="todayDhuhr">--:--</span>
-                </div>
-                <div class="prayer-card-item">
-                    <span class="prayer-card-name">صلاة المغربين</span>
-                    <span class="prayer-card-time" id="todayMaghrib">--:--</span>
-                </div>
-            </div>
-
-            <!-- Countdown Timer -->
-            <div class="countdown-widget">
-                <span class="countdown-title" id="nextPrayerName">جاري احتساب الصلاة القادمة...</span>
-                <span class="countdown-timer" id="nextPrayerTimeLeft">--:--:--</span>
-            </div>
-        </section>
-
         <!-- Control Bar -->
         <section class="control-bar">
             <div class="selector-group">
@@ -508,7 +474,7 @@
         let selectedYear = 1448;
         let selectedMonth = 1;
         let calendarData = null;
-        let hijriOffset = 0;
+        let hijri_offset = 0;
 
         document.addEventListener('DOMContentLoaded', async () => {
             // Check Admin Privilege
@@ -516,8 +482,8 @@
             if (isAdmin) {
                 document.getElementById('adminPanel').style.display = 'flex';
                 // Load saved offset
-                hijriOffset = parseInt(localStorage.getItem('hijriOffset') || '0');
-                document.getElementById('adminOffsetSelect').value = hijriOffset;
+                hijri_offset = parseInt(localStorage.getItem('hijri_offset') || '0');
+                document.getElementById('adminOffsetSelect').value = hijri_offset;
             }
 
             // Populate Months dropdown
@@ -581,8 +547,8 @@
                         body: JSON.stringify({ offset: newOffset })
                     });
                     if (res.ok) {
-                        localStorage.setItem('hijriOffset', newOffset);
-                        hijriOffset = newOffset;
+                        localStorage.setItem('hijri_offset', newOffset);
+                        hijri_offset = newOffset;
                         alert("✅ تم حفظ تعديل الرؤية بنجاح وتحديث التقويم!");
                         renderCalendar();
                     } else {
@@ -639,7 +605,7 @@
                 
                 // Adjust Hijri day dynamically based on offset
                 const originalHijriDay = day.hijriDay;
-                const adjustedHijriDay = originalHijriDay + hijriOffset;
+                const adjustedHijriDay = originalHijriDay + hijri_offset;
                 
                 // Find occasion
                 const dayOccasion = monthData.occasions.find(o => o.hijriDay === adjustedHijriDay);
@@ -673,7 +639,7 @@
             monthData.days.forEach(day => {
                 const isToday = day.gregorianDate === bhTime.dateString;
                 const originalHijriDay = day.hijriDay;
-                const adjustedHijriDay = originalHijriDay + hijriOffset;
+                const adjustedHijriDay = originalHijriDay + hijri_offset;
                 const dayOccasion = monthData.occasions.find(o => o.hijriDay === adjustedHijriDay);
 
                 mobileHTML += `
@@ -701,7 +667,7 @@
             // Render Today Card Info
             const currentDayObj = monthData.days.find(d => d.gregorianDate === bhTime.dateString);
             if (currentDayObj) {
-                const adjustedTodayHijri = currentDayObj.hijriDay + hijriOffset;
+                const adjustedTodayHijri = currentDayObj.hijriDay + hijri_offset;
                 document.getElementById('todayHijriTitle').textContent = `اليوم: ${currentDayObj.dayNameAr} | ${adjustedTodayHijri} ${monthData.monthNameAr} 1448هـ`;
                 document.getElementById('todayGregTitle').textContent = `الموافق: ${currentDayObj.gregorianDate}`;
                 document.getElementById('todayFajr').textContent = currentDayObj.fajr;
@@ -718,7 +684,7 @@
             } else {
                 // If not found, use first day of month
                 const firstDay = monthData.days[0];
-                const adjustedFirstHijri = firstDay.hijriDay + hijriOffset;
+                const adjustedFirstHijri = firstDay.hijriDay + hijri_offset;
                 document.getElementById('todayHijriTitle').textContent = `اليوم: ${firstDay.dayNameAr} | ${adjustedFirstHijri} ${monthData.monthNameAr} 1448هـ`;
                 document.getElementById('todayGregTitle').textContent = `الموافق: ${firstDay.gregorianDate}`;
                 document.getElementById('todayFajr').textContent = firstDay.fajr;

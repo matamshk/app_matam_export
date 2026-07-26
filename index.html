@@ -44,24 +44,41 @@
         </div>
     </header>
 
-    <!-- Main Prayer Cards (Overlap Header) -->
-    <section class="prayer-grid" id="prayerCardsGrid">
-        <!-- Fajr -->
-        <div class="prayer-main-card">
-            <span class="prayer-name">الفجر</span>
-            <span class="prayer-time" id="cardFajr">--:--</span>
-        </div>
-        <!-- Dhuhr -->
-        <div class="prayer-main-card active">
-            <span class="prayer-name">الظهر</span>
-            <span class="prayer-time" id="cardDhuhr">--:--</span>
-        </div>
-        <!-- Maghrib -->
-        <div class="prayer-main-card">
-            <span class="prayer-name">المغرب</span>
-            <span class="prayer-time" id="cardMaghrib">--:--</span>
-        </div>
-    </section>
+    <!-- Today Card Section (Unified Emerald/Gold style with Live Countdown) -->
+    <div class="container" style="max-width: 900px; margin: -50px auto 30px auto; padding: 0 20px; position: relative; z-index: 20;">
+        <section class="today-card" style="background: #ffffff; border: 1px solid rgba(49, 95, 102, 0.15); border-radius: 16px; padding: 25px; box-shadow: 0 10px 30px rgba(0, 0, 0, 0.08); color: #333; text-align: right;">
+            <div class="today-header" style="display: flex; justify-content: space-between; align-items: center; border-bottom: 1px solid rgba(0, 0, 0, 0.08); padding-bottom: 15px; margin-bottom: 20px; flex-wrap: wrap; gap: 15px;">
+                <div style="text-align: right;">
+                    <span style="color: #315F66; font-size: 0.85rem; font-weight: 700; display: block;">مواقيت الصلاة لمملكة البحرين - مأتم أبو صيبع الشرقي</span>
+                    <h2 class="today-title" id="todayHijriTitle" style="font-size: 1.4rem; font-weight: 800; color: #315F66; margin-top: 5px; margin-bottom: 2px;">جاري تحميل التاريخ اليومي...</h2>
+                    <span class="today-greg" id="todayGregTitle" style="font-size: 0.9rem; color: #666;">الموافق: --/--/----</span>
+                </div>
+                <div id="todayNotesBadge" style="display: none; background: rgba(212,175,55,0.15); color: #8a6d1c; padding: 6px 12px; border-radius: 8px; font-weight: bold; font-size: 0.85rem;"></div>
+            </div>
+
+            <!-- Prayer cards (Subuh, Zohor, Maghrib) -->
+            <div class="prayer-cards-grid" style="display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 20px; margin-bottom: 20px;">
+                <div class="prayer-card-item" style="background: rgba(49, 95, 102, 0.03); border: 1px solid rgba(49, 95, 102, 0.08); border-radius: 12px; padding: 20px; text-align: center;">
+                    <span class="prayer-card-name" style="font-size: 0.95rem; color: #555; font-weight: 600; display: block;">صلاة الصبح</span>
+                    <span class="prayer-card-time" id="todayFajr" style="font-size: 2.2rem; font-weight: 800; color: #315F66; margin-top: 10px; font-family: monospace; display: block;">--:--</span>
+                </div>
+                <div class="prayer-card-item" style="background: rgba(49, 95, 102, 0.03); border: 1px solid rgba(49, 95, 102, 0.08); border-radius: 12px; padding: 20px; text-align: center;">
+                    <span class="prayer-card-name" style="font-size: 0.95rem; color: #555; font-weight: 600; display: block;">صلاة الظهرين</span>
+                    <span class="prayer-card-time" id="todayDhuhr" style="font-size: 2.2rem; font-weight: 800; color: #315F66; margin-top: 10px; font-family: monospace; display: block;">--:--</span>
+                </div>
+                <div class="prayer-card-item" style="background: rgba(49, 95, 102, 0.03); border: 1px solid rgba(49, 95, 102, 0.08); border-radius: 12px; padding: 20px; text-align: center;">
+                    <span class="prayer-card-name" style="font-size: 0.95rem; color: #555; font-weight: 600; display: block;">صلاة المغربين</span>
+                    <span class="prayer-card-time" id="todayMaghrib" style="font-size: 2.2rem; font-weight: 800; color: #315F66; margin-top: 10px; font-family: monospace; display: block;">--:--</span>
+                </div>
+            </div>
+
+            <!-- Countdown Timer -->
+            <div class="countdown-widget" style="background: #234A50; color: #ffffff; border-radius: 12px; padding: 15px 25px; display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 15px; box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);">
+                <span class="countdown-title" id="nextPrayerName" style="font-weight: 700; font-size: 1.1rem;">جاري احتساب الصلاة القادمة...</span>
+                <span class="countdown-timer" id="nextPrayerTimeLeft" style="font-size: 2rem; font-weight: 800; color: #B79A5B; font-family: monospace; letter-spacing: 2px;">--:--:--</span>
+            </div>
+        </section>
+    </div>
 
     <!-- Secondary Info & Stats -->
     <div class="container info-section">

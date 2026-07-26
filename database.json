@@ -258,6 +258,8 @@
   ],
   "hijri_offset": 0,
   "settings": {
+    "whatsapp_phone": "97334195510+",
+    "prayer_reference_url": "/uploads/تقويم-مأتم-أبو-صيبع-الشرقي-1448.json",
     "hidden_pages": [],
     "hidden_prayers": [
       "imsak",
@@ -266,10 +268,8 @@
       "midnight"
     ],
     "google_webapp_url": "https://script.google.com/macros/s/AKfycbzqaTV-Wc1nLNASCUh9L_MZU2g6QU7GKZXh7hIWmvvKifwaQbeMFi_jYdsLWNkGfAc2eQ/exec",
-    "prayer_reference_option": "apply_offsets",
-    "whatsapp_phone": "97334195510+",
-    "prayer_reference_url": "/uploads/تقويم-مأتم-أبو-صيبع-الشرقي-1448.json",
-    "contribution_price": 10
+    "contribution_price": 10,
+    "prayer_reference_option": "apply_offsets"
   },
   "users": [
     {
@@ -291,6 +291,11 @@
   ],
   "sessions": {
     "300c941bd9594bd599bfea87b44aa0d9": {
+      "role": "superadmin",
+      "user_id": "superadmin1",
+      "name": "المدير العام"
+    },
+    "31cc41e0dd454ddaa40d36b8831a3932": {
       "role": "superadmin",
       "user_id": "superadmin1",
       "name": "المدير العام"

@@ -1064,72 +1064,158 @@ function adjustHijriOffset(delta) {
     renderHomeOccasions();
 }
 
-function renderHomePrayerTimes() {
-    // 1. Coordinates (Bahrain)
-    // Precise coords for Bahrain (Manama) as used by Al-Sayegh calendar
-    const coords = { latitude: 26.2285, longitude: 50.5860 };
+let homeCalendarData = null;
 
-    if (typeof adhan === 'undefined') return;
-
-    const coordinates = new adhan.Coordinates(coords.latitude, coords.longitude);
-    const date = new Date();
-
-    // Bahrain Shi'a specific calculation (Al-Sayegh / Ja'fari)
-    // Uses Tehran method (Fajr 17.7°, Isha 14°, Maghrib 4.5°/Red Twlight) 
-    // BUT commonly adds ~15 min to Sunset for Maghrib.
-    const params = adhan.CalculationMethod.Tehran();
-    params.madhab = adhan.Madhab.Shafi; // Asr factor standard
-
-    // Adjustments to precisely match Taqwim Al Sayegh for Bahrain
-    params.adjustments.fajr = 13;
-    params.adjustments.dhuhr = 2;
-    params.adjustments.maghrib = 15;
-    params.adjustments.sunrise = 0;
-    params.adjustments.dhuhr = 0; // Zuhr is usually solar noon
-    params.adjustments.asr = 0;
-    params.adjustments.maghrib = 15; // 15 min after sunset for full disk disappearance (cautionary)
-    params.adjustments.isha = 0;
-
-    // FORCE BAHRAIN TIMEZONE (UTC+3)
-    // This ensures correct calculation regardless of user's device setting (e.g. if traveling or wrong clock)
-    params.timezone = 3;
-
-    const prayerTimes = new adhan.PrayerTimes(coordinates, date, params);
-
-    // Time Formatter
-    const timeFormat = (t) => {
-        let hours = t.getHours();
-        const minutes = t.getMinutes().toString().padStart(2, '0');
-        // const ampm = hours >= 12 ? 'م' : 'ص';
-        hours = hours % 12;
-        hours = hours ? hours : 12;
-        return `${hours}:${minutes}`;
+function getBahrainTime() {
+    const now = new Date();
+    const formatter = new Intl.DateTimeFormat('en-US', {
+        timeZone: 'Asia/Bahrain',
+        year: 'numeric', month: '2-digit', day: '2-digit'
+    });
+    const parts = formatter.formatToParts(now);
+    const y = parts.find(p => p.type === 'year').value;
+    const m = parts.find(p => p.type === 'month').value;
+    const d = parts.find(p => p.type === 'day').value;
+    return {
+        dateString: `${y}-${m}-${d}`,
+        todayDate: now
     };
+}
 
-    // Update Cards
-    const fEl = document.getElementById('cardFajr');
-    const dEl = document.getElementById('cardDhuhr');
-    const mEl = document.getElementById('cardMaghrib');
-
-    if (fEl) fEl.textContent = timeFormat(prayerTimes.fajr);
-    if (dEl) dEl.textContent = timeFormat(prayerTimes.dhuhr);
-    if (mEl) mEl.textContent = timeFormat(prayerTimes.maghrib);
-
-    // Header Date (Hijri + Gregorian) removed from here - now handled by updateHeaderTime() in renderHomeOccasions
-
-
-    // Banner: Next Prayer
-    const next = prayerTimes.nextPrayer();
-    const names = { fajr: 'الفجر', sunrise: 'الشروق', dhuhr: 'الظهر', asr: 'العصر', maghrib: 'المغرب', isha: 'العشاء', none: 'الفجر' };
-
-    const bannerName = document.getElementById('bannerNextPrayer');
-    const bannerTime = document.getElementById('bannerNextTime');
-
-    if (bannerName) bannerName.textContent = names[next] || names['fajr'];
-    if (bannerTime) {
-        const nTime = prayerTimes.timeForPrayer(next) || prayerTimes.fajr; // fallback to fajr tomorrow roughly
-        bannerTime.textContent = timeFormat(nTime);
+async function loadHomeCalendarData() {
+    try {
+        const res = await fetch('/uploads/structured-calendar-1448.json');
+        if (res.ok) {
+            homeCalendarData = await res.json();
+            renderHomePrayerTimes();
+            startHomeCountdown();
+        }
+    } catch (e) {
+        console.warn("Failed to load structured calendar on homepage:", e);
     }
+}
+
+function renderHomePrayerTimes() {
+    if (!homeCalendarData) {
+        loadHomeCalendarData();
+        return;
+    }
+
+    const bhTime = getBahrainTime();
+    let currentDayObj = null;
+    let currentMonthObj = null;
+
+    for (const m of homeCalendarData.months) {
+        const day = m.days.find(d => d.gregorianDate === bhTime.dateString);
+        if (day) {
+            currentDayObj = day;
+            currentMonthObj = m;
+            break;
+        }
+    }
+
+    if (!currentDayObj) {
+        currentMonthObj = homeCalendarData.months[0];
+        currentDayObj = currentMonthObj.days[0];
+    }
+
+    const adjustedHijriDay = currentDayObj.hijriDay + hijriOffset;
+
+    const hijriTitleEl = document.getElementById('todayHijriTitle');
+    const gregTitleEl = document.getElementById('todayGregTitle');
+    const fEl = document.getElementById('todayFajr');
+    const dEl = document.getElementById('todayDhuhr');
+    const mEl = document.getElementById('todayMaghrib');
+    const notesEl = document.getElementById('todayNotesBadge');
+
+    if (hijriTitleEl) {
+        hijriTitleEl.textContent = `اليوم: ${currentDayObj.dayNameAr} | ${adjustedHijriDay} ${currentMonthObj.monthNameAr} 1448هـ`;
+    }
+    if (gregTitleEl) {
+        gregTitleEl.textContent = `الموافق: ${currentDayObj.gregorianDate}`;
+    }
+    if (fEl) fEl.textContent = currentDayObj.fajr;
+    if (dEl) dEl.textContent = currentDayObj.dhuhr;
+    if (mEl) mEl.textContent = currentDayObj.maghrib;
+
+    if (notesEl) {
+        if (currentDayObj.notes) {
+            notesEl.textContent = `📢 ${currentDayObj.notes}`;
+            notesEl.style.display = 'inline-block';
+        } else {
+            notesEl.style.display = 'none';
+        }
+    }
+}
+
+function startHomeCountdown() {
+    if (window.homeCountdownInterval) clearInterval(window.homeCountdownInterval);
+
+    window.homeCountdownInterval = setInterval(() => {
+        if (!homeCalendarData) return;
+        
+        const bhTime = getBahrainTime();
+        let currentDayObj = null;
+        for (const m of homeCalendarData.months) {
+            const day = m.days.find(d => d.gregorianDate === bhTime.dateString);
+            if (day) {
+                currentDayObj = day;
+                break;
+            }
+        }
+        if (!currentDayObj) return;
+
+        const now = new Date();
+        const options = { timeZone: "Asia/Bahrain", hour: "2-digit", minute: "2-digit", second: "2-digit", hour12: false };
+        const formatter = new Intl.DateTimeFormat("en-US", options);
+        const parts = formatter.formatToParts(now);
+        const val = (name) => parts.find(p => p.type === name)?.value || "0";
+        
+        const currentH = parseInt(val("hour"));
+        const currentM = parseInt(val("minute"));
+        const currentS = parseInt(val("second"));
+        const currentSeconds = currentH * 3600 + currentM * 60 + currentS;
+
+        const parseTimeToSec = (tStr) => {
+            const [h, m] = tStr.split(":").map(Number);
+            return h * 3600 + m * 60;
+        };
+
+        const fSec = parseTimeToSec(currentDayObj.fajr);
+        const dSec = parseTimeToSec(currentDayObj.dhuhr);
+        const mSec = parseTimeToSec(currentDayObj.maghrib);
+
+        let targetSec = 0;
+        let name = "";
+
+        if (currentSeconds < fSec) {
+            targetSec = fSec;
+            name = "صلاة الصبح";
+        } else if (currentSeconds < dSec) {
+            targetSec = dSec;
+            name = "صلاة الظهرين";
+        } else if (currentSeconds < mSec) {
+            targetSec = mSec;
+            name = "صلاة المغربين";
+        } else {
+            targetSec = fSec + 24 * 3600;
+            name = "صلاة الصبح (الغد)";
+        }
+
+        const nameEl = document.getElementById('nextPrayerName');
+        const timeEl = document.getElementById('nextPrayerTimeLeft');
+
+        if (nameEl) nameEl.textContent = `المتبقي لـ ${name}`;
+
+        const diffSec = targetSec - currentSeconds;
+        const h = Math.floor(diffSec / 3600);
+        const m = Math.floor((diffSec % 3600) / 60);
+        const s = diffSec % 60;
+
+        if (timeEl) {
+            timeEl.textContent = `${h.toString().padStart(2, '0')}:${m.toString().padStart(2, '0')}:${s.toString().padStart(2, '0')}`;
+        }
+    }, 1000);
 }
 
 function renderHomeOccasions() {
