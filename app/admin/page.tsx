@@ -21,6 +21,13 @@ export default async function AdminDashboardPage() {
     take: 5
   });
 
+  async function logout() {
+    "use server";
+    const { cookies } = await import("next/headers");
+    (await cookies()).delete("admin_token");
+    redirect("/admin/login");
+  }
+
   return (
     <div className="container mx-auto px-4 py-8 max-w-5xl">
       {/* Header */}
@@ -29,8 +36,7 @@ export default async function AdminDashboardPage() {
           <h2 className="text-2xl font-bold text-text-primary">لوحة إدارة التقويم والمواقيت</h2>
           <p className="text-sm text-text-secondary mt-1">مرحباً بك، {session.name} ({session.role})</p>
         </div>
-        <form action="/app/api/auth" method="DELETE" className="inline">
-          {/* Logout button triggers client side call or direct api route */}
+        <form action={logout} className="inline">
           <button 
             type="submit" 
             className="bg-red-50 hover:bg-red-100 text-red-600 border border-red-200 px-4 py-2 rounded-lg text-sm transition font-semibold"
