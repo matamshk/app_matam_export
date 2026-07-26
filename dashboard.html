@@ -61,7 +61,8 @@
             </div>
             
             <ul class="sidebar-menu">
-                <li><a href="#" class="active" onclick="showSection('bookingsViewer')"><i class="fas fa-book"></i> إدارة الحجوزات</a></li>
+                <li id="menu-home"><a href="#" class="active" onclick="showSection('homeViewer')"><i class="fas fa-home"></i> الرئيسية</a></li>
+                <li id="menu-bookings"><a href="#" onclick="showSection('bookingsViewer')"><i class="fas fa-book"></i> إدارة الحجوزات</a></li>
                 <li id="menu-contributions" style="display:none;"><a href="#" onclick="showSection('contributionsViewer')"><i class="fas fa-hand-holding-heart"></i> مساهمات المرحومين</a></li>
                 <li id="menu-reports" style="display:none;"><a href="#" onclick="showSection('reportsViewer')"><i class="fas fa-chart-bar"></i> التقارير</a></li>
                 <li id="menu-users" style="display:none;"><a href="#" onclick="showSection('usersViewer')"><i class="fas fa-users"></i> إدارة المستخدمين</a></li>
@@ -79,7 +80,7 @@
         <!-- Main Content -->
         <main class="main-content">
             <header class="top-header">
-                <h2 class="page-title" id="pageTitle">إدارة الحجوزات</h2>
+                <h2 class="page-title" id="pageTitle">لوحة التحكم الرئيسية</h2>
                 <div class="user-info">
                     <span style="color: var(--text-gray);" id="loggedInUser"><i class="fas fa-user-circle"></i> جاري التحميل...</span>
                 </div>
@@ -87,8 +88,54 @@
 
             <div class="content-body">
                 
+                <!-- Section: Admin Home -->
+                <section id="homeViewer">
+                    <div class="stats-grid">
+                        <div class="stat-card">
+                            <div class="stat-info">
+                                <h4>أيام التقويم الموثقة</h4>
+                                <h2 id="homeDaysCount">358</h2>
+                            </div>
+                            <div class="stat-icon" style="color: #315f66;"><i class="fas fa-calendar-day"></i></div>
+                        </div>
+                        <div class="stat-card">
+                            <div class="stat-info">
+                                <h4>المناسبات الدينية</h4>
+                                <h2 id="homeOccasionsCount">108</h2>
+                            </div>
+                            <div class="stat-icon" style="color: #315f66;"><i class="fas fa-star"></i></div>
+                        </div>
+                        <div class="stat-card">
+                            <div class="stat-info">
+                                <h4>الحجوزات المسجلة</h4>
+                                <h2 id="homeBookingsCount">--</h2>
+                            </div>
+                            <div class="stat-icon" style="color: #315f66;"><i class="fas fa-clipboard-list"></i></div>
+                        </div>
+                    </div>
+
+                    <!-- Modern Action Cards Grid -->
+                    <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); gap: 20px; margin-bottom: 30px;">
+                        <div class="card-panel" style="margin-bottom: 0; cursor: pointer; text-align: center; padding: 30px;" onclick="showSection('prayerSettingsViewer')">
+                            <span style="font-size: 2.5rem; display: block; margin-bottom: 10px;">📅</span>
+                            <h3 style="color: var(--primary); font-weight: 700; margin-bottom: 8px;">ضبط الشهور الهجرية والأوقات</h3>
+                            <p style="font-size: 0.85rem; color: var(--text-gray);">تعديل إزاحة التقويم الهجري (تعديل الرؤية) لكامل الموقع</p>
+                        </div>
+                        <div class="card-panel" style="margin-bottom: 0; cursor: pointer; text-align: center; padding: 30px;" onclick="showSection('occasionsViewer')">
+                            <span style="font-size: 2.5rem; display: block; margin-bottom: 10px;">🌟</span>
+                            <h3 style="color: var(--primary); font-weight: 700; margin-bottom: 8px;">إدارة المناسبات الدينية</h3>
+                            <p style="font-size: 0.85rem; color: var(--text-gray);">إضافة وتعديل وحذف المناسبات الدينية وتفعيل ظهورها</p>
+                        </div>
+                        <div class="card-panel" style="margin-bottom: 0; cursor: pointer; text-align: center; padding: 30px;" onclick="showSection('bookingsViewer')">
+                            <span style="font-size: 2.5rem; display: block; margin-bottom: 10px;">📋</span>
+                            <h3 style="color: var(--primary); font-weight: 700; margin-bottom: 8px;">إدارة الحجوزات والطلبات</h3>
+                            <p style="font-size: 0.85rem; color: var(--text-gray);">عرض واعتماد طلبات حجز المأتم والخطباء والتبرعات</p>
+                        </div>
+                    </div>
+                </section>
+
                 <!-- Section: Bookings -->
-                <section id="bookingsViewer">
+                <section id="bookingsViewer" style="display: none;">
                     <div class="stats-grid">
                         <div class="stat-card">
                             <div class="stat-info">

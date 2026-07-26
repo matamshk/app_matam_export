@@ -5,17 +5,18 @@
 // --- Authentication Guard ---
 (function() {
     const path = window.location.pathname;
+    const isAdminPage = path.endsWith('dashboard.html');
     const isLogin = path.endsWith('login.html');
     const token = localStorage.getItem('admin_token');
     
-    // If not logged in and not on login page, redirect to login
-    if (!isLogin && !token) {
+    // If not logged in and on admin page, redirect to login
+    if (isAdminPage && !token) {
         window.location.replace('login.html');
     }
     
-    // If logged in and on login page, redirect to main page
+    // If logged in and on login page, redirect to admin dashboard
     if (isLogin && token) {
-        window.location.replace('index.html');
+        window.location.replace('dashboard.html');
     }
 })();
 

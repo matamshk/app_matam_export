@@ -133,7 +133,7 @@ function showBookingsReminder(force = false) {
 
 function showSection(sectionId) {
     // Hide all
-    ['bookingsViewer', 'contributionsViewer', 'reportsViewer', 'usersViewer', 'occasionsViewer', 'prayerSettingsViewer', 'settingsViewer'].forEach(id => {
+    ['homeViewer', 'bookingsViewer', 'contributionsViewer', 'reportsViewer', 'usersViewer', 'occasionsViewer', 'prayerSettingsViewer', 'settingsViewer'].forEach(id => {
         const el = document.getElementById(id);
         if (el) el.style.display = 'none';
     });
@@ -142,10 +142,15 @@ function showSection(sectionId) {
     document.querySelectorAll('.sidebar-menu a').forEach(a => a.classList.remove('active'));
     
     // Show selected
-    document.getElementById(sectionId).style.display = 'block';
-    event.currentTarget.classList.add('active');
+    const targetEl = document.getElementById(sectionId);
+    if (targetEl) targetEl.style.display = 'block';
+    
+    // Set active link in sidebar
+    const link = document.querySelector(`.sidebar-menu a[onclick*="${sectionId}"]`);
+    if (link) link.classList.add('active');
 
     const titles = {
+        'homeViewer': 'لوحة التحكم الرئيسية',
         'bookingsViewer': 'إدارة الحجوزات',
         'contributionsViewer': 'مساهمات المرحومين',
         'reportsViewer': 'التقارير المتقدمة',
@@ -154,7 +159,7 @@ function showSection(sectionId) {
         'prayerSettingsViewer': 'إعدادات الصلاة',
         'settingsViewer': 'إعدادات النظام'
     };
-    document.getElementById('pageTitle').textContent = titles[sectionId];
+    document.getElementById('pageTitle').textContent = titles[sectionId] || 'لوحة التحكم';
 
     if (sectionId === 'bookingsViewer') {
         showBookingsReminder();
@@ -170,6 +175,14 @@ async function loadDashboardData() {
         allBookingsCache = db.bookings || [];
         allContributionsCache = db.contributions || [];
         
+        // Update home stats
+        const homeDays = document.getElementById('homeDaysCount');
+        const homeOccasions = document.getElementById('homeOccasionsCount');
+        const homeBookings = document.getElementById('homeBookingsCount');
+        if (homeDays) homeDays.textContent = "358";
+        if (homeOccasions) homeOccasions.textContent = 108 + (db.custom_occasions || []).length;
+        if (homeBookings) homeBookings.textContent = allBookingsCache.length;
+
         renderBookingsTable(allBookingsCache);
         renderContributionsTable(allContributionsCache);
         generateReport();

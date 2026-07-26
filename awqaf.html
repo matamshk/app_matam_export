@@ -608,7 +608,17 @@
                 const adjustedHijriDay = originalHijriDay + hijri_offset;
                 
                 // Find occasion
-                const dayOccasion = monthData.occasions.find(o => o.hijriDay === adjustedHijriDay);
+                let dayOccasion = monthData.occasions.find(o => o.hijriDay === adjustedHijriDay);
+                if (!dayOccasion) {
+                    const customOccasions = JSON.parse(localStorage.getItem('custom_occasions') || '[]');
+                    const custom = customOccasions.find(o => o.hijri && o.hijri.month === selectedMonth && o.hijri.day === adjustedHijriDay);
+                    if (custom) {
+                        dayOccasion = {
+                            title: custom.title,
+                            eventType: custom.type === 'sad' ? 'MARTYRDOM' : 'BIRTH'
+                        };
+                    }
+                }
 
                 let marriageColor = "";
                 if (day.marriageCode === "✓") marriageColor = "color: #16a34a; font-weight: bold;";
@@ -640,7 +650,17 @@
                 const isToday = day.gregorianDate === bhTime.dateString;
                 const originalHijriDay = day.hijriDay;
                 const adjustedHijriDay = originalHijriDay + hijri_offset;
-                const dayOccasion = monthData.occasions.find(o => o.hijriDay === adjustedHijriDay);
+                let dayOccasion = monthData.occasions.find(o => o.hijriDay === adjustedHijriDay);
+                if (!dayOccasion) {
+                    const customOccasions = JSON.parse(localStorage.getItem('custom_occasions') || '[]');
+                    const custom = customOccasions.find(o => o.hijri && o.hijri.month === selectedMonth && o.hijri.day === adjustedHijriDay);
+                    if (custom) {
+                        dayOccasion = {
+                            title: custom.title,
+                            eventType: custom.type === 'sad' ? 'MARTYRDOM' : 'BIRTH'
+                        };
+                    }
+                }
 
                 mobileHTML += `
                     <div class="mobile-day-card" style="${isToday ? 'border-color: var(--gold-primary); background: rgba(212,175,55,0.04);' : ''}">

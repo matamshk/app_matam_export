@@ -1,17 +1,17 @@
 @import url('https://fonts.googleapis.com/css2?family=Tajawal:wght@400;500;700;800&display=swap');
 
 :root {
-    --primary: #1E3C72;
-    --primary-dark: #112240;
-    --gold: #D4AF37;
-    --bg-light: #f4f6f9;
+    --primary: #315F66;
+    --primary-dark: #234A50;
+    --gold: #B79A5B;
+    --bg-light: #F8F9F7;
     --card-bg: #ffffff;
-    --text-dark: #2c3e50;
-    --text-gray: #7f8c8d;
-    --success: #2ecc71;
-    --danger: #e74c3c;
-    --warning: #f1c40f;
-    --border: #e0e6ed;
+    --text-dark: #333333;
+    --text-gray: #666666;
+    --success: #16a34a;
+    --danger: #dc2626;
+    --warning: #d97706;
+    --border: rgba(49, 95, 102, 0.15);
 }
 
 body, html {
@@ -172,7 +172,7 @@ body, html {
     width: 50px;
     height: 50px;
     border-radius: 50%;
-    background: rgba(30, 60, 114, 0.1);
+    background: rgba(49, 95, 102, 0.1);
     color: var(--primary);
     display: flex;
     align-items: center;
