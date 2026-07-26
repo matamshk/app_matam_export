@@ -48,3 +48,4 @@ next-env.d.ts
 /dev.db-shm
 /dev.db-wal
 /legacy-python/service-account.json
+/service-account.json

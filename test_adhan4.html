@@ -1,0 +1,21 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <script src="js/adhan_fixed.js"></script>
+</head>
+<body>
+    <div id="output"></div>
+    <script>
+        const coordinates = new adhan.Coordinates(26.2285, 50.5860);
+        const params = adhan.CalculationMethod.MuslimWorldLeague(); // MWL uses 18 degrees Fajr
+        const date = new Date('2026-04-30'); // fixed date to ensure consistency
+        const times = new adhan.PrayerTimes(coordinates, date, params);
+        
+        const out = document.getElementById('output');
+        out.innerHTML += "<p>Fajr: " + times.fajr.toString() + "</p>";
+        out.innerHTML += "<p>Sunrise: " + times.sunrise.toString() + "</p>";
+        out.innerHTML += "<p>Dhuhr: " + times.dhuhr.toString() + "</p>";
+        out.innerHTML += "<p>Maghrib (Sunset): " + times.maghrib.toString() + "</p>";
+    </script>
+</body>
+</html>

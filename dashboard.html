@@ -1,0 +1,595 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>لوحة التحكم - بوابة المأتم</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    <link rel="stylesheet" href="css/admin.css">
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"></script>
+    <style>
+        .report-controls {
+            background: rgba(255,255,255,0.05);
+            padding: 20px;
+            border-radius: 12px;
+            margin-bottom: 20px;
+            display: flex;
+            gap: 15px;
+            flex-wrap: wrap;
+            align-items: flex-end;
+            border: 1px solid var(--primary-color);
+        }
+        .btn-view { background: rgba(212,175,55,0.1); color: var(--primary-color); border: 1px solid var(--primary-color); padding: 6px 12px; border-radius: 4px; cursor: pointer; }
+        .btn-edit { background: rgba(23, 162, 184, 0.1); color: #17a2b8; border: 1px solid #17a2b8; padding: 6px 12px; border-radius: 4px; cursor: pointer; }
+        .btn-delete { background: rgba(220, 53, 69, 0.1); color: #dc3545; border: 1px solid #dc3545; padding: 6px 12px; border-radius: 4px; cursor: pointer; }
+        
+        .modal-overlay {
+            position: fixed; top: 0; left: 0; width: 100%; height: 100%;
+            background: rgba(0,0,0,0.85); z-index: 9999;
+            display: none; justify-content: center; align-items: center; padding: 20px;
+        }
+        .modal-box {
+            background: var(--bg-card); border-radius: 12px; padding: 30px; width: 100%;
+            max-width: 500px; max-height: 90vh; overflow-y: auto; text-align: right;
+            border: 1px solid var(--primary-color);
+        }
+        
+        @media print {
+            body:not(.printing-modal) .sidebar, 
+            body:not(.printing-modal) .top-header,
+            body:not(.printing-modal) .report-controls,
+            body:not(.printing-modal) .action-btns { display: none !important; }
+            body:not(.printing-modal) .main-content { margin: 0; padding: 0; }
+        }
+    </style>
+</head>
+<body>
+
+    <!-- Loader -->
+    <div id="authLoader" class="loader-overlay">
+        <i class="fas fa-circle-notch fa-spin"></i>
+        <h3>جاري التحقق من الصلاحيات...</h3>
+    </div>
+
+    <div class="dashboard-container" style="display: none;" id="mainDashboard">
+        
+        <!-- Sidebar -->
+        <aside class="sidebar">
+            <div class="sidebar-header">
+                <i class="fas fa-shield-alt"></i>
+                <h3>لوحة الإدارة</h3>
+            </div>
+            
+            <ul class="sidebar-menu">
+                <li><a href="#" class="active" onclick="showSection('bookingsViewer')"><i class="fas fa-book"></i> إدارة الحجوزات</a></li>
+                <li id="menu-contributions" style="display:none;"><a href="#" onclick="showSection('contributionsViewer')"><i class="fas fa-hand-holding-heart"></i> مساهمات المرحومين</a></li>
+                <li id="menu-reports" style="display:none;"><a href="#" onclick="showSection('reportsViewer')"><i class="fas fa-chart-bar"></i> التقارير</a></li>
+                <li id="menu-users" style="display:none;"><a href="#" onclick="showSection('usersViewer')"><i class="fas fa-users"></i> إدارة المستخدمين</a></li>
+                <li id="menu-occasions"><a href="#" onclick="showSection('occasionsViewer')"><i class="fas fa-calendar-alt"></i> المناسبات</a></li>
+                <li id="menu-prayer-settings" style="display:none;"><a href="#" onclick="showSection('prayerSettingsViewer')"><i class="fas fa-mosque"></i> إعدادات الصلاة</a></li>
+                <li id="menu-settings" style="display:none;"><a href="#" onclick="showSection('settingsViewer')"><i class="fas fa-cogs"></i> الإعدادات العامة</a></li>
+                <li><a href="index.html" target="_blank"><i class="fas fa-external-link-alt"></i> عرض الموقع</a></li>
+            </ul>
+
+            <div class="sidebar-footer">
+                <button class="logout-btn" onclick="logout()"><i class="fas fa-sign-out-alt"></i> تسجيل الخروج</button>
+            </div>
+        </aside>
+
+        <!-- Main Content -->
+        <main class="main-content">
+            <header class="top-header">
+                <h2 class="page-title" id="pageTitle">إدارة الحجوزات</h2>
+                <div class="user-info">
+                    <span style="color: var(--text-gray);" id="loggedInUser"><i class="fas fa-user-circle"></i> جاري التحميل...</span>
+                </div>
+            </header>
+
+            <div class="content-body">
+                
+                <!-- Section: Bookings -->
+                <section id="bookingsViewer">
+                    <div class="stats-grid">
+                        <div class="stat-card">
+                            <div class="stat-info">
+                                <h4>إجمالي الحجوزات</h4>
+                                <h2 id="statTotalBooks">0</h2>
+                            </div>
+                            <div class="stat-icon"><i class="fas fa-list-alt"></i></div>
+                        </div>
+                        <div class="stat-card">
+                            <div class="stat-info">
+                                <h4>قيد الانتظار</h4>
+                                <h2 id="statPendingBooks">0</h2>
+                            </div>
+                            <div class="stat-icon" style="color: var(--warning); background: rgba(241, 196, 15, 0.1);"><i class="fas fa-clock"></i></div>
+                        </div>
+                        <div class="stat-card">
+                            <div class="stat-info">
+                                <h4>مؤكدة</h4>
+                                <h2 id="statApprovedBooks">0</h2>
+                            </div>
+                            <div class="stat-icon" style="color: var(--success); background: rgba(46, 204, 113, 0.1);"><i class="fas fa-check-circle"></i></div>
+                        </div>
+                    </div>
+
+                    <div class="card-panel">
+                        <div class="card-header">
+                            <h3>أحدث الطلبات</h3>
+                            <div style="display: flex; gap: 10px;">
+                                <button class="btn-primary" style="background: var(--primary-color); border-color: var(--primary-color);" onclick="showBookingsReminder(true)"><i class="fas fa-bell"></i> تذكير المتابعة</button>
+                                <button class="btn-primary" onclick="loadDashboardData()"><i class="fas fa-sync"></i> تحديث</button>
+                            </div>
+                        </div>
+                        <div style="overflow-x: auto;">
+                            <table>
+                                <thead>
+                                    <tr>
+                                        <th>رقم الطلب</th>
+                                        <th>الاسم</th>
+                                        <th>الهاتف</th>
+                                        <th>التاريخ</th>
+                                        <th>النوع</th>
+                                        <th>الحالة</th>
+                                        <th>إجراءات</th>
+                                    </tr>
+                                </thead>
+                                <tbody id="bookingsTableBody">
+                                    <tr><td colspan="7" style="text-align: center;">جاري التحميل...</td></tr>
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                </section>
+
+                <!-- Section: Contributions -->
+                <section id="contributionsViewer" style="display: none;">
+                    <div class="card-panel">
+                        <div class="card-header">
+                            <h3>طلبات مساهمة المرحومين</h3>
+                            <button class="btn-primary" onclick="loadDashboardData()"><i class="fas fa-sync"></i> تحديث</button>
+                        </div>
+                        <div style="overflow-x: auto;">
+                            <table>
+                                <thead>
+                                    <tr>
+                                        <th>التاريخ</th>
+                                        <th>المرسل</th>
+                                        <th>الهاتف</th>
+                                        <th>عدد الأسماء</th>
+                                        <th>المبلغ</th>
+                                        <th>الحالة</th>
+                                        <th>إجراءات</th>
+                                    </tr>
+                                </thead>
+                                <tbody id="contributionsTableBody">
+                                    <tr><td colspan="7" style="text-align: center;">جاري التحميل...</td></tr>
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                </section>
+
+                <!-- Section: Advanced Reports -->
+                <section id="reportsViewer" style="display: none;">
+                    <div class="report-controls">
+                        <div style="flex: 1; min-width: 150px;">
+                            <label>نوع الحجز</label>
+                            <select id="reportTypeFilter">
+                                <option value="all">الكل</option>
+                                <option value="مأتم">حجز مأتم</option>
+                                <option value="خطيب">حجز خطيب</option>
+                                <option value="احتفالات">احتفالات</option>
+                            </select>
+                        </div>
+                        <div style="flex: 1; min-width: 150px;">
+                            <label>من تاريخ</label>
+                            <input type="date" id="dateFrom">
+                        </div>
+                        <div style="flex: 1; min-width: 150px;">
+                            <label>إلى تاريخ</label>
+                            <input type="date" id="dateTo">
+                        </div>
+                        <div style="display: flex; gap: 10px;">
+                            <button onclick="generateReport()" class="btn-primary" style="width:auto;"><i class="fas fa-filter"></i> تصفية</button>
+                            <button onclick="window.print()" class="btn-primary" style="background: #e74c3c; width:auto;"><i class="fas fa-file-pdf"></i> حفظ PDF</button>
+                            <button onclick="exportToExcel()" class="btn-primary" style="background: #28a745; width:auto;"><i class="fas fa-file-excel"></i> حفظ Excel</button>
+                        </div>
+                    </div>
+
+                    <div class="card-panel">
+                        <div class="card-header">
+                            <h3>نتائج التقرير</h3>
+                        </div>
+                        <div style="overflow-x: auto;">
+                            <table id="reportTable">
+                                <thead>
+                                    <tr>
+                                        <th>رقم الحجز</th>
+                                        <th>التاريخ</th>
+                                        <th>النوع</th>
+                                        <th>الاسم</th>
+                                        <th>الهاتف</th>
+                                        <th>الحالة</th>
+                                        <th class="action-btns">الإجراءات (عرض/تعديل/حذف)</th>
+                                    </tr>
+                                </thead>
+                                <tbody id="reportTableBody">
+                                    <tr><td colspan="7" style="text-align: center;">جاري التحميل...</td></tr>
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                </section>
+
+                <!-- Section: Prayer Settings -->
+                <section id="prayerSettingsViewer" style="display: none;">
+                    <div class="card-panel">
+                        <div class="card-header">
+                            <h3>تعديل التقويم الهجري</h3>
+                        </div>
+                        <p style="color: var(--text-gray); margin-bottom: 20px;">يمكنك تعديل فارق الأيام إذا كان التقويم الهجري العالمي يختلف عن الرؤية الشرعية المحلية.</p>
+                        <form id="offsetForm" onsubmit="saveOffset(event)">
+                            <div class="form-group" style="max-width: 300px; margin-bottom: 20px;">
+                                <label>مقدار الإزاحة (بالأيام)</label>
+                                <div style="display: flex; gap: 10px; align-items: center; margin-top: 5px;">
+                                    <button type="button" class="btn-primary" style="background: rgba(255,255,255,0.1); color: var(--primary-color); border: 1px solid var(--primary-color); width: auto; padding: 5px 15px;" onclick="adjustLocalOffset(-1)">-1 يوم</button>
+                                    <input type="number" id="hijriOffsetInput" value="0" step="1" style="flex: 1; text-align: center; font-size: 1.2rem; font-weight: bold; background: rgba(0,0,0,0.3); border: 1px solid rgba(255,255,255,0.1); color: #fff; padding: 8px; border-radius: 8px;">
+                                    <button type="button" class="btn-primary" style="background: rgba(255,255,255,0.1); color: var(--primary-color); border: 1px solid var(--primary-color); width: auto; padding: 5px 15px;" onclick="adjustLocalOffset(1)">+1 يوم</button>
+                                </div>
+                            </div>
+                            <button type="submit" class="btn-primary" style="width: auto;"><i class="fas fa-save"></i> حفظ الإزاحة</button>
+                        </form>
+                        <script>
+                            function adjustLocalOffset(delta) {
+                                const input = document.getElementById('hijriOffsetInput');
+                                input.value = parseInt(input.value || 0) + delta;
+                            }
+                        </script>
+                    </div>
+
+                    <div class="card-panel">
+                        <div class="card-header">
+                            <h3>التحكم في ظهور أوقات الصلاة</h3>
+                        </div>
+                        <p style="color: var(--text-gray); margin-bottom: 20px;">اختر الأوقات التي ترغب في إخفائها من صفحة أوقات الصلاة والتقويم الشهري.</p>
+                        <form id="prayerSettingsForm" onsubmit="savePrayerSettings(event)">
+                            <div class="form-group" style="margin-bottom: 20px;">
+                                <div style="display: flex; gap: 15px; flex-wrap: wrap;">
+                                    <label style="display: flex; align-items: center; gap: 5px; cursor: pointer;"><input type="checkbox" name="hiddenPrayers" value="imsak"> الإمساك</label>
+                                    <label style="display: flex; align-items: center; gap: 5px; cursor: pointer;"><input type="checkbox" name="hiddenPrayers" value="fajr"> الفجر</label>
+                                    <label style="display: flex; align-items: center; gap: 5px; cursor: pointer;"><input type="checkbox" name="hiddenPrayers" value="sunrise"> الشروق</label>
+                                    <label style="display: flex; align-items: center; gap: 5px; cursor: pointer;"><input type="checkbox" name="hiddenPrayers" value="dhuhr"> الظهر</label>
+                                    <label style="display: flex; align-items: center; gap: 5px; cursor: pointer;"><input type="checkbox" name="hiddenPrayers" value="asr"> العصر</label>
+                                    <label style="display: flex; align-items: center; gap: 5px; cursor: pointer;"><input type="checkbox" name="hiddenPrayers" value="maghrib"> المغرب</label>
+                                    <label style="display: flex; align-items: center; gap: 5px; cursor: pointer;"><input type="checkbox" name="hiddenPrayers" value="isha"> العشاء</label>
+                                    <label style="display: flex; align-items: center; gap: 5px; cursor: pointer;"><input type="checkbox" name="hiddenPrayers" value="midnight"> منتصف الليل</label>
+                                </div>
+                            </div>
+                            <button type="submit" class="btn-primary" style="width: auto;"><i class="fas fa-save"></i> حفظ إعدادات الصلاة</button>
+                        </form>
+                    </div>
+
+                    <div class="card-panel">
+                        <div class="card-header">
+                            <h3>جدول مواقيت الصلاة المرجعي</h3>
+                        </div>
+                        <p style="color: var(--text-gray); margin-bottom: 20px;">يمكنك رفع جدول مواقيت الصلاة المعتمد (كصورة أو ملف PDF) ليعرض للمستخدمين كمرجع رسمي، مع خيارات التحكم بمواقيت الموقع.</p>
+                        <form id="prayerReferenceForm" onsubmit="savePrayerReference(event)">
+                            <div class="form-group" style="max-width: 400px; margin-bottom: 20px;">
+                                <label>ملف الجدول (PDF, PNG, JPEG)</label>
+                                <input type="file" id="prayerRefFile" accept=".pdf,image/png,image/jpeg" style="margin-top: 5px; background: rgba(0,0,0,0.2); padding: 8px; border-radius: 8px; border: 1px solid rgba(255,255,255,0.1); color: #fff; width: 100%;">
+                                <div id="currentPrayerRefContainer" style="margin-top: 8px; display: none;">
+                                    <span style="font-size: 0.9rem; color: var(--text-gray);">الملف الحالي:</span>
+                                    <a id="currentPrayerRefLink" href="#" target="_blank" style="color: var(--primary-color); text-decoration: underline; margin-right: 5px;">مشاهدة الملف الحالي</a>
+                                </div>
+                            </div>
+                            
+                            <div class="form-group" style="margin-bottom: 20px;">
+                                <label style="display: block; margin-bottom: 10px; font-weight: bold; color: var(--primary-color);">خيارات التحديث وتأثير الملف على الموقع:</label>
+                                <div style="display: flex; flex-direction: column; gap: 10px;">
+                                    <label style="display: flex; align-items: center; gap: 8px; cursor: pointer;">
+                                        <input type="radio" name="refUpdateOption" value="download_only" checked>
+                                        <span>اعتماد الملف كجدول مصور معتمد للتحميل فقط (دون تغيير الحسابات التلقائية للموقع)</span>
+                                    </label>
+                                    <label style="display: flex; align-items: center; gap: 8px; cursor: pointer;">
+                                        <input type="radio" name="refUpdateOption" value="apply_offsets">
+                                        <span>تعديل وحفظ إزاحة التقويم الهجري وأوقات الصلوات يدوياً لمطابقة الجدول المرفق</span>
+                                    </label>
+                                </div>
+                            </div>
+                            
+                            <button type="submit" class="btn-primary" style="width: auto;"><i class="fas fa-upload"></i> رفع وحفظ الإعدادات</button>
+                        </form>
+                    </div>
+                </section>
+
+                <!-- Section: Settings -->
+                <section id="settingsViewer" style="display: none;">
+                    <div class="card-panel">
+                        <div class="card-header">
+                            <h3>الإعدادات العامة للموقع</h3>
+                        </div>
+                        <p style="color: var(--text-gray); margin-bottom: 20px;">إدارة معلومات التواصل والروابط الخارجية الأساسية.</p>
+                        <form id="generalSettingsForm" onsubmit="saveGeneralSettings(event)">
+                            <div class="form-group" style="max-width: 300px; margin-bottom: 20px;">
+                                <label>رقم الواتساب (للتواصل والحجوزات)</label>
+                                <input type="text" id="whatsappPhoneInput" placeholder="مثال: 97330000000" required>
+                                <small style="display:block; margin-top:5px; color:#888;">الرجاء إدخال الرقم مع رمز الدولة بدون أصفار إضافية أو علامة +</small>
+                            </div>
+                            
+                            <div class="form-group" style="max-width: 500px; margin-bottom: 20px;">
+                                <label>رابط خدمة جوجل لمزامنة المساهمات (Google Web App URL)</label>
+                                <input type="url" id="googleWebAppUrlInput" placeholder="https://script.google.com/macros/s/.../exec">
+                                <small style="display:block; margin-top:5px; color:#888;">الرابط السحابي لمزامنة مساهمات المرحومين مع Google Sheet و Google Drive تلقائياً</small>
+                            </div>
+                            
+                            <div class="form-group" style="max-width: 300px; margin-bottom: 20px;">
+                                <label>تسعيرة المساهمة للمرحوم (د.ب)</label>
+                                <input type="number" id="contributionPriceInput" min="1" placeholder="مثال: 5" required>
+                                <small style="display:block; margin-top:5px; color:#888;">المبلغ الذي يتم احتسابه عن كل اسم مرحوم</small>
+                            </div>
+                            
+                            <hr style="border: 1px solid rgba(255,255,255,0.05); margin: 20px 0;">
+                            
+                            <div class="form-group" style="margin-bottom: 20px;">
+                                <label style="font-size: 1.1rem; color: var(--gold-primary); margin-bottom: 10px; display: block;"><i class="fas fa-eye-slash"></i> إخفاء صفحات من الموقع</label>
+                                <div style="display: flex; gap: 15px; flex-wrap: wrap;">
+                                    <label style="display: flex; align-items: center; gap: 5px; cursor: pointer;"><input type="checkbox" name="hiddenPages" value="booking-matem.html"> حجز مأتم</label>
+                                    <label style="display: flex; align-items: center; gap: 5px; cursor: pointer;"><input type="checkbox" name="hiddenPages" value="booking-speaker.html"> حجز خطيب</label>
+                                    <label style="display: flex; align-items: center; gap: 5px; cursor: pointer;"><input type="checkbox" name="hiddenPages" value="celebrations.html"> احتفالات</label>
+                                    <label style="display: flex; align-items: center; gap: 5px; cursor: pointer;"><input type="checkbox" name="hiddenPages" value="occasions.html"> المناسبات</label>
+                                    <label style="display: flex; align-items: center; gap: 5px; cursor: pointer;"><input type="checkbox" name="hiddenPages" value="awqaf.html"> أوقات الصلاة</label>
+                                    <label style="display: flex; align-items: center; gap: 5px; cursor: pointer;"><input type="checkbox" name="hiddenPages" value="contribution.html"> مساهمة للمرحومين</label>
+                                </div>
+                            </div>
+                            
+                            <button type="submit" class="btn-primary"><i class="fas fa-save"></i> حفظ الإعدادات</button>
+                        </form>
+                    </div>
+
+                    <div class="card-panel" style="margin-top: 25px; border: 1px solid rgba(46, 204, 113, 0.3);">
+                        <div class="card-header">
+                            <h3 style="color: #2ecc71;"><i class="fas fa-database"></i> تصدير قاعدة البيانات الكاملة إلى Google Sheets</h3>
+                        </div>
+                        <p style="color: var(--text-gray); margin-bottom: 20px;">تصدير جميع جداول وقوائم الموقع (الحجوزات، مساهمات المرحومين، المناسبات المخصصة، والمستخدمين) كأوراق عمل (Tabs) منفصلة ومنعزلة داخل نفس ملف Google Sheets للاحتفاظ بها كمرجعية دائمة.</p>
+                        <button type="button" class="btn-primary" onclick="exportFullDatabaseToGoogle()" style="background: #2ecc71; color: white; border: none; width: auto;"><i class="fas fa-file-export"></i> بدء تصدير البيانات بالكامل</button>
+                    </div>
+                </section>
+
+                <!-- Section: Occasions -->
+                <section id="occasionsViewer" style="display: none;">
+                    <div class="card-panel">
+                        <div class="card-header">
+                            <h3>إضافة مناسبة جديدة</h3>
+                        </div>
+                        <form id="adminOccasionForm" class="grid-form" onsubmit="saveAdminOccasion(event)">
+                            <div class="form-group">
+                                <label>عنوان المناسبة</label>
+                                <input type="text" id="occTitle" required>
+                            </div>
+                            <div class="form-group">
+                                <label>نوع المناسبة</label>
+                                <select id="occType">
+                                    <option value="religious">ديني (عام)</option>
+                                    <option value="happy">ميلاد / عيد (سعيد)</option>
+                                    <option value="sad">وفاة / استشهاد (حزين)</option>
+                                </select>
+                            </div>
+                            <div class="form-group">
+                                <label>الشهر الهجري</label>
+                                <select id="occMonth">
+                                    <option value="1">محرم</option><option value="2">صفر</option><option value="3">ربيع الأول</option><option value="4">ربيع الآخر</option>
+                                    <option value="5">جمادى الأولى</option><option value="6">جمادى الآخرة</option><option value="7">رجب</option><option value="8">شعبان</option>
+                                    <option value="9">رمضان</option><option value="10">شوال</option><option value="11">ذو القعدة</option><option value="12">ذو الحجة</option>
+                                </select>
+                            </div>
+                            <div class="form-group">
+                                <label>اليوم</label>
+                                <input type="number" id="occDay" min="1" max="30" required>
+                            </div>
+                            <div class="form-group" style="grid-column: 1 / -1;">
+                                <label>وصف إضافي</label>
+                                <textarea id="occDesc" rows="2"></textarea>
+                            </div>
+                            <div class="form-group" style="grid-column: 1 / -1;">
+                                <button type="submit" class="btn-primary" style="width: auto;"><i class="fas fa-plus"></i> إضافة المناسبة للإرشيف</button>
+                            </div>
+                        </form>
+                    </div>
+
+                    <div class="card-panel">
+                        <div class="card-header">
+                            <h3>قائمة المناسبات المخصصة</h3>
+                        </div>
+                        <div style="overflow-x: auto;">
+                            <table>
+                                <thead>
+                                    <tr>
+                                        <th>الشهر</th>
+                                        <th>اليوم</th>
+                                        <th>العنوان</th>
+                                        <th>النوع</th>
+                                    </tr>
+                                </thead>
+                                <tbody id="occasionsTableBody">
+                                    <tr><td colspan="4" style="text-align: center;">جاري التحميل...</td></tr>
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                </section>
+
+                <!-- Section: Users Management -->
+                <section id="usersViewer" style="display: none;">
+                    <div class="card-panel">
+                        <div class="card-header">
+                            <h3>إضافة / تعديل مستخدم</h3>
+                        </div>
+                        <form id="userForm" class="grid-form" onsubmit="saveUserSubmit(event)">
+                            <input type="hidden" id="userIdInput">
+                            <div class="form-group">
+                                <label>اسم المستخدم (للدخول)</label>
+                                <input type="text" id="userUsername" required>
+                            </div>
+                            <div class="form-group">
+                                <label>الاسم الكامل</label>
+                                <input type="text" id="userName" required>
+                            </div>
+                            <div class="form-group">
+                                <label>كلمة المرور</label>
+                                <input type="password" id="userPassword" placeholder="اتركه فارغاً إذا لم ترغب بالتغيير">
+                            </div>
+                            <div class="form-group">
+                                <label>الصلاحية</label>
+                                <select id="userRole" required onchange="togglePermissionsGrid()">
+                                    <option value="manager">مستخدم بصلاحيات مخصصة (Custom Manager)</option>
+                                    <option value="superadmin">مدير عام بتصريح كامل (Super Admin)</option>
+                                </select>
+                            </div>
+                            <div class="form-group" id="permissionsContainer" style="grid-column: 1 / -1; background: rgba(0,0,0,0.2); padding: 15px; border-radius: 8px;">
+                                <label style="margin-bottom: 10px; display: block; color: var(--gold-primary); font-weight: bold;"><i class="fas fa-sliders-h"></i> تخصيص الصلاحيات</label>
+                                <table style="width: 100%; border-collapse: collapse; font-size: 0.9rem;">
+                                    <thead>
+                                        <tr style="border-bottom: 1px solid rgba(255,255,255,0.1);">
+                                            <th style="text-align: right; padding: 8px;">القسم</th>
+                                            <th style="text-align: center; padding: 8px;">لا يوجد وصول</th>
+                                            <th style="text-align: center; padding: 8px;">قراءة فقط</th>
+                                            <th style="text-align: center; padding: 8px;">قراءة وتعديل (كامل)</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody id="permissionsTableBody">
+                                        <!-- Will be populated dynamically by JS, or statically here -->
+                                        <tr style="border-bottom: 1px solid rgba(255,255,255,0.05);">
+                                            <td style="padding: 8px;"><i class="fas fa-book"></i> إدارة الحجوزات</td>
+                                            <td style="text-align: center;"><input type="radio" name="perm_bookings" value="none" checked></td>
+                                            <td style="text-align: center;"><input type="radio" name="perm_bookings" value="read"></td>
+                                            <td style="text-align: center;"><input type="radio" name="perm_bookings" value="write"></td>
+                                        </tr>
+                                        <tr style="border-bottom: 1px solid rgba(255,255,255,0.05);">
+                                            <td style="padding: 8px;"><i class="fas fa-hand-holding-heart"></i> مساهمات المرحومين</td>
+                                            <td style="text-align: center;"><input type="radio" name="perm_contributions" value="none" checked></td>
+                                            <td style="text-align: center;"><input type="radio" name="perm_contributions" value="read"></td>
+                                            <td style="text-align: center;"><input type="radio" name="perm_contributions" value="write"></td>
+                                        </tr>
+                                        <tr style="border-bottom: 1px solid rgba(255,255,255,0.05);">
+                                            <td style="padding: 8px;"><i class="fas fa-chart-bar"></i> التقارير</td>
+                                            <td style="text-align: center;"><input type="radio" name="perm_reports" value="none" checked></td>
+                                            <td style="text-align: center;"><input type="radio" name="perm_reports" value="read"></td>
+                                            <td style="text-align: center;"><input type="radio" name="perm_reports" value="write"></td>
+                                        </tr>
+                                        <tr style="border-bottom: 1px solid rgba(255,255,255,0.05);">
+                                            <td style="padding: 8px;"><i class="fas fa-calendar-alt"></i> المناسبات</td>
+                                            <td style="text-align: center;"><input type="radio" name="perm_occasions" value="none" checked></td>
+                                            <td style="text-align: center;"><input type="radio" name="perm_occasions" value="read"></td>
+                                            <td style="text-align: center;"><input type="radio" name="perm_occasions" value="write"></td>
+                                        </tr>
+                                        <tr style="border-bottom: 1px solid rgba(255,255,255,0.05);">
+                                            <td style="padding: 8px;"><i class="fas fa-mosque"></i> إعدادات الصلاة</td>
+                                            <td style="text-align: center;"><input type="radio" name="perm_prayer" value="none" checked></td>
+                                            <td style="text-align: center;"><input type="radio" name="perm_prayer" value="read"></td>
+                                            <td style="text-align: center;"><input type="radio" name="perm_prayer" value="write"></td>
+                                        </tr>
+                                        <tr style="border-bottom: 1px solid rgba(255,255,255,0.05);">
+                                            <td style="padding: 8px;"><i class="fas fa-cogs"></i> الإعدادات العامة</td>
+                                            <td style="text-align: center;"><input type="radio" name="perm_settings" value="none" checked></td>
+                                            <td style="text-align: center;"><input type="radio" name="perm_settings" value="read"></td>
+                                            <td style="text-align: center;"><input type="radio" name="perm_settings" value="write"></td>
+                                        </tr>
+                                    </tbody>
+                                </table>
+                            </div>
+                            <script>
+                                function togglePermissionsGrid() {
+                                    const role = document.getElementById('userRole').value;
+                                    document.getElementById('permissionsContainer').style.display = (role === 'superadmin') ? 'none' : 'block';
+                                }
+                            </script>
+                            <div class="form-group" style="grid-column: 1 / -1;">
+                                <button type="submit" class="btn-primary" style="width: auto;"><i class="fas fa-save"></i> حفظ بيانات المستخدم</button>
+                                <button type="button" class="btn-primary" style="width: auto; background: #666;" onclick="document.getElementById('userForm').reset(); document.getElementById('userIdInput').value='';">جديد</button>
+                            </div>
+                        </form>
+                    </div>
+
+                    <div class="card-panel">
+                        <div class="card-header">
+                            <h3>قائمة مدراء النظام</h3>
+                        </div>
+                        <div style="overflow-x: auto;">
+                            <table>
+                                <thead>
+                                    <tr>
+                                        <th>اسم المستخدم</th>
+                                        <th>الاسم الكامل</th>
+                                        <th>الصلاحية</th>
+                                        <th>إجراءات</th>
+                                    </tr>
+                                </thead>
+                                <tbody id="usersTableBody">
+                                    <tr><td colspan="4" style="text-align: center;">جاري التحميل...</td></tr>
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                </section>
+
+            </div>
+        </main>
+    </div>
+
+    <!-- Edit Booking Modal -->
+    <div class="modal-overlay" id="editModalOverlay">
+        <div class="modal-box">
+            <h3 style="color: var(--primary-color); margin-bottom: 20px;">تعديل تفاصيل الحجز الأساسية</h3>
+            <form id="editBookingForm" onsubmit="submitEditBooking(event)">
+                <input type="hidden" id="editBookingId">
+                <div class="form-group">
+                    <label>الاسم</label>
+                    <input type="text" id="editName" required>
+                </div>
+                <div class="form-group">
+                    <label>رقم الهاتف</label>
+                    <input type="tel" id="editPhone" required>
+                </div>
+                <div class="form-group">
+                    <label>التاريخ</label>
+                    <input type="date" id="editDate" required>
+                </div>
+                <div style="display: flex; gap: 10px; margin-top: 20px;">
+                    <button type="submit" class="btn-primary" style="flex: 1;"><i class="fas fa-save"></i> حفظ التعديلات</button>
+                    <button type="button" class="btn-primary" style="flex: 1; background: #aaa;" onclick="document.getElementById('editModalOverlay').style.display='none'">إلغاء</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <!-- Full Details View Modal -->
+    <div class="modal-overlay" id="viewModalOverlay">
+        <div class="modal-box" id="viewModalContent" style="max-width: 600px; background: #fff; color: #000;">
+            <!-- Populated dynamically -->
+        </div>
+    </div>
+
+    <!-- Bookings Reminder Modal -->
+    <div class="modal-overlay" id="reminderModalOverlay" style="display: none;">
+        <div class="modal-box" style="max-width: 600px; background: #121212; color: #fff; border: 1.5px solid var(--primary-color); text-align: right; direction: rtl;">
+            <h3 style="color: var(--primary-color); margin-bottom: 15px; display: flex; align-items: center; gap: 10px; font-size: 1.3rem;">
+                <i class="fas fa-bell" style="color: var(--primary-color);"></i>
+                تذكير بمتابعة الحجوزات الأحدث
+            </h3>
+            <p style="font-size: 0.9rem; margin-bottom: 20px; line-height: 1.6; color: #ccc;">
+                يرجى مراجعة وتأكيد سلامة أحدث الحجوزات المذكورة أدناه والمتابعة مع القائمين على إدارتها لضمان التنسيق التام.
+            </p>
+            <div id="reminderBookingsContainer" style="display: flex; flex-direction: column; gap: 12px; max-height: 50vh; overflow-y: auto; margin-bottom: 25px; padding-left: 5px;">
+                <!-- Populated dynamically -->
+            </div>
+            <div style="display: flex; gap: 10px; justify-content: center;">
+                <button type="button" class="btn-primary" style="padding: 10px 40px; cursor: pointer; font-weight: bold;" onclick="document.getElementById('reminderModalOverlay').style.display='none'">فهمت ومتابعة</button>
+            </div>
+        </div>
+    </div>
+
+    <script src="js/admin.js?v=2026"></script>
+</body>
+</html>

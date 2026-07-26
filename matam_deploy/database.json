@@ -1,0 +1,44 @@
+{
+  "bookings": [
+    {
+      "id": 1775353342661,
+      "createdAt": "2026-04-05T01:42:22.661Z",
+      "type": "حجز الخطباء",
+      "details": {
+        "name": "هاني",
+        "phone": "17595063",
+        "date": "2026-04-26",
+        "time": "الصباح",
+        "time_specific": "08:00",
+        "event_type": "مولد",
+        "service": "مولد الرسول الأعظم (ص) والإمام الصادق (ع)"
+      },
+      "date": "2026-04-26",
+      "name": "هاني",
+      "phone": "17595063"
+    }
+  ],
+  "custom_occasions": [],
+  "hijri_offset": -1,
+  "users": [
+    {
+      "id": "superadmin1",
+      "username": "admin",
+      "password": "admin123",
+      "role": "superadmin",
+      "name": "المدير العام"
+    }
+  ],
+  "sessions": {
+    "06cc1842148e4baf8d7a22f5b40e8f96": {
+      "user_id": "superadmin1",
+      "role": "superadmin",
+      "name": "المدير العام"
+    },
+    "bd9f44b7e27f4c94b804f47212c63472": {
+      "user_id": "superadmin1",
+      "role": "superadmin",
+      "name": "المدير العام"
+    }
+  }
+}

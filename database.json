@@ -1,0 +1,299 @@
+{
+  "bookings": [
+    {
+      "name": "سيد عدنان",
+      "notes": "",
+      "status": "pending",
+      "phone": "365224423652244236522442",
+      "date": "60627-02-02",
+      "details": {
+        "service": "عقد قران",
+        "hall": "المأتم بالكامل",
+        "time": "الصباح",
+        "other_services": "",
+        "chairs_count": "",
+        "tables_count": "",
+        "date": "60627-02-02",
+        "phone": "365224423652244236522442",
+        "package": "حجز مع المسرح والتنظيف",
+        "name": "سيد عدنان"
+      },
+      "occasion": "",
+      "id": "1780766474594"
+    },
+    {
+      "name": "Ali HasanAli HasanAli Hasan",
+      "notes": "",
+      "status": "pending",
+      "phone": "332211003322110033221100",
+      "date": "2026-07-28",
+      "details": {
+        "service": "عقد قران",
+        "hall": "الصالة الأرضية",
+        "time": "الظهر",
+        "other_services": "",
+        "chairs_count": "",
+        "tables_count": "",
+        "date": "2026-07-28",
+        "phone": "332211003322110033221100",
+        "package": "حجز كامل يشمل الطاقم والتنظيف والمسرح",
+        "name": "Ali HasanAli HasanAli Hasan"
+      },
+      "occasion": "",
+      "id": "1781347442230"
+    },
+    {
+      "name": "مأتم أبوصيبع",
+      "notes": "",
+      "status": "pending",
+      "phone": "121212112",
+      "date": "2026-07-22",
+      "occasion": "",
+      "id": "1784906538091"
+    },
+    {
+      "name": "Ali Hasan",
+      "notes": "",
+      "status": "pending",
+      "phone": "33221100",
+      "date": "2026-07-20",
+      "details": {
+        "service": "عقد قران",
+        "hall": "الصالة الأرضية",
+        "time": "الصباح",
+        "other_services": "",
+        "chairs_count": "",
+        "tables_count": "",
+        "date": "2026-07-20",
+        "phone": "33221100",
+        "package": "حجز كامل يشمل الطاقم والتنظيف والمسرح",
+        "name": "Ali Hasan"
+      },
+      "occasion": "",
+      "id": "1781346785356"
+    },
+    {
+      "name": "جاسم محمد",
+      "notes": "",
+      "status": "pending",
+      "phone": "36522442",
+      "date": "2026-06-29",
+      "details": {
+        "service": "عقد قران",
+        "hall": "المأتم بالكامل",
+        "time": "الظهر",
+        "other_services": "",
+        "chairs_count": "",
+        "tables_count": "",
+        "date": "2026-06-29",
+        "phone": "36522442",
+        "package": "حجز مع المسرح والتنظيف",
+        "name": "جاسم محمد"
+      },
+      "occasion": "",
+      "id": "1780783280514"
+    },
+    {
+      "name": "أحمد علي",
+      "notes": "",
+      "status": "pending",
+      "phone": "36522442",
+      "date": "2026-06-28",
+      "details": {
+        "service": "عقد قران",
+        "hall": "المأتم بالكامل",
+        "time": "الظهر",
+        "other_services": "",
+        "chairs_count": "",
+        "tables_count": "",
+        "date": "2026-06-28",
+        "phone": "36522442",
+        "package": "حجز مع المسرح والتنظيف",
+        "name": "أحمد علي"
+      },
+      "occasion": "",
+      "id": "1780782917627"
+    },
+    {
+      "name": "hani",
+      "notes": "",
+      "status": "pending",
+      "phone": "36522442",
+      "date": "2026-06-27",
+      "details": {
+        "has_coffee": "نعم",
+        "hall": "الصالة الأرضية",
+        "service": "عقد قران",
+        "other_services": "",
+        "date": "2026-06-27",
+        "tables_count": "",
+        "time": "الصباح",
+        "chairs_count": "",
+        "phone": "36522442",
+        "package": "حجز مع التنظيف",
+        "name": "hani"
+      },
+      "occasion": "",
+      "id": "1780764201874"
+    },
+    {
+      "name": "Hani al mahary",
+      "notes": "",
+      "status": "pending",
+      "phone": "36522442",
+      "date": "2026-06-27",
+      "details": {
+        "event_type": "مولد",
+        "service": "المباهلة وتصدق أمير المؤمنين (ع) بالخاتم",
+        "time": "الصباح",
+        "phone": "36522442",
+        "date": "2026-06-27",
+        "time_specific": "08:45",
+        "name": "Hani al mahary"
+      },
+      "occasion": "",
+      "id": "1780764268720"
+    },
+    {
+      "name": "Ali Hasan",
+      "notes": "",
+      "status": "pending",
+      "phone": "36522442",
+      "date": "2026-06-27",
+      "details": {
+        "service": "عقد قران",
+        "hall": "الصالة العلوية",
+        "time": "الصباح",
+        "other_services": "",
+        "chairs_count": "",
+        "tables_count": "",
+        "date": "2026-06-27",
+        "phone": "36522442",
+        "package": "حجز مع التنظيف",
+        "name": "Ali Hasan"
+      },
+      "occasion": "",
+      "id": "1781348009788"
+    },
+    {
+      "name": "hani",
+      "notes": "",
+      "status": "pending",
+      "phone": "36522442",
+      "date": "2026-04-29",
+      "details": {
+        "has_coffee": "نعم",
+        "hall": "المأتم بالكامل",
+        "service": "محاضرة",
+        "other_services": "",
+        "date": "2026-04-29",
+        "tables_count": "",
+        "time": "الصباح",
+        "chairs_count": "",
+        "phone": "36522442",
+        "package": "حجز مع التنظيف",
+        "name": "hani"
+      },
+      "occasion": "",
+      "id": "1777548010769"
+    }
+  ],
+  "custom_occasions": [],
+  "contributions": [
+    {
+      "status": "pending",
+      "sender_name": "hani",
+      "deceased_list": [
+        {
+          "name": "محمد علي",
+          "photo": "uploads/deceased_0_1780156825_81ab97.jpeg"
+        }
+      ],
+      "date": "30/05/2026",
+      "sender_phone": "36522442",
+      "occasion": "وفيات",
+      "receipt_image": "uploads/receipt_1780156825_ab1f8f.jpeg",
+      "hijri_month": "1",
+      "total_amount": 10,
+      "id": "cont_1780156825262"
+    },
+    {
+      "status": "pending",
+      "sender_name": "محسن علي",
+      "deceased_list": [
+        {
+          "name": "محمد علي ",
+          "photo": "uploads/deceased_0_1780158817_a1f321.jpeg"
+        },
+        {
+          "name": "محسن علي",
+          "photo": "uploads/deceased_1_1780158817_69536b.jpeg"
+        }
+      ],
+      "date": "30/05/2026",
+      "sender_phone": "36522442",
+      "occasion": "عامة",
+      "receipt_image": "uploads/receipt_1780158817_5b2db7.jpeg",
+      "hijri_month": "1",
+      "total_amount": 20,
+      "id": "cont_1780158816746"
+    },
+    {
+      "status": "pending",
+      "sender_name": "hani",
+      "deceased_list": [
+        {
+          "name": "سيد محمد ابرهيم",
+          "photo": "uploads/deceased_0_1780159347_0b9a6c.jpeg"
+        }
+      ],
+      "date": "30/05/2026",
+      "sender_phone": "36522442",
+      "occasion": "وفيات",
+      "receipt_image": "uploads/receipt_1780159347_c75543.jpeg",
+      "hijri_month": "2",
+      "total_amount": 10,
+      "id": "cont_1780159347477"
+    }
+  ],
+  "hijri_offset": 0,
+  "settings": {
+    "hidden_pages": [],
+    "hidden_prayers": [
+      "imsak",
+      "asr",
+      "isha",
+      "midnight"
+    ],
+    "google_webapp_url": "https://script.google.com/macros/s/AKfycbzqaTV-Wc1nLNASCUh9L_MZU2g6QU7GKZXh7hIWmvvKifwaQbeMFi_jYdsLWNkGfAc2eQ/exec",
+    "prayer_reference_option": "apply_offsets",
+    "whatsapp_phone": "97334195510+",
+    "prayer_reference_url": "/uploads/تقويم-مأتم-أبو-صيبع-الشرقي-1448.json",
+    "contribution_price": 10
+  },
+  "users": [
+    {
+      "name": "المدير العام",
+      "username": "admin",
+      "permissions": {},
+      "role": "superadmin",
+      "password": "admin123",
+      "id": "superadmin1"
+    },
+    {
+      "name": "hani almahary",
+      "username": "hani",
+      "permissions": {},
+      "role": "manager",
+      "password": "hani198161",
+      "id": "user_3d3b7939"
+    }
+  ],
+  "sessions": {
+    "300c941bd9594bd599bfea87b44aa0d9": {
+      "role": "superadmin",
+      "user_id": "superadmin1",
+      "name": "المدير العام"
+    }
+  }
+}
