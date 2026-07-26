@@ -18,7 +18,7 @@
             --emerald-dark: #112240; /* Blue Dark */
             --gold-primary: #B79A5B;
             --gold-light: #D4AF37;
-            --bg-page: #F8F9F7;
+            --bg-page: #FDFCF8; /* Beige Background matching Homepage */
         }
 
         body {
@@ -73,8 +73,8 @@
         }
 
         .prayer-card-item {
-            background: rgba(49, 95, 102, 0.03);
-            border: 1px solid rgba(49, 95, 102, 0.08);
+            background: rgba(30, 60, 114, 0.03);
+            border: 1px solid rgba(30, 60, 114, 0.08);
             border-radius: 12px;
             padding: 20px;
             text-align: center;
@@ -221,7 +221,7 @@
         }
 
         th {
-            background: rgba(49, 95, 102, 0.05);
+            background: rgba(30, 60, 114, 0.05);
             color: var(--emerald-dark);
             font-weight: 700;
             padding: 12px 10px;
@@ -235,7 +235,7 @@
         }
 
         tr:hover td {
-            background: rgba(49, 95, 102, 0.02);
+            background: rgba(30, 60, 114, 0.02);
         }
 
         .today-row td {
@@ -247,7 +247,7 @@
         }
 
         .friday-row td {
-            background: rgba(49, 95, 102, 0.02);
+            background: rgba(30, 60, 114, 0.02);
         }
 
         /* Mobile Cards layout */
@@ -542,10 +542,29 @@
             });
 
             // Set current Hijri month based on today
-            const today = new Date();
-            // Estimate current month from Gregorian if needed
-            selectedMonth = 1; // Default Moharram for 1448
+            const bhTime = getBahrainTime();
+            let todayMonth = 1;
+            let todayYear = 1448;
+            
+            // Try converting current date to UmAlQura Hijri
+            try {
+                const parts = new Intl.DateTimeFormat('en-u-ca-islamic-umalqura', { year: 'numeric', month: 'numeric' }).formatToParts(new Date());
+                todayYear = parseInt(parts.find(p => p.type === 'year').value);
+                todayMonth = parseInt(parts.find(p => p.type === 'month').value);
+            } catch(e) {}
+
+            selectedMonth = todayMonth;
+            selectedYear = todayYear;
+            
+            // Verify if Year exists in select dropdown, otherwise fallback to 1448
+            const yearSelect = document.getElementById('yearSelect');
+            const yearExists = Array.from(yearSelect.options).some(opt => parseInt(opt.value) === selectedYear);
+            if (!yearExists) {
+                selectedYear = 1448;
+            }
+            
             monthSelect.value = selectedMonth;
+            yearSelect.value = selectedYear;
 
             // Load structured JSON file
             try {
@@ -759,7 +778,7 @@
                             <span>الزواج: <strong>${day.marriageCode || "--"}</strong></span>
                             ${day.moonStatus ? `<span style="color: #7c3aed;">🌙 ${day.moonStatus}</span>` : ""}
                         </div>
-                        ${dayOccasion ? `<div style="background: rgba(49, 95, 102, 0.05); color: var(--emerald-primary); font-weight: bold; font-size: 0.75rem; text-align: center; padding: 6px; border-radius: 6px; margin-top: 8px;">🌟 ${dayOccasion.title}</div>` : ""}
+                        ${dayOccasion ? `<div style="background: rgba(30, 60, 114, 0.05); color: var(--emerald-primary); font-weight: bold; font-size: 0.75rem; text-align: center; padding: 6px; border-radius: 6px; margin-top: 8px;">🌟 ${dayOccasion.title}</div>` : ""}
                     </div>
                 `;
             });
