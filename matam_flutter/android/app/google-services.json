@@ -1,0 +1,29 @@
+{
+  "project_info": {
+    "project_number": "955333650474",
+    "project_id": "app-matam",
+    "storage_bucket": "app-matam.firebasestorage.app"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:955333650474:android:171fa634b06e9f47267b53",
+        "android_client_info": {
+          "package_name": "com.example.matam_app"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyAXiTP4zxkXPuj8CVP27eSXB-AANro0ir0"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}

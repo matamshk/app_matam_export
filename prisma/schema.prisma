@@ -1,0 +1,134 @@
+datasource db {
+  provider = "sqlite"
+}
+
+generator client {
+  provider        = "prisma-client-js"
+  previewFeatures = ["driverAdapters"]
+}
+
+model User {
+  id           String     @id @default(uuid())
+  username     String     @unique
+  passwordHash String
+  name         String
+  role         String     @default("VIEWER") // SUPER_ADMIN, ADMIN, CALENDAR_MANAGER, EVENT_EDITOR, VIEWER
+  auditLogs    AuditLog[]
+  createdAt    DateTime   @default(now())
+  updatedAt    DateTime   @updatedAt
+}
+
+model Year {
+  hijriYear   Int        @id
+  status      String     @default("DRAFT") // DRAFT, UNDER_REVIEW, PUBLISHED, ARCHIVED
+  dataSource  String     @default("manual") // manual, imported_json, legacy_pdf
+  revision    Int        @default(1)
+  lastUpdated DateTime   @updatedAt
+  months      Month[]
+}
+
+model Month {
+  id             String   @id @default(uuid())
+  monthNumber    Int      // 1 to 12
+  monthNameAr    String   // محرم، صفر ...
+  adjustmentDays Int      @default(0)
+  yearId         Int
+  year           Year     @relation(fields: [yearId], references: [hijriYear], onDelete: Cascade)
+  days           Day[]
+
+  @@unique([yearId, monthNumber])
+}
+
+model Day {
+  id            String   @id @default(uuid())
+  gregorianDate String   // Gregorian Date f.e. "2026-06-17"
+  hijriYear     Int
+  hijriMonth    Int
+  hijriDay      Int
+  dayNameAr     String   // الأربعاء، الخميس...
+  imsak         String?  // HH:mm
+  fajr          String   // HH:mm
+  sunrise       String   // HH:mm
+  dhuhr         String   // HH:mm
+  maghrib       String   // HH:mm
+  moonStatus    String?  // حالة القمر
+  moonDetails   String?  // دخول/خروج العقرب
+  marriageCode  String?  // &, ✓, ×
+  marriageLabel String?
+  notes         String?  // Note details in text format
+  monthId       String
+  month         Month    @relation(fields: [monthId], references: [id], onDelete: Cascade)
+
+  @@index([gregorianDate])
+  @@index([hijriYear, hijriMonth, hijriDay])
+}
+
+model Event {
+  id                String    @id @default(uuid())
+  title             String
+  slug              String    @unique
+  description       String?
+  hijriMonth        Int       // 1 to 12
+  hijriDay          Int       // 1 to 30
+  eventType         String    @default("GENERAL") // BIRTH, MARTYRDOM, DEATH, MAJLIS, ACTIVITY, SEASON, ALERT, GENERAL
+  recurringAnnually Boolean   @default(true)
+  startTime         String?   // HH:mm
+  endTime           String?   // HH:mm
+  image             String?   // URL
+  isPublished       Boolean   @default(true)
+  displayInCalendar Boolean   @default(true)
+  priority          Int       @default(1)
+  createdAt         DateTime  @default(now())
+  updatedAt         DateTime  @updatedAt
+}
+
+model HijriAdjustment {
+  id             String    @id @default(uuid())
+  hijriYear      Int
+  hijriMonth     Int?      // Null if general year adjustment
+  adjustmentDays Int       // -2, -1, 0, 1, 2
+  effectiveFrom  DateTime?
+  reason         String?
+  internalNotes  String?
+  updatedBy      String
+  updatedAt      DateTime  @default(now())
+}
+
+model PrayerTimeAdjustment {
+  id             String   @id @default(uuid())
+  scope          String   // "day" | "month" | "year"
+  hijriYear      Int
+  hijriMonth     Int?
+  gregorianDate  String?
+  prayer         String   // "imsak" | "fajr" | "sunrise" | "dhuhr" | "maghrib"
+  offsetMinutes  Int      // -30 to 30
+  reason         String
+  updatedBy      String
+  updatedAt      DateTime @default(now())
+}
+
+model AuditLog {
+  id        String   @id @default(uuid())
+  userId    String?
+  user      User?    @relation(fields: [userId], references: [id], onDelete: SetNull)
+  username  String
+  action    String
+  ipAddress String?
+  oldValue  String?
+  newValue  String?
+  timestamp DateTime @default(now())
+}
+
+model SiteSettings {
+  id                 String  @id @default("global")
+  whatsappPhone      String  @default("34195510")
+  socialUsername     String  @default("matam_abusaiba")
+  facebookUrl        String?
+  instagramUrl       String?
+  xUrl               String?
+  youtubeUrl         String?
+  telegramUrl        String?
+  tiktokUrl          String?
+  showSourceToPublic Boolean @default(false)
+  printInstructions  String?
+}

@@ -1,0 +1,28 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "title": "CalendarSchema",
+  "type": "object",
+  "properties": {
+    "schemaVersion": { "type": "string" },
+    "organization": {
+      "type": "object",
+      "properties": {
+        "nameAr": { "type": "string" },
+        "nameEn": { "type": "string" },
+        "country": { "type": "string" },
+        "timezone": { "type": "string" }
+      }
+    },
+    "months": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "properties": {
+          "monthNumber": { "type": "integer" },
+          "monthNameAr": { "type": "string" },
+          "days": { "type": "array" }
+        }
+      }
+    }
+  }
+}
