@@ -399,70 +399,40 @@
       ],
       "occasions": [
         {
-          "id": "f90351c1-ec46-4e21-9ed4-231640239d50",
-          "title": "بداٌة السنة الهجرٌة",
+          "id": "occ_1_1_0",
+          "title": "بداية السنة الهجرية",
           "hijriDay": 1,
           "eventType": "GENERAL"
         },
         {
-          "id": "e0e9f0b6-ab60-47f4-bd71-149b84ba8378",
-          "title": "وصول سٌد الشهداء الإمام الحسٌن (ع) إلى كربالء سنة 61هـ",
+          "id": "occ_1_2_1",
+          "title": "وصول سيد الشهداء الإمام الحسين (ع) إلى كربلاء سنة 61هـ",
           "hijriDay": 2,
           "eventType": "GENERAL"
         },
         {
-          "id": "19492fba-f0d7-45e8-b205-30b264d280a2",
-          "title": "دخول فصل الصٌف ٌ 21ونٌو ()6",
-          "hijriDay": 5,
-          "eventType": "GENERAL"
-        },
-        {
-          "id": "2eb4e318-3519-4b62-b7b7-ad4e1d6c23fd",
-          "title": "دخول القمر فً برج العقرب صبح األربعاء الساعة",
-          "hijriDay": 8,
-          "eventType": "GENERAL"
-        },
-        {
-          "id": "0ef5995c-0472-4b9e-b2ef-b89c32a127e8",
-          "title": "القمر فً برج العقرب",
-          "hijriDay": 9,
-          "eventType": "GENERAL"
-        },
-        {
-          "id": "7854b0df-ee3c-4f5a-9762-fe027dc52d62",
-          "title": "ٌوم عاشوراء وشهادة الإمام الحسٌن (ع) وأنصاره سنة61هـ | القمر فً برج العقرب",
+          "id": "occ_1_10_2",
+          "title": "يوم عاشوراء واستشهاد الإمام الحسين (ع) وأنصاره سنة 61هـ",
           "hijriDay": 10,
           "eventType": "MARTYRDOM"
         },
         {
-          "id": "1ad93157-5f46-4ec8-acf8-c5c369dab780",
-          "title": "خروج القمر من برج العقرب لٌلة السبت الساعة",
-          "hijriDay": 11,
-          "eventType": "GENERAL"
-        },
-        {
-          "id": "bc586a7f-8cee-49ef-9f72-6e9bad682180",
-          "title": "دفن شهداء الطف (الحسٌن و أهل بٌته علٌهم السالم) سنة61هـ",
+          "id": "occ_1_13_3",
+          "title": "دفن شهداء الطف: الإمام الحسين وأهل بيته (عليهم السلام) سنة 61هـ",
           "hijriDay": 13,
           "eventType": "GENERAL"
         },
         {
-          "id": "30c5e60f-e8b4-4748-a766-4c38b5d483df",
-          "title": "ذكرى هدم قبة العسكرٌٌن (ع) بسامراء سنة1427هـ",
+          "id": "occ_1_23_4",
+          "title": "ذكرى هدم قبة الإمامين العسكريين (ع) في سامراء سنة 1427هـ",
           "hijriDay": 23,
           "eventType": "GENERAL"
         },
         {
-          "id": "c946dd5d-5133-4d4b-a010-de8eadae8e4a",
-          "title": "ذكرى شهادة الإمام علً بن الحسٌن (ع) سنة 95هـ",
+          "id": "occ_1_25_5",
+          "title": "ذكرى استشهاد الإمام علي بن الحسين زين العابدين (ع) سنة 95هـ",
           "hijriDay": 25,
           "eventType": "MARTYRDOM"
-        },
-        {
-          "id": "6f5f55ae-7f6b-45a8-b973-6e30bee199cd",
-          "title": "تحدٌد القبلة باتجاه الشمس ٌ 16ولٌو( )7الساعة",
-          "hijriDay": 30,
-          "eventType": "GENERAL"
         }
       ]
     },
@@ -864,80 +834,74 @@
       ],
       "occasions": [
         {
-          "id": "717be1b1-e8da-4d03-bf80-d5de09a9f89a",
-          "title": "تحدٌد القبلة باتجاه الشمس ٌ 16ولٌو( )7الساعة",
-          "hijriDay": 1,
-          "eventType": "GENERAL"
-        },
-        {
-          "id": "7a5bcd1a-3495-4ca4-ae67-ebc1c0358c44",
-          "title": "ذكرى شهادة زٌد بن علً بن الحسٌن(ع)121هـ",
+          "id": "occ_2_2_0",
+          "title": "ذكرى استشهاد زيد بن علي بن الحسين (ع) سنة 121هـ",
           "hijriDay": 2,
           "eventType": "MARTYRDOM"
         },
         {
-          "id": "701d33db-0463-40a1-8bb1-9503fce925de",
-          "title": "ذكرى وفاة رقٌة بنت الإمام الحسٌن (ع) سنة 61هـ (على قول)",
+          "id": "occ_2_4_1",
+          "title": "ذكرى وفاة السيدة رقية بنت الإمام الحسين (ع) سنة 61هـ",
           "hijriDay": 4,
-          "eventType": "DEATH"
+          "eventType": "MARTYRDOM"
         },
         {
-          "id": "b01480e3-69fc-4a61-81fa-2f204f4d95de",
-          "title": "ذكرى وفاة رقٌة بنت الإمام الحسٌن (ع) سنة 61هـ",
+          "id": "occ_2_5_2",
+          "title": "ذكرى وفاة السيدة رقية بنت الإمام الحسين (ع) سنة 61هـ",
           "hijriDay": 5,
-          "eventType": "DEATH"
+          "eventType": "MARTYRDOM"
         },
         {
-          "id": "dc38878e-1a84-4bc3-b56f-36048b73cd19",
-          "title": "دخول القمر فً برج العقرب عصر الثالثاء الساعة",
-          "hijriDay": 6,
-          "eventType": "GENERAL"
-        },
-        {
-          "id": "cc0b120b-ff81-4384-9c9e-88269d529522",
-          "title": "ذكرى شهادة الإمام الحسن بن علً الزكً(ع)50هـ | القمر فً برج العقرب",
+          "id": "occ_2_7_3",
+          "title": "ذكرى استشهاد الإمام الحسن بن علي المجتبى (ع) سنة 50هـ",
           "hijriDay": 7,
           "eventType": "MARTYRDOM"
         },
         {
-          "id": "0c4743b8-8a29-40c4-894c-fab1612d9d48",
-          "title": "القمر فً برج العقرب",
-          "hijriDay": 8,
-          "eventType": "GENERAL"
-        },
-        {
-          "id": "baba7f78-8e29-4075-a45e-ce82a93d14e0",
-          "title": "ذكرى ٌوم األربعٌن لشهادة الإمام الحسٌن (ع)",
-          "hijriDay": 20,
+          "id": "occ_2_17_4",
+          "title": "ذكرى استشهاد الإمام علي بن موسى الرضا (ع) سنة 203هـ",
+          "hijriDay": 17,
           "eventType": "MARTYRDOM"
         },
         {
-          "id": "266f8c49-fdf4-449d-9d55-5ea2d5bd055f",
-          "title": "ذكرى وفاة مرٌم بنت عمران (ع)",
-          "hijriDay": 25,
-          "eventType": "DEATH"
+          "id": "occ_2_20_5",
+          "title": "ذكرى أربعينية استشهاد الإمام الحسين (ع)",
+          "hijriDay": 20,
+          "eventType": "GENERAL"
         },
         {
-          "id": "a9691bc9-9de4-4880-a09a-97f6826c2ff0",
-          "title": "ذكرى شهادة ولدي مسلم بن عقٌل (ع)",
+          "id": "occ_2_23_6",
+          "title": "وفاة السيدة فاطمة بنت أسد، والدة الإمام علي (ع)، سنة 4هـ",
+          "hijriDay": 23,
+          "eventType": "MARTYRDOM"
+        },
+        {
+          "id": "occ_2_25_7",
+          "title": "ذكرى وفاة السيدة مريم بنت عمران (ع)",
+          "hijriDay": 25,
+          "eventType": "MARTYRDOM"
+        },
+        {
+          "id": "occ_2_26_8",
+          "title": "ذكرى استشهاد ولدي مسلم بن عقيل (ع)",
           "hijriDay": 26,
           "eventType": "MARTYRDOM"
         },
         {
-          "id": "576625a4-dbf2-4937-b576-0f28bc68ca37",
-          "title": "ذكرى وفاة النبً ٌحٌى (ع)",
+          "id": "occ_2_27_9",
+          "title": "ذكرى وفاة النبي يحيى (ع)",
           "hijriDay": 27,
-          "eventType": "DEATH"
+          "eventType": "MARTYRDOM"
         },
         {
-          "id": "c4a24b78-c36c-479e-a1a2-2abd51c59a60",
-          "title": "ذكرى وفاة النبً محمد (ص) 11هـ",
+          "id": "occ_2_28_10",
+          "title": "ذكرى وفاة النبي محمد (ص) سنة 11هـ",
           "hijriDay": 28,
-          "eventType": "DEATH"
+          "eventType": "MARTYRDOM"
         },
         {
-          "id": "41c3931c-bd53-49f4-8728-b3d1566c12fc",
-          "title": "غصب فاطمة الزهراء (ع)",
+          "id": "occ_2_29_11",
+          "title": "ذكرى غصب حق السيدة فاطمة الزهراء (ع)",
           "hijriDay": 29,
           "eventType": "GENERAL"
         }
@@ -1341,46 +1305,34 @@
       ],
       "occasions": [
         {
-          "id": "27002a2d-1356-4c39-8825-8cf32d52b529",
-          "title": "هجرة الرسول (ص) ومبٌت الإمام علً (ع) 11هـ",
+          "id": "occ_3_1_0",
+          "title": "هجرة الرسول الأكرم (ص) ومبيت الإمام علي (ع) في فراشه سنة 11هـ",
           "hijriDay": 1,
           "eventType": "GENERAL"
         },
         {
-          "id": "a55b8785-a024-4f74-8a54-41c920308f13",
-          "title": "دخول القمر فً برج العقرب لٌلة الثالثاء الساعة",
-          "hijriDay": 4,
-          "eventType": "GENERAL"
-        },
-        {
-          "id": "d7ab7337-6aac-44ea-9ff1-600b853046be",
-          "title": "ذكرى وفاة السٌدة سكٌنة بنت الحسٌن (ع)117هـ | القمر فً برج العقرب",
+          "id": "occ_3_5_1",
+          "title": "ذكرى وفاة السيدة سكينة بنت الإمام الحسين (ع) سنة 117هـ",
           "hijriDay": 5,
-          "eventType": "DEATH"
+          "eventType": "MARTYRDOM"
         },
         {
-          "id": "77c5dad9-ea95-4ba3-b3cd-115f03f6d263",
-          "title": "خروج القمر من برج العقرب صبح الخمٌس الساعة",
-          "hijriDay": 6,
-          "eventType": "GENERAL"
-        },
-        {
-          "id": "c0792e3a-3060-4664-9f32-944133d8b47e",
-          "title": "ذكرى شهادة الإمام الحسن العسكري (ع)260هـ",
+          "id": "occ_3_8_2",
+          "title": "ذكرى استشهاد الإمام الحسن العسكري (ع) سنة 260هـ",
           "hijriDay": 8,
           "eventType": "MARTYRDOM"
         },
         {
-          "id": "e2533c95-756d-471d-aeeb-57389644ef40",
-          "title": "بدء أسبوع الوحدة اإلسالمً",
+          "id": "occ_3_12_3",
+          "title": "بدء أسبوع الوحدة الإسلامية",
           "hijriDay": 12,
           "eventType": "GENERAL"
         },
         {
-          "id": "0fe0b9fa-1b4d-4a46-be35-c5d8f1e37580",
-          "title": "ذكرى مولد النبً (ص) 40قبل البعثة ،ومولد الإمام الصادق (ع) 83هـ",
+          "id": "occ_3_17_4",
+          "title": "ذكرى مولد النبي محمد (ص) قبل البعثة بأربعين سنة، ومولد الإمام جعفر الصادق (ع) سنة 83هـ",
           "hijriDay": 17,
-          "eventType": "GENERAL"
+          "eventType": "BIRTH"
         }
       ]
     },
@@ -1769,52 +1721,22 @@
       ],
       "occasions": [
         {
-          "id": "2bf08a85-0dd0-4c3b-bb44-1ba3e6cf7571",
-          "title": "دخول القمر فً برج العقرب صبح االثنٌن الساعة",
-          "hijriDay": 2,
-          "eventType": "GENERAL"
-        },
-        {
-          "id": "c00de9ba-ebd7-47e8-961e-6aa2ecc288bc",
-          "title": "القمر فً برج العقرب",
-          "hijriDay": 3,
-          "eventType": "GENERAL"
-        },
-        {
-          "id": "21b8a241-2b9d-4595-a40f-af6896ed37e6",
-          "title": "ذكرى مولد الإمام الحسن العسكري (ع) 231هـ | القمر فً برج العقرب",
+          "id": "occ_4_4_0",
+          "title": "ذكرى مولد الإمام الحسن العسكري (ع) سنة 231هـ",
           "hijriDay": 4,
-          "eventType": "GENERAL"
+          "eventType": "BIRTH"
         },
         {
-          "id": "37887372-7c43-4003-8311-af6568475f07",
-          "title": "خروج القمر من برج العقرب لٌلة الخمٌس الساعة",
-          "hijriDay": 5,
-          "eventType": "GENERAL"
-        },
-        {
-          "id": "9cc77b5d-a892-448b-9023-3d515d688938",
-          "title": "وفاة الصدٌقة فاطمة الزهراء (ع) 11هـ على رواٌة",
+          "id": "occ_4_8_1",
+          "title": "وفاة الصديقة فاطمة الزهراء (ع) سنة 11هـ",
           "hijriDay": 8,
-          "eventType": "DEATH"
+          "eventType": "MARTYRDOM"
         },
         {
-          "id": "7e321c31-b7b7-4b8e-92ac-61ce63f488b4",
-          "title": "ذكرى وفاة السٌدة فاطمة المعصومة (ع)201هـ",
+          "id": "occ_4_10_2",
+          "title": "ذكرى وفاة السيدة فاطمة المعصومة (ع) سنة 201هـ",
           "hijriDay": 10,
-          "eventType": "DEATH"
-        },
-        {
-          "id": "48d168fc-88f2-4cd5-925c-17d1e90f41d9",
-          "title": "دخول فصل الخرٌف 23سبتمبر()9",
-          "hijriDay": 11,
-          "eventType": "GENERAL"
-        },
-        {
-          "id": "701ba94d-a5fc-41d3-b42e-86e8bc51fbcf",
-          "title": "دخول القمر فً برج العقرب لٌلة االثنٌن الساعة",
-          "hijriDay": 30,
-          "eventType": "GENERAL"
+          "eventType": "MARTYRDOM"
         }
       ]
     },
@@ -2216,40 +2138,22 @@
       ],
       "occasions": [
         {
-          "id": "5f0a150f-f953-4903-8d40-ba1775760814",
-          "title": "القمر فً برج العقرب",
-          "hijriDay": 2,
-          "eventType": "GENERAL"
-        },
-        {
-          "id": "04ccaefa-6c4c-456b-b48b-4f7aba23523b",
-          "title": "مولد السٌدة زٌنب الكبرى (ع) 5هـ",
+          "id": "occ_5_5_0",
+          "title": "مولد السيدة زينب الكبرى (ع) سنة 5هـ",
           "hijriDay": 5,
-          "eventType": "GENERAL"
+          "eventType": "BIRTH"
         },
         {
-          "id": "7ac9ffb2-8e8b-4510-8d1d-2b9d34bcba07",
-          "title": "وفاة الصدٌقة فاطمة الزهراء (ع) 11هـ",
+          "id": "occ_5_13_1",
+          "title": "وفاة الصديقة فاطمة الزهراء (ع) سنة 11هـ",
           "hijriDay": 13,
-          "eventType": "DEATH"
+          "eventType": "MARTYRDOM"
         },
         {
-          "id": "7e51ed46-5fa6-4464-9932-d86f8d5f5f10",
-          "title": "وفاة القاسم بن الإمام الكاظم (ع)",
+          "id": "occ_5_22_2",
+          "title": "وفاة القاسم بن الإمام موسى الكاظم (ع)",
           "hijriDay": 22,
-          "eventType": "DEATH"
-        },
-        {
-          "id": "f8c95542-43b4-4931-8e6b-dc4636d8ad21",
-          "title": "دخول القمر فً برج العقرب لٌلة األحد الساعة",
-          "hijriDay": 27,
-          "eventType": "GENERAL"
-        },
-        {
-          "id": "2ed8780e-f437-43b0-a745-74a43b2903b4",
-          "title": "القمر فً برج العقرب",
-          "hijriDay": 28,
-          "eventType": "GENERAL"
+          "eventType": "MARTYRDOM"
         }
       ]
     },
@@ -2638,46 +2542,28 @@
       ],
       "occasions": [
         {
-          "id": "e906c98b-4bb0-496d-9b7c-f995e0a578e8",
-          "title": "وفاة فاطمة الزهراء (ع) 11هـ (على رواٌة)",
+          "id": "occ_6_3_0",
+          "title": "وفاة السيدة فاطمة الزهراء (ع) سنة 11هـ",
           "hijriDay": 3,
-          "eventType": "DEATH"
+          "eventType": "MARTYRDOM"
         },
         {
-          "id": "4f9721c5-adbe-4dd8-9b1f-6983a6249fc1",
-          "title": "وفاة أم البنٌن فاطمة بنت حزام زوجة الإمام علً (أم العباس) سنة 64هـ",
+          "id": "occ_6_13_1",
+          "title": "وفاة أم البنين فاطمة بنت حزام، زوجة الإمام علي (ع) وأم أبي الفضل العباس (ع)، سنة 64هـ",
           "hijriDay": 13,
-          "eventType": "DEATH"
+          "eventType": "MARTYRDOM"
         },
         {
-          "id": "02df15e8-e053-43d2-abff-e1eb7affe1e2",
-          "title": "دخول القمر فً برج العقرب صبح السبت الساعة",
-          "hijriDay": 24,
-          "eventType": "GENERAL"
+          "id": "occ_6_20_2",
+          "title": "مولد الصديقة الطاهرة فاطمة الزهراء (ع) سنة 5 بعد البعثة",
+          "hijriDay": 20,
+          "eventType": "BIRTH"
         },
         {
-          "id": "1b35a91c-9dc6-4295-b7a5-e44918d4654d",
-          "title": "القمر فً برج العقرب",
-          "hijriDay": 25,
-          "eventType": "GENERAL"
-        },
-        {
-          "id": "3130e4ea-5a3a-4c84-96cc-c15c4df14a13",
-          "title": "القمر فً برج العقرب",
-          "hijriDay": 26,
-          "eventType": "GENERAL"
-        },
-        {
-          "id": "caf1b1a0-fc20-4e0b-a3e5-e2a91435aafc",
-          "title": "خروج القمر من برج العقرب لٌلة الثالثاء الساعة",
-          "hijriDay": 27,
-          "eventType": "GENERAL"
-        },
-        {
-          "id": "734d1eff-30db-40e5-9780-17f5e9c9ad53",
-          "title": "وفاة السٌد محمد بن الإمام الهادي (سبع الدجٌل) (ع)",
+          "id": "occ_6_29_3",
+          "title": "وفاة السيد محمد بن الإمام الهادي، المعروف بسبع الدجيل (ع)",
           "hijriDay": 29,
-          "eventType": "DEATH"
+          "eventType": "MARTYRDOM"
         }
       ]
     },
@@ -3079,62 +2965,50 @@
       ],
       "occasions": [
         {
-          "id": "d19abad6-6f32-4c86-a41f-9f076003088f",
+          "id": "occ_7_1_0",
           "title": "مولد الإمام محمد الباقر (ع) سنة 57هـ",
           "hijriDay": 1,
-          "eventType": "GENERAL"
+          "eventType": "BIRTH"
         },
         {
-          "id": "84db46b2-1aca-4548-9731-c02d8a42e013",
-          "title": "مولد الإمام علً الهادي (ع) سنة 212هـ",
+          "id": "occ_7_2_1",
+          "title": "مولد الإمام علي الهادي (ع) سنة 212هـ",
           "hijriDay": 2,
-          "eventType": "GENERAL"
+          "eventType": "BIRTH"
         },
         {
-          "id": "f47a5822-baec-4b78-ac34-0c39b00ec56f",
-          "title": "وفاة الإمام علً الهادي (ع) سنة 254هـ",
+          "id": "occ_7_3_2",
+          "title": "وفاة الإمام علي الهادي (ع) سنة 254هـ",
           "hijriDay": 3,
-          "eventType": "DEATH"
+          "eventType": "MARTYRDOM"
         },
         {
-          "id": "0e89d522-14fa-4b05-9dae-436344e3ecdd",
+          "id": "occ_7_10_3",
           "title": "مولد الإمام محمد الجواد (ع) سنة 195هـ",
           "hijriDay": 10,
-          "eventType": "GENERAL"
+          "eventType": "BIRTH"
         },
         {
-          "id": "d01d94ce-e70d-4f8a-bd7d-fd5d7abcabe7",
-          "title": "مولد الإمام علً بن أبً طالب (ع) 23قبل الهجرة ( 30سنة من عام الفٌل)",
+          "id": "occ_7_13_4",
+          "title": "مولد الإمام علي بن أبي طالب (ع)، قبل الهجرة بثلاث وعشرين سنة",
           "hijriDay": 13,
-          "eventType": "GENERAL"
+          "eventType": "BIRTH"
         },
         {
-          "id": "131a9fc7-e6fa-4faf-bd44-8c498d3690a9",
-          "title": "وفاة السٌدة زٌنب (ع) سنة 62هـ",
+          "id": "occ_7_15_5",
+          "title": "وفاة السيدة زينب الكبرى (ع) سنة 62هـ",
           "hijriDay": 15,
-          "eventType": "DEATH"
+          "eventType": "MARTYRDOM"
         },
         {
-          "id": "8fc6c81f-b39c-4d53-b152-de66398a1745",
-          "title": "القمر فً برج العقرب",
-          "hijriDay": 23,
-          "eventType": "GENERAL"
-        },
-        {
-          "id": "9ff99ad8-840c-4e28-b4d8-35ec62b79ee2",
-          "title": "القمر فً برج العقرب",
-          "hijriDay": 24,
-          "eventType": "GENERAL"
-        },
-        {
-          "id": "d732fbf4-a290-48b3-ae13-b291cc1d0e05",
-          "title": "وفاة الإمام موسى الكاظم (ع) سنة 183هـ | خروج القمر من برج العقرب لٌلة االثنٌن الساعة 11:57",
+          "id": "occ_7_25_6",
+          "title": "وفاة الإمام موسى الكاظم (ع) سنة 183هـ",
           "hijriDay": 25,
-          "eventType": "DEATH"
+          "eventType": "MARTYRDOM"
         },
         {
-          "id": "501e7473-bdcd-43b7-8363-485315ced99f",
-          "title": "بعثة النبً األكرم (ص) 13قبل الهجرة /اإلسراء و المعراج",
+          "id": "occ_7_27_7",
+          "title": "بعثة النبي الأكرم (ص) قبل الهجرة بثلاث عشرة سنة، وذكرى الإسراء والمعراج",
           "hijriDay": 27,
           "eventType": "GENERAL"
         }
@@ -3538,52 +3412,34 @@
       ],
       "occasions": [
         {
-          "id": "7a264613-b1c6-4830-a0c6-063adeda48c0",
-          "title": "ذكرى مولد الإمام الحسٌن (ع) سنة 3هـ",
+          "id": "occ_8_3_0",
+          "title": "ذكرى مولد الإمام الحسين (ع) سنة 3هـ",
           "hijriDay": 3,
-          "eventType": "GENERAL"
+          "eventType": "BIRTH"
         },
         {
-          "id": "2b850f1c-dd85-4e3d-802a-2c7393ddde44",
-          "title": "ذكرى مولد أبً الفضل العباس (ع) سنة 26هـ",
+          "id": "occ_8_4_1",
+          "title": "ذكرى مولد أبي الفضل العباس (ع) سنة 26هـ",
           "hijriDay": 4,
-          "eventType": "GENERAL"
+          "eventType": "BIRTH"
         },
         {
-          "id": "70901994-aa25-4cdd-8599-f865388d3e1b",
-          "title": "ذكرى مولد الإمام علً زٌن العابدٌن (ع) سنة38هـ",
+          "id": "occ_8_5_2",
+          "title": "ذكرى مولد الإمام علي زين العابدين (ع) سنة 38هـ",
           "hijriDay": 5,
-          "eventType": "GENERAL"
+          "eventType": "BIRTH"
         },
         {
-          "id": "9e7c3457-e742-4d3c-ad30-c5bde3ebca11",
-          "title": "مولد علً الأكبر بن الإمام الحسٌن (ع) 33هـ",
+          "id": "occ_8_11_3",
+          "title": "مولد علي الأكبر بن الإمام الحسين (ع) سنة 33هـ",
           "hijriDay": 11,
-          "eventType": "GENERAL"
+          "eventType": "BIRTH"
         },
         {
-          "id": "da34a4bf-fbad-4c30-9dda-022ab58ee95d",
-          "title": "مولد الإمام الحجة المهدي (عجل) سنة 255هـ",
+          "id": "occ_8_15_4",
+          "title": "مولد الإمام الحجة المهدي (عج) سنة 255هـ",
           "hijriDay": 15,
-          "eventType": "GENERAL"
-        },
-        {
-          "id": "c21f96d0-2693-4934-8844-520c99de6de1",
-          "title": "دخول القمر فً برج العقرب لٌلة الجمعة الساعة",
-          "hijriDay": 20,
-          "eventType": "GENERAL"
-        },
-        {
-          "id": "39f8f707-5fb8-42a2-9d2c-cd68f33f4956",
-          "title": "القمر فً برج العقرب",
-          "hijriDay": 21,
-          "eventType": "GENERAL"
-        },
-        {
-          "id": "912c8ab3-350d-4cc4-8668-125a56902ad1",
-          "title": "خروج القمر من برج العقرب صبح األحد الساعة",
-          "hijriDay": 22,
-          "eventType": "GENERAL"
+          "eventType": "BIRTH"
         }
       ]
     },
@@ -3985,62 +3841,56 @@
       ],
       "occasions": [
         {
-          "id": "54312fc9-8edc-40a7-bcbc-ed546cc99f8d",
-          "title": "معركة تبوك 1رمضان 9هـ",
+          "id": "occ_9_1_0",
+          "title": "معركة تبوك سنة 9هـ",
           "hijriDay": 1,
           "eventType": "GENERAL"
         },
         {
-          "id": "542e590e-4644-4432-9ccf-c05cd64dae01",
-          "title": "ذكرى وفاة أبً طالب (ع) بعد البعثة والسنة الثالثة ق.هـ",
+          "id": "occ_9_7_1",
+          "title": "ذكرى وفاة أبي طالب (ع)، في السنة الثالثة قبل الهجرة",
           "hijriDay": 7,
-          "eventType": "DEATH"
+          "eventType": "MARTYRDOM"
         },
         {
-          "id": "2c364580-03f3-474c-b978-731a47b9f0f3",
-          "title": "ذكرى وفاة السٌدة خدٌجة (ع) بعد البعثة والسنة الثالثة ق.هـ",
+          "id": "occ_9_10_2",
+          "title": "ذكرى وفاة السيدة خديجة الكبرى (ع)، في السنة الثالثة قبل الهجرة",
           "hijriDay": 10,
-          "eventType": "DEATH"
+          "eventType": "MARTYRDOM"
         },
         {
-          "id": "12188f55-8514-44ff-8649-757420bf3e28",
-          "title": "ذكرى والدة الإمام الحسن الزكً (ع) 2هـ",
+          "id": "occ_9_15_3",
+          "title": "ذكرى ولادة الإمام الحسن المجتبى (ع) سنة 2هـ",
           "hijriDay": 15,
-          "eventType": "GENERAL"
+          "eventType": "BIRTH"
         },
         {
-          "id": "80a36957-11a0-41ee-abea-7d90d36d421f",
-          "title": "ذكرى معركة بدر الكبرى 2هـ",
+          "id": "occ_9_17_4",
+          "title": "ذكرى معركة بدر الكبرى سنة 2هـ",
           "hijriDay": 17,
           "eventType": "GENERAL"
         },
         {
-          "id": "814b9948-cc97-4260-80e3-cbd75fd35b9b",
-          "title": "دخول القمر فً برج العقرب صبح الخمٌس الساعة 5:25 | القمر فً برج العقرب",
-          "hijriDay": 18,
-          "eventType": "GENERAL"
-        },
-        {
-          "id": "89b092bd-f8ea-40a5-9fc3-49273a8b3a61",
-          "title": "ذكرى ضربة الإمام علً (ع) 40هـ",
+          "id": "occ_9_19_5",
+          "title": "ذكرى ضربة الإمام علي (ع) سنة 40هـ",
           "hijriDay": 19,
           "eventType": "GENERAL"
         },
         {
-          "id": "c7f1e799-ab44-4384-98d6-ffffdc536f45",
-          "title": "ذكرى مرض الإمام علً (ع) 40هـ",
+          "id": "occ_9_20_6",
+          "title": "ذكرى مرض الإمام علي (ع) سنة 40هـ",
           "hijriDay": 20,
           "eventType": "GENERAL"
         },
         {
-          "id": "a94dff86-46e2-4549-adb6-5a749f6abb41",
-          "title": "ذكرى وفاة الإمام علً (ع) 40هـ",
+          "id": "occ_9_21_7",
+          "title": "ذكرى وفاة الإمام علي (ع) سنة 40هـ",
           "hijriDay": 21,
-          "eventType": "DEATH"
+          "eventType": "MARTYRDOM"
         },
         {
-          "id": "2654798a-2384-4fef-92a6-8a6efb190878",
-          "title": "لٌلة القدر الشرٌفة",
+          "id": "occ_9_23_8",
+          "title": "ليلة القدر الشريفة",
           "hijriDay": 23,
           "eventType": "GENERAL"
         }
@@ -4444,58 +4294,34 @@
       ],
       "occasions": [
         {
-          "id": "0d8c6fd4-a453-4b0d-bfa7-371b7600607b",
-          "title": "عٌد الفطر المبارك",
+          "id": "occ_10_1_0",
+          "title": "عيد الفطر المبارك",
           "hijriDay": 1,
           "eventType": "GENERAL"
         },
         {
-          "id": "640c5efe-0976-4d2a-b326-4746ebafa3e2",
-          "title": "ذكرى هدم قبور األئمة فً البقٌع الغرقد 1344هـ",
+          "id": "occ_10_8_1",
+          "title": "ذكرى هدم قبور الأئمة (ع) في بقيع الغرقد سنة 1344هـ",
           "hijriDay": 8,
           "eventType": "GENERAL"
         },
         {
-          "id": "ef0ea99b-3be4-42ca-97e4-7495da45b946",
-          "title": "ذكرى زواج النبً محمد (ص) بخدٌجة على قول",
+          "id": "occ_10_9_2",
+          "title": "ذكرى زواج النبي محمد (ص) من السيدة خديجة الكبرى (ع)",
           "hijriDay": 9,
           "eventType": "GENERAL"
         },
         {
-          "id": "c2a060f4-79e7-4401-9caa-e9e468c23031",
-          "title": "دخول فصل الربٌع ( عٌد النٌروز ) 20مارس()3",
-          "hijriDay": 11,
-          "eventType": "GENERAL"
-        },
-        {
-          "id": "02162608-9dba-497b-a86f-a4b2d823739c",
-          "title": "معركة احد وشهادة حمزه عم النبً (ص) عام 3هـ",
+          "id": "occ_10_15_3",
+          "title": "معركة أُحد واستشهاد حمزة عم النبي (ص) سنة 3هـ",
           "hijriDay": 15,
-          "eventType": "MARTYRDOM"
-        },
-        {
-          "id": "1c1ff00e-0df8-43d6-b6c5-eaf20b5859d9",
-          "title": "القمر فً برج العقرب",
-          "hijriDay": 16,
           "eventType": "GENERAL"
         },
         {
-          "id": "6bbe0216-e801-4a90-afe1-ab1414346650",
-          "title": "القمر فً برج العقرب",
-          "hijriDay": 17,
-          "eventType": "GENERAL"
-        },
-        {
-          "id": "9cbc6e91-0209-495b-adee-9efcdbc34321",
-          "title": "خروج القمر من برج العقرب لٌلة السبت الساعة",
-          "hijriDay": 18,
-          "eventType": "GENERAL"
-        },
-        {
-          "id": "36f75a84-6dde-43dc-bbce-67900a51ee58",
+          "id": "occ_10_25_4",
           "title": "ذكرى وفاة الإمام جعفر الصادق (ع) سنة 148هـ",
           "hijriDay": 25,
-          "eventType": "DEATH"
+          "eventType": "MARTYRDOM"
         }
       ]
     },
@@ -4897,46 +4723,28 @@
       ],
       "occasions": [
         {
-          "id": "dea5cfea-89ad-47fc-b6d0-3d0984b724e9",
-          "title": "ذكرى والدة السٌدة فاطمة المعصومة (ع) 173هـ",
+          "id": "occ_11_1_0",
+          "title": "ذكرى ولادة السيدة فاطمة المعصومة (ع) سنة 173هـ",
           "hijriDay": 1,
-          "eventType": "GENERAL"
+          "eventType": "BIRTH"
         },
         {
-          "id": "92f676fe-69ee-4b34-b9e8-613ea6b468f0",
-          "title": "ذكرى والدة الإمام علً بن موسى الرضا (ع) 148هـ",
+          "id": "occ_11_11_1",
+          "title": "ذكرى ولادة الإمام علي بن موسى الرضا (ع) سنة 148هـ",
           "hijriDay": 11,
-          "eventType": "GENERAL"
+          "eventType": "BIRTH"
         },
         {
-          "id": "1341e5a1-858f-441a-931f-469e1b6a4cff",
-          "title": "دخول القمر فً برج العقرب لٌلة األربعاء الساعة",
-          "hijriDay": 13,
-          "eventType": "GENERAL"
-        },
-        {
-          "id": "2257064c-3697-4c50-b074-49aac7915820",
-          "title": "القمر فً برج العقرب",
-          "hijriDay": 14,
-          "eventType": "GENERAL"
-        },
-        {
-          "id": "a942472b-0451-4c6d-8799-45f915457988",
-          "title": "خروج القمر من برج العقرب صبح الجمعة الساعة",
-          "hijriDay": 15,
-          "eventType": "GENERAL"
-        },
-        {
-          "id": "d641ba5c-cdb3-4409-bbbe-3881f8c366d6",
-          "title": "ٌوم دحو األرض",
+          "id": "occ_11_25_2",
+          "title": "يوم دحو الأرض",
           "hijriDay": 25,
           "eventType": "GENERAL"
         },
         {
-          "id": "acfaac12-f2a4-4528-98da-e2528534fb40",
-          "title": "ذكرى وفاة الإمام محمد بن علً الجواد (ع) 220هـ",
+          "id": "occ_11_29_3",
+          "title": "ذكرى وفاة الإمام محمد الجواد (ع) سنة 220هـ",
           "hijriDay": 29,
-          "eventType": "DEATH"
+          "eventType": "MARTYRDOM"
         }
       ]
     },
@@ -5338,74 +5146,56 @@
       ],
       "occasions": [
         {
-          "id": "d015b89e-d00a-4c24-942b-e973edd28d1f",
-          "title": "زواج االمام علً (ع) من فاطمة الزهراء (ع) عام 2هـ",
+          "id": "occ_12_1_0",
+          "title": "زواج الإمام علي (ع) من السيدة فاطمة الزهراء (ع) سنة 2هـ",
           "hijriDay": 1,
           "eventType": "GENERAL"
         },
         {
-          "id": "fe0b7950-5cab-4b13-826e-33cd56e4d684",
+          "id": "occ_12_7_1",
           "title": "ذكرى وفاة الإمام محمد الباقر (ع) سنة 114هـ",
           "hijriDay": 7,
-          "eventType": "DEATH"
+          "eventType": "MARTYRDOM"
         },
         {
-          "id": "9ac8450e-cba6-41d5-b674-cddc021d5128",
-          "title": "ذكرى استشهاد مسلم ،وحرم الحجاج ،وخروج الحسٌن (ع)",
+          "id": "occ_12_8_2",
+          "title": "ذكرى استشهاد مسلم بن عقيل، وإحرام الحجاج، وخروج الإمام الحسين (ع)",
           "hijriDay": 8,
-          "eventType": "MARTYRDOM"
+          "eventType": "GENERAL"
         },
         {
-          "id": "f690fe9e-78a0-4da4-aa4c-5c54cf9c704c",
-          "title": "الوقوف بعرفة ،استشهاد مسلم بن عقٌل وهانً بن عروه سنة60هـ",
+          "id": "occ_12_9_3",
+          "title": "الوقوف بعرفة، واستشهاد مسلم بن عقيل وهانئ بن عروة سنة 60هـ",
           "hijriDay": 9,
-          "eventType": "MARTYRDOM"
+          "eventType": "GENERAL"
         },
         {
-          "id": "413764be-24e5-41a5-8514-90e00b7bc7f5",
-          "title": "عٌد األضحى المبارك",
+          "id": "occ_12_10_4",
+          "title": "عيد الأضحى المبارك",
           "hijriDay": 10,
           "eventType": "GENERAL"
         },
         {
-          "id": "372b5bf7-d61a-43fe-8959-4aafa8609406",
-          "title": "دخول القمر فً برج العقرب صبح الثالثاء الساعة",
-          "hijriDay": 11,
-          "eventType": "GENERAL"
-        },
-        {
-          "id": "f7e9b89d-d795-4232-8498-4aa61f5fa8ec",
-          "title": "القمر فً برج العقرب",
-          "hijriDay": 12,
-          "eventType": "GENERAL"
-        },
-        {
-          "id": "992bd677-2b86-4492-aafd-27ad97080634",
-          "title": "ذكرى والدة الإمام علً الهادي 212هـ على قول",
+          "id": "occ_12_15_5",
+          "title": "ذكرى ولادة الإمام علي الهادي (ع) سنة 212هـ",
           "hijriDay": 15,
-          "eventType": "GENERAL"
+          "eventType": "BIRTH"
         },
         {
-          "id": "af16581a-3519-4d38-8ecd-4d3637917030",
-          "title": "عٌد الغدٌر األغر وتنصٌب الإمام علً (ع) للخالفة سنة 10هـ",
+          "id": "occ_12_18_6",
+          "title": "عيد الغدير الأغر وتنصيب الإمام علي (ع) للخلافة سنة 10هـ",
           "hijriDay": 18,
           "eventType": "GENERAL"
         },
         {
-          "id": "c4dde292-bfcf-439f-bb66-595e24c6ce4a",
-          "title": "تحدٌد القبلة باتجاه الشمس 28ماٌو( )5الساعة",
-          "hijriDay": 21,
-          "eventType": "GENERAL"
-        },
-        {
-          "id": "344b8489-9ca4-48ce-8e71-df1161785eb3",
-          "title": "استشهاد مٌثم التمار صاحب أمٌر المؤمنٌن (ع) سنة 60هـ",
+          "id": "occ_12_22_7",
+          "title": "استشهاد ميثم التمار، صاحب أمير المؤمنين (ع)، سنة 60هـ",
           "hijriDay": 22,
           "eventType": "MARTYRDOM"
         },
         {
-          "id": "fe5524bd-8beb-42b8-a70d-8f38bc1cb2c8",
-          "title": "ٌوم المباهلة سنة 10هـ /تصدق أمٌر المؤمنٌن (ع) بالخاتم",
+          "id": "occ_12_24_8",
+          "title": "يوم المباهلة سنة 10هـ، وتصدّق أمير المؤمنين (ع) بالخاتم",
           "hijriDay": 24,
           "eventType": "GENERAL"
         }
