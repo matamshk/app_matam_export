@@ -328,18 +328,27 @@
             }
         }
 
+        /* Screen styling for print helper elements */
+        .print-header-top, .print-footer {
+            display: none;
+        }
+
         /* Print styles */
         @media print {
             @page {
                 size: A4 portrait;
-                margin: 10mm 12mm;
+                margin: 6mm 10mm;
             }
             body {
                 background: #ffffff !important;
                 color: #000000 !important;
-                font-size: 10pt !important;
+                font-size: 9pt !important;
+                margin: 0 !important;
+                padding: 0 !important;
+                -webkit-print-color-adjust: exact;
+                print-color-adjust: exact;
             }
-            .navbar, .control-bar, .admin-panel, .legend-card, #whatsapp-float, footer, .today-card {
+            .navbar, .control-bar, .admin-panel, .legend-card, #whatsapp-float, footer, .today-card, .bottom-nav {
                 display: none !important;
             }
             .calendar-container {
@@ -352,18 +361,63 @@
                 box-shadow: none !important;
                 margin: 0 !important;
             }
+            
+            /* Print Header Top Styling */
+            .print-header-top {
+                display: flex !important;
+                justify-content: space-between;
+                align-items: center;
+                border-bottom: 2px solid #1E3C72;
+                padding-bottom: 6px;
+                margin-bottom: 8px;
+            }
+            .print-logo-title {
+                display: flex;
+                align-items: center;
+                gap: 12px;
+            }
+            .print-logo {
+                height: 48px;
+                width: 48px;
+                object-fit: contain;
+            }
+            .print-title-text h2 {
+                font-size: 11.5pt;
+                font-weight: 800;
+                margin: 0;
+                color: #1E3C72;
+            }
+            .print-title-text p {
+                font-size: 7.5pt;
+                margin: 1px 0 0 0;
+                color: #555;
+            }
+            .print-gregorian-range {
+                font-size: 8.5pt;
+                font-weight: 700;
+                color: #333;
+            }
+            
             .calendar-table-header {
+                display: block !important;
                 background: none !important;
                 color: #000000 !important;
                 border-bottom: 2px solid #1E3C72 !important;
-                padding: 8px 0 !important;
+                padding: 5px 0 !important;
                 text-align: center !important;
+                margin-bottom: 6px !important;
             }
             .calendar-table-header h3 {
                 color: #1E3C72 !important;
-                font-size: 14pt !important;
-                margin: 0 0 5px 0 !important;
+                font-size: 12.5pt !important;
+                margin: 0 !important;
+                text-align: center !important;
+                display: block !important;
             }
+            .calendar-table-header span {
+                display: none !important; /* Hidden since it is shown in top left of page */
+            }
+            
             .desktop-table-container {
                 display: block !important;
             }
@@ -375,10 +429,11 @@
                 border-collapse: collapse !important;
             }
             th, td {
-                border: 1px solid #aaaaaa !important;
-                padding: 5px 3px !important;
-                font-size: 8.5pt !important;
+                border: 1px solid #777777 !important;
+                padding: 3px 2px !important;
+                font-size: 7.5pt !important;
                 text-align: center !important;
+                line-height: 1.15 !important;
             }
             th {
                 background: #f5f5f5 !important;
@@ -389,6 +444,28 @@
                 background: none !important;
                 font-weight: bold !important;
                 border: 1.5px solid #000000 !important;
+            }
+            
+            /* Print Footer Styling */
+            .print-footer {
+                display: flex !important;
+                justify-content: center;
+                align-items: center;
+                gap: 25px;
+                border-top: 2px solid #1E3C72;
+                padding-top: 6px;
+                margin-top: 8px;
+                font-size: 8pt;
+                font-weight: bold;
+                color: #333;
+            }
+            .print-footer span {
+                display: inline-flex;
+                align-items: center;
+                gap: 6px;
+            }
+            .print-footer i {
+                color: #1E3C72;
             }
         }
     </style>
@@ -406,6 +483,17 @@
 
     <!-- Main Container -->
     <div class="calendar-container">
+        <!-- Print Header -->
+        <div class="print-header-top">
+            <div class="print-logo-title">
+                <img src="uploads/matam_logo_calligraphy.png" alt="شعار المأتم" class="print-logo">
+                <div class="print-title-text">
+                    <h2>مأتم أبو صيبع الشرقي</h2>
+                    <p>مملكة البحرين - أبو صيبع</p>
+                </div>
+            </div>
+            <div class="print-gregorian-range" id="printGregRange">المطابق لـ: --</div>
+        </div>
         
         <!-- Admin Adjustment Panel (Privileged) -->
         <div class="admin-panel" id="adminPanel">
@@ -506,6 +594,13 @@
                 </div>
             </div>
         </section>
+
+        <!-- Print Footer -->
+        <div class="print-footer">
+            <span>للتواصل والمتابعة:</span>
+            <span style="direction: ltr;"><i class="fab fa-instagram"></i> @matam_abusaiba</span>
+            <span style="direction: ltr;"><i class="fab fa-whatsapp"></i> +973 34195510</span>
+        </div>
 
     </div>
 
