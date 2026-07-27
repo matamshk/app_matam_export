@@ -433,7 +433,7 @@
             }
             th, td {
                 border: 1px solid #777777 !important;
-                padding: 5.2px 3px !important; /* Calibrated to fill exactly one A4 page */
+                padding: 6.2px 3px !important; /* Expanded padding to fill A4 beautifully */
                 font-size: 8pt !important;
                 text-align: center !important;
                 line-height: 1.2 !important;
@@ -449,17 +449,15 @@
                 border: 1.5px solid #000000 !important;
             }
             
-            /* Print Footer (Dark Blue Banner) Styling */
+            /* Print Footer (Clean White Styling) */
             .print-footer {
                 display: block !important;
-                background: #112240 !important; /* Dark blue background */
-                padding: 10px 15px !important;
-                border-radius: 10px !important;
+                background: none !important; /* Removed blue background */
+                padding: 8px 0 !important;
+                border-top: 2px solid #1E3C72 !important; /* Blue divider line */
                 margin-top: 15px !important;
                 text-align: center !important;
-                color: #ffffff !important;
-                -webkit-print-color-adjust: exact;
-                print-color-adjust: exact;
+                color: #000000 !important;
             }
             .print-footer-banner {
                 display: flex !important;
@@ -471,7 +469,7 @@
                 height: 38px !important;
                 width: auto !important;
                 object-fit: contain !important;
-                filter: brightness(0) invert(1) !important; /* Invert black logo to white */
+                filter: none !important; /* No invert filter (keeps original blue calligraphy logo) */
             }
             .print-social-row {
                 display: flex !important;
@@ -486,7 +484,7 @@
                 gap: 6px !important;
                 font-size: 8.5pt !important;
                 font-weight: bold !important;
-                color: #ffffff !important;
+                color: #000000 !important; /* Black text */
             }
             .icon-circle {
                 display: inline-flex !important;
@@ -532,7 +530,7 @@
         <!-- Print Header -->
         <div class="print-header-top">
             <div class="print-logo-title">
-                <img src="uploads/matam_logo_calligraphy.png" alt="شعار المأتم" class="print-logo">
+                <img src="public/branding/logo-primary.png" alt="شعار المأتم" class="print-logo">
                 <div class="print-title-text">
                     <h2>مأتم أبو صيبع الشرقي</h2>
                     <p>مملكة البحرين - أبو صيبع</p>
