@@ -333,25 +333,23 @@
             display: none;
         }
 
-        /* Screen styling for print helper elements */
-        .print-header-top, .print-footer {
-            display: none;
-        }
-
         /* Print styles */
         @media print {
             @page {
                 size: A4 portrait;
-                margin: 6mm 10mm;
+                margin: 5mm 8mm; /* Reduced margins to prevent overflow */
             }
             body {
                 background: #ffffff !important;
                 color: #000000 !important;
-                font-size: 9.5pt !important;
+                font-size: 9pt !important;
                 margin: 0 !important;
                 padding: 0 !important;
-                -webkit-print-color-adjust: exact;
-                print-color-adjust: exact;
+                -webkit-print-color-adjust: exact !important;
+                print-color-adjust: exact !important;
+            }
+            * {
+                page-break-inside: avoid;
             }
             .navbar, .control-bar, .admin-panel, .legend-card, #whatsapp-float, footer, .today-card, .bottom-nav {
                 display: none !important;
@@ -435,10 +433,10 @@
             }
             th, td {
                 border: 1px solid #777777 !important;
-                padding: 6.5px 4px !important; /* Increased padding to expand table height to fill A4 */
-                font-size: 8.5pt !important; /* Slightly larger font for better filling */
+                padding: 5.2px 3px !important; /* Calibrated to fill exactly one A4 page */
+                font-size: 8pt !important;
                 text-align: center !important;
-                line-height: 1.25 !important;
+                line-height: 1.2 !important;
             }
             th {
                 background: #f5f5f5 !important;
