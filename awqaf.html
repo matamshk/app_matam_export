@@ -329,9 +329,73 @@
         }
 
         /* Screen styling for print helper elements */
-        .print-header-top, .print-footer {
+        .print-header-top {
             display: none;
         }
+        
+        /* Social Media Footer Section for Screen */
+        .social-footer-section {
+            background: #ffffff;
+            border: 1px solid rgba(30, 60, 114, 0.1);
+            border-radius: 12px;
+            padding: 20px;
+            margin-top: 30px;
+            margin-bottom: 20px;
+            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.02);
+            text-align: center;
+        }
+        .social-footer-container {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 15px;
+        }
+        .footer-logo-img {
+            height: 50px;
+            width: auto;
+            object-fit: contain;
+        }
+        .social-links-grid {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            gap: 20px;
+            flex-wrap: wrap;
+        }
+        .social-link-item {
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            text-decoration: none;
+            color: #333;
+            font-size: 0.9rem;
+            font-weight: 600;
+            transition: all 0.3s;
+            padding: 6px 12px;
+            border-radius: 8px;
+            background: rgba(30, 60, 114, 0.02);
+            border: 1px solid rgba(30, 60, 114, 0.05);
+        }
+        .social-link-item:hover {
+            background: rgba(30, 60, 114, 0.05);
+            transform: translateY(-2px);
+        }
+        .icon-circle {
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            width: 24px;
+            height: 24px;
+            border-radius: 50%;
+            color: #ffffff;
+            font-size: 10pt;
+        }
+        .icon-circle.instagram { background: #d62976; }
+        .icon-circle.whatsapp { background: #25D366; }
+        .icon-circle.facebook { background: #1877F2; }
+        .icon-circle.telegram { background: #0088cc; }
+        .icon-circle.tiktok { background: #ff0050; }
+        .icon-circle.website { background: #1E3C72; }
 
         /* Print styles */
         @media print {
@@ -449,42 +513,59 @@
                 border: 1.5px solid #000000 !important;
             }
             
-            /* Print Footer (Clean White Styling) */
-            .print-footer {
+            /* Print Footer (Social Media Section) Styling */
+            .social-footer-section {
                 display: block !important;
-                background: none !important; /* Removed blue background */
-                padding: 8px 0 !important;
-                border-top: 2px solid #1E3C72 !important; /* Blue divider line */
+                background: none !important;
+                border: none !important;
+                border-top: 2px solid #1E3C72 !important;
+                box-shadow: none !important;
+                padding: 8px 0 0 0 !important;
                 margin-top: 15px !important;
+                margin-bottom: 0 !important;
                 text-align: center !important;
-                color: #000000 !important;
             }
-            .print-footer-banner {
+            .social-footer-container {
                 display: flex !important;
                 flex-direction: column !important;
                 align-items: center !important;
                 gap: 6px !important;
             }
-            .print-footer-logo {
+            .footer-logo-img {
                 height: 38px !important;
                 width: auto !important;
                 object-fit: contain !important;
-                filter: none !important; /* No invert filter (keeps original blue calligraphy logo) */
+                filter: none !important;
+                display: block !important;
             }
-            .print-social-row {
+            .social-links-grid {
                 display: flex !important;
                 justify-content: center !important;
                 align-items: center !important;
                 gap: 15px !important;
                 flex-wrap: wrap !important;
             }
-            .social-item {
+            .social-link-item {
                 display: inline-flex !important;
                 align-items: center !important;
                 gap: 6px !important;
                 font-size: 8.5pt !important;
                 font-weight: bold !important;
-                color: #000000 !important; /* Black text */
+                color: #000000 !important;
+                background: none !important;
+                border: none !important;
+                padding: 0 !important;
+                text-decoration: none !important;
+            }
+            .icon-circle {
+                display: inline-flex !important;
+                align-items: center !important;
+                justify-content: center !important;
+                width: 20px !important;
+                height: 20px !important;
+                border-radius: 50% !important;
+                color: #ffffff !important;
+                font-size: 9.5pt !important;
             }
             .icon-circle {
                 display: inline-flex !important;
@@ -639,17 +720,35 @@
             </div>
         </section>
 
-        <!-- Print Footer (Dark Blue Social Media Banner) -->
-        <div class="print-footer">
-            <div class="print-footer-banner">
-                <img src="uploads/matam_logo_calligraphy.png" alt="مأتم أبو صيبع" class="print-footer-logo">
-                <div class="print-social-row">
-                    <div class="social-item">تواصل والمتابعة:</div>
-                    <div class="social-item"><span class="icon-circle instagram"><i class="fab fa-instagram"></i></span> @matam_abusaiba</div>
-                    <div class="social-item"><span class="icon-circle whatsapp"><i class="fab fa-whatsapp"></i></span> +973 34195510</div>
-                    <div class="social-item"><span class="icon-circle facebook"><i class="fab fa-facebook-f"></i></span></div>
-                    <div class="social-item"><span class="icon-circle telegram"><i class="fab fa-telegram-plane"></i></span></div>
-                    <div class="social-item"><span class="icon-circle tiktok"><i class="fab fa-tiktok"></i></span></div>
+        <!-- Social Media Footer Section -->
+        <div class="social-footer-section">
+            <div class="social-footer-container">
+                <img src="uploads/matam_logo_calligraphy.png" alt="مأتم أبو صيبع" class="footer-logo-img">
+                <div class="social-links-grid">
+                    <a href="https://instagram.com/matam_abusaiba" target="_blank" class="social-link-item">
+                        <span class="icon-circle instagram"><i class="fab fa-instagram"></i></span>
+                        <span class="link-text">@matam_abusaiba</span>
+                    </a>
+                    <a href="https://api.whatsapp.com/send/?phone=97334195510&text&type=phone_number&app_absent=0" target="_blank" class="social-link-item">
+                        <span class="icon-circle whatsapp"><i class="fab fa-whatsapp"></i></span>
+                        <span class="link-text">+973 34195510</span>
+                    </a>
+                    <a href="https://facebook.com/profile.php?id=100078783154048" target="_blank" class="social-link-item">
+                        <span class="icon-circle facebook"><i class="fab fa-facebook-f"></i></span>
+                        <span class="link-text">مأتم أبو صيبع الشرقي</span>
+                    </a>
+                    <a href="https://t.me/matam_abusaiba" target="_blank" class="social-link-item">
+                        <span class="icon-circle telegram"><i class="fab fa-telegram-plane"></i></span>
+                        <span class="link-text">t.me/matam_abusaiba</span>
+                    </a>
+                    <a href="https://tiktok.com/@matam_abusaiba?is_from_webapp=1&sender_device=pc" target="_blank" class="social-link-item">
+                        <span class="icon-circle tiktok"><i class="fab fa-tiktok"></i></span>
+                        <span class="link-text">matam_abusaiba</span>
+                    </a>
+                    <a href="https://matamabusaiba.com/" target="_blank" class="social-link-item">
+                        <span class="icon-circle website"><i class="fas fa-globe"></i></span>
+                        <span class="link-text">matamabusaiba.com</span>
+                    </a>
                 </div>
             </div>
         </div>
