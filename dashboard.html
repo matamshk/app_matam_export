@@ -35,11 +35,44 @@
         }
         
         @media print {
-            body:not(.printing-modal) .sidebar, 
-            body:not(.printing-modal) .top-header,
-            body:not(.printing-modal) .report-controls,
-            body:not(.printing-modal) .action-btns { display: none !important; }
-            body:not(.printing-modal) .main-content { margin: 0; padding: 0; }
+            body:not(.printing-modal):not(.printing-voucher):not(.printing-finance-summary) .sidebar, 
+            body:not(.printing-modal):not(.printing-voucher):not(.printing-finance-summary) .top-header,
+            body:not(.printing-modal):not(.printing-voucher):not(.printing-finance-summary) .report-controls,
+            body:not(.printing-modal):not(.printing-voucher):not(.printing-finance-summary) .action-btns { display: none !important; }
+            body:not(.printing-modal):not(.printing-voucher):not(.printing-finance-summary) .main-content { margin: 0; padding: 0; }
+            
+            /* Print Voucher Modal Styles */
+            body.printing-voucher .dashboard-container { display: none !important; }
+            body.printing-voucher .modal-overlay:not(#printVoucherModalOverlay) { display: none !important; }
+            body.printing-voucher #printVoucherModalOverlay { 
+                position: static !important;
+                background: none !important;
+                padding: 0 !important;
+                display: block !important;
+                visibility: visible !important;
+            }
+            body.printing-voucher #printVoucherModalOverlay * {
+                visibility: visible !important;
+            }
+            body.printing-voucher #printVoucherModalOverlay .modal-box {
+                border: none !important;
+                box-shadow: none !important;
+                padding: 0 !important;
+                max-width: 100% !important;
+                background: #fff !important;
+                color: #000 !important;
+            }
+            body.printing-voucher .action-btns { display: none !important; }
+            body.printing-voucher .voucher-signatures { display: none !important; }
+            
+            /* Print Finance Summary Styles */
+            body.printing-finance-summary .sidebar, 
+            body.printing-finance-summary .top-header,
+            body.printing-finance-summary .finance-tabs,
+            body.printing-finance-summary .action-btns { display: none !important; }
+            body.printing-finance-summary .main-content { margin: 0; padding: 0; }
+            body.printing-finance-summary .finance-tab-content { display: none !important; }
+            body.printing-finance-summary #finance-dash { display: block !important; }
         }
     </style>
 </head>
@@ -64,6 +97,7 @@
                 <li id="menu-home"><a href="#" class="active" onclick="showSection('homeViewer')"><i class="fas fa-home"></i> الرئيسية</a></li>
                 <li id="menu-bookings"><a href="#" onclick="showSection('bookingsViewer')"><i class="fas fa-book"></i> إدارة الحجوزات</a></li>
                 <li id="menu-contributions" style="display:none;"><a href="#" onclick="showSection('contributionsViewer')"><i class="fas fa-hand-holding-heart"></i> مساهمات المرحومين</a></li>
+                <li id="menu-finance" style="display:none;"><a href="#" onclick="showSection('financeViewer')"><i class="fas fa-wallet"></i> إدارة المالية</a></li>
                 <li id="menu-reports" style="display:none;"><a href="#" onclick="showSection('reportsViewer')"><i class="fas fa-chart-bar"></i> التقارير</a></li>
                 <li id="menu-users" style="display:none;"><a href="#" onclick="showSection('usersViewer')"><i class="fas fa-users"></i> إدارة المستخدمين</a></li>
                 <li id="menu-occasions"><a href="#" onclick="showSection('occasionsViewer')"><i class="fas fa-calendar-alt"></i> المناسبات</a></li>
@@ -265,6 +299,337 @@
                                     <tr><td colspan="7" style="text-align: center;">جاري التحميل...</td></tr>
                                 </tbody>
                             </table>
+                        </div>
+                    </div>
+                </section>
+
+                <!-- Section: Financial Management -->
+                <section id="financeViewer" style="display: none;">
+                    <div class="finance-tabs" style="display: flex; gap: 10px; margin-bottom: 20px; border-bottom: 2px solid var(--border); padding-bottom: 10px; flex-wrap: wrap;">
+                        <button onclick="showFinanceTab('finance-dash')" class="btn-finance-tab active-tab" style="padding: 10px 20px; border-radius: 5px; border: none; background: var(--primary); color: white; cursor: pointer; font-weight: bold; font-family: inherit;">لوحة الملخص</button>
+                        <button onclick="showFinanceTab('finance-income')" class="btn-finance-tab" style="padding: 10px 20px; border-radius: 5px; border: none; background: rgba(0,0,0,0.05); color: var(--text-dark); cursor: pointer; font-weight: bold; font-family: inherit;">تسجيل إيراد</button>
+                        <button onclick="showFinanceTab('finance-expense')" class="btn-finance-tab" style="padding: 10px 20px; border-radius: 5px; border: none; background: rgba(0,0,0,0.05); color: var(--text-dark); cursor: pointer; font-weight: bold; font-family: inherit;">تسجيل مصروف</button>
+                        <button onclick="showFinanceTab('finance-log')" class="btn-finance-tab" style="padding: 10px 20px; border-radius: 5px; border: none; background: rgba(0,0,0,0.05); color: var(--text-dark); cursor: pointer; font-weight: bold; font-family: inherit;">سجل العمليات</button>
+                        <button onclick="showFinanceTab('finance-cats')" class="btn-finance-tab" style="padding: 10px 20px; border-radius: 5px; border: none; background: rgba(0,0,0,0.05); color: var(--text-dark); cursor: pointer; font-weight: bold; font-family: inherit;">إعداد الفئات</button>
+                        <button onclick="showFinanceTab('finance-backup')" class="btn-finance-tab" style="padding: 10px 20px; border-radius: 5px; border: none; background: rgba(0,0,0,0.05); color: var(--text-dark); cursor: pointer; font-weight: bold; font-family: inherit;">النسخ الاحتياطي</button>
+                    </div>
+
+                    <!-- 1. Dashboard Tab -->
+                    <div id="finance-dash" class="finance-tab-content">
+                        <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px;" class="action-btns">
+                            <h3 style="margin: 0; color: var(--primary);">الملخص المالي العام</h3>
+                            <button onclick="printFinanceSummary()" class="btn-primary" style="width: auto; background: #315F66;"><i class="fas fa-print"></i> طباعة ملخص لوحة التحكم المالية</button>
+                        </div>
+                        <div class="stats-grid" style="grid-template-columns: repeat(auto-fit, minmax(220px, 1fr)); margin-bottom: 25px;">
+                            <div class="stat-card" style="border-bottom-color: #28a745;">
+                                <div class="stat-info">
+                                    <h4>💰 إجمالي الإيرادات</h4>
+                                    <h2 id="totalRevenues">0.000 د.ب</h2>
+                                </div>
+                                <div class="stat-icon" style="background: rgba(40,167,69,0.1); color: #28a745;">
+                                    <i class="fas fa-arrow-down"></i>
+                                </div>
+                            </div>
+                            <div class="stat-card" style="border-bottom-color: #dc3545;">
+                                <div class="stat-info">
+                                    <h4>💸 إجمالي المصروفات</h4>
+                                    <h2 id="totalExpenses">0.000 د.ب</h2>
+                                </div>
+                                <div class="stat-icon" style="background: rgba(220,53,69,0.1); color: #dc3545;">
+                                    <i class="fas fa-arrow-up"></i>
+                                </div>
+                            </div>
+                            <div class="stat-card" id="balanceCard" style="border-bottom-color: var(--primary);">
+                                <div class="stat-info">
+                                    <h4>📊 الرصيد الحالي</h4>
+                                    <h2 id="currentBalance">0.000 د.ب</h2>
+                                </div>
+                                <div class="stat-icon" id="balanceIcon" style="background: rgba(49,95,102,0.1); color: var(--primary);">
+                                    <i class="fas fa-coins"></i>
+                                </div>
+                            </div>
+                            <div class="stat-card" style="border-bottom-color: var(--gold);">
+                                <div class="stat-info">
+                                    <h4>👥 عدد العمليات</h4>
+                                    <h2 id="totalTransactionsCount">0</h2>
+                                </div>
+                                <div class="stat-icon" style="background: rgba(183,154,91,0.1); color: var(--gold);">
+                                    <i class="fas fa-exchange-alt"></i>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Today/Month Stats & Charts Grid -->
+                        <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 20px; flex-wrap: wrap;" class="finance-dash-grid">
+                            <div class="card-panel" style="margin-bottom: 0;">
+                                <div class="card-header">
+                                    <h3>أحدث المعاملات اليوم والشهر</h3>
+                                </div>
+                                <div style="display: flex; flex-direction: column; gap: 15px;">
+                                    <div style="background: rgba(0,0,0,0.02); padding: 15px; border-radius: 8px; display: flex; justify-content: space-between; align-items: center;">
+                                        <div>
+                                            <span style="color: var(--text-gray); font-size: 0.9em; font-weight: bold;">📅 معاملات اليوم</span>
+                                            <div id="todayTxCount" style="font-size: 1.1rem; font-weight: bold; margin-top: 5px; color: var(--primary);">0 عملية</div>
+                                        </div>
+                                        <div style="text-align: right;">
+                                            <span style="color: var(--text-gray); font-size: 0.9em;">صافي اليوم:</span>
+                                            <div id="todayTxAmount" style="font-size: 1.1rem; font-weight: bold; margin-top: 5px; color: #16a34a;">0.000 د.ب</div>
+                                        </div>
+                                    </div>
+                                    <div style="background: rgba(0,0,0,0.02); padding: 15px; border-radius: 8px; display: flex; justify-content: space-between; align-items: center;">
+                                        <div>
+                                            <span style="color: var(--text-gray); font-size: 0.9em; font-weight: bold;">📈 معاملات الشهر الحالي</span>
+                                            <div id="monthTxCount" style="font-size: 1.1rem; font-weight: bold; margin-top: 5px; color: var(--primary);">0 عملية</div>
+                                        </div>
+                                        <div style="text-align: right;">
+                                            <span style="color: var(--text-gray); font-size: 0.9em;">صافي الشهر:</span>
+                                            <div id="monthTxAmount" style="font-size: 1.1rem; font-weight: bold; margin-top: 5px; color: #16a34a;">0.000 د.ب</div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="card-panel" style="margin-bottom: 0;">
+                                <div class="card-header">
+                                    <h3>مقارنة الإيرادات والمصروفات</h3>
+                                </div>
+                                <div style="position: relative; height: 180px;">
+                                    <canvas id="financeChart"></canvas>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- 2. Revenues Tab -->
+                    <div id="finance-income" class="finance-tab-content" style="display: none;">
+                        <div class="card-panel">
+                            <div class="card-header">
+                                <h3 id="revenueFormTitle">استلام مبلغ جديد (تسجيل إيراد)</h3>
+                            </div>
+                            <form id="revenueForm" onsubmit="saveRevenueForm(event)">
+                                <input type="hidden" id="rev-id">
+                                <div class="grid-form" style="grid-template-columns: 1fr 1fr; margin-bottom: 15px;">
+                                    <div class="form-group">
+                                        <label>رقم العملية (تلقائي)</label>
+                                        <input type="text" id="rev-op-num" readonly placeholder="يولد تلقائياً" style="background: var(--bg-light); cursor: not-allowed;">
+                                    </div>
+                                    <div class="form-group">
+                                        <label>التاريخ</label>
+                                        <input type="date" id="rev-date" required>
+                                    </div>
+                                </div>
+                                <div class="grid-form" style="grid-template-columns: 1fr 1fr; margin-bottom: 15px;">
+                                    <div class="form-group">
+                                        <label>اسم الدافع</label>
+                                        <input type="text" id="rev-payer" required placeholder="اسم الشخص أو الجهة الدافعة">
+                                    </div>
+                                    <div class="form-group">
+                                        <label>رقم الهاتف (اختياري)</label>
+                                        <input type="tel" id="rev-phone" placeholder="مثال: 39999999">
+                                    </div>
+                                </div>
+                                <div class="grid-form" style="grid-template-columns: 1fr 1fr 1fr; margin-bottom: 15px;">
+                                    <div class="form-group">
+                                        <label>نوع الإيراد</label>
+                                        <select id="rev-category" required>
+                                            <!-- Populated dynamically -->
+                                        </select>
+                                    </div>
+                                    <div class="form-group">
+                                        <label>طريقة الدفع</label>
+                                        <select id="rev-method" required>
+                                            <option value="BenefitPay">BenefitPay</option>
+                                            <option value="نقد">نقد (كاش)</option>
+                                            <option value="تحويل بنكي">تحويل بنكي</option>
+                                            <option value="بطاقة">بطاقة (مكينة)</option>
+                                        </select>
+                                    </div>
+                                    <div class="form-group">
+                                        <label>المبلغ (د.ب)</label>
+                                        <input type="number" id="rev-amount" step="0.001" min="0.001" required placeholder="0.000">
+                                    </div>
+                                </div>
+                                <div class="form-group" style="margin-bottom: 20px;">
+                                    <label>ملاحظات إضافية</label>
+                                    <textarea id="rev-notes" rows="2" placeholder="ملاحظات حول العملية أو المناسبة المخصصة..."></textarea>
+                                </div>
+                                <div style="display: flex; gap: 10px;">
+                                    <button type="submit" class="btn-primary" style="width: auto;"><i class="fas fa-save"></i> حفظ العملية</button>
+                                    <button type="button" class="btn-primary" id="btnCancelEditRev" style="background: #7f8c8d; display: none; width: auto;" onclick="resetRevenueForm()">إلغاء التعديل</button>
+                                </div>
+                            </form>
+                        </div>
+                    </div>
+
+                    <!-- 3. Expenses Tab -->
+                    <div id="finance-expense" class="finance-tab-content" style="display: none;">
+                        <div class="card-panel">
+                            <div class="card-header">
+                                <h3 id="expenseFormTitle">تسجيل مصروف جديد</h3>
+                            </div>
+                            <form id="expenseForm" onsubmit="saveExpenseForm(event)">
+                                <input type="hidden" id="exp-id">
+                                <div class="grid-form" style="grid-template-columns: 1fr 1fr; margin-bottom: 15px;">
+                                    <div class="form-group">
+                                        <label>رقم العملية (تلقائي)</label>
+                                        <input type="text" id="exp-op-num" readonly placeholder="يولد تلقائياً" style="background: var(--bg-light); cursor: not-allowed;">
+                                    </div>
+                                    <div class="form-group">
+                                        <label>التاريخ</label>
+                                        <input type="date" id="exp-date" required>
+                                    </div>
+                                </div>
+                                <div class="grid-form" style="grid-template-columns: 1fr 1fr 1fr; margin-bottom: 15px;">
+                                    <div class="form-group">
+                                        <label>تصنيف المصروف</label>
+                                        <select id="exp-category" required>
+                                            <!-- Populated dynamically -->
+                                        </select>
+                                    </div>
+                                    <div class="form-group">
+                                        <label>الجهة المستلمة (المورد/المحل)</label>
+                                        <input type="text" id="exp-vendor" required placeholder="اسم الشركة أو المستلم">
+                                    </div>
+                                    <div class="form-group">
+                                        <label>المبلغ (د.ب)</label>
+                                        <input type="number" id="exp-amount" step="0.001" min="0.001" required placeholder="0.000">
+                                    </div>
+                                </div>
+                                <div class="grid-form" style="grid-template-columns: 1fr; margin-bottom: 15px;">
+                                    <div class="form-group">
+                                        <label>إرفاق فاتورة / رصيد دفع (صورة أو ملف PDF)</label>
+                                        <input type="file" id="exp-invoice-file" accept="image/*,application/pdf" style="padding: 6px;">
+                                        <div id="exp-current-invoice" style="margin-top: 5px; font-size: 0.85em; color: var(--gold); display: none;">
+                                            <i class="fas fa-file-invoice"></i> يوجد فاتورة مرفقة حالياً: <a href="#" target="_blank" id="exp-invoice-link" style="text-decoration: underline; color: inherit;">عرض الملف</a>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="form-group" style="margin-bottom: 20px;">
+                                    <label>ملاحظات وتفاصيل المصروف</label>
+                                    <textarea id="exp-notes" rows="2" placeholder="ملاحظات حول المشتريات أو الخدمات المقدمة للمأتم..."></textarea>
+                                </div>
+                                <div style="display: flex; gap: 10px;">
+                                    <button type="submit" class="btn-primary" style="width: auto;"><i class="fas fa-save"></i> حفظ العملية</button>
+                                    <button type="button" class="btn-primary" id="btnCancelEditExp" style="background: #7f8c8d; display: none; width: auto;" onclick="resetExpenseForm()">إلغاء التعديل</button>
+                                </div>
+                            </form>
+                        </div>
+                    </div>
+
+                    <!-- 4. Transactions Log Tab -->
+                    <div id="finance-log" class="finance-tab-content" style="display: none;">
+                        <div class="report-controls" style="margin-bottom: 20px;">
+                            <div style="flex: 1.5; min-width: 180px;">
+                                <label>البحث بالاسم / الملاحظات</label>
+                                <input type="text" id="financeSearchInput" placeholder="أدخل كلمة للبحث..." onkeyup="filterFinanceLog()" style="width: 100%; box-sizing: border-box; padding: 8px;">
+                            </div>
+                            <div style="flex: 1; min-width: 120px;">
+                                <label>نوع المعاملة</label>
+                                <select id="financeTypeFilter" onchange="filterFinanceLog()">
+                                    <option value="all">الكل</option>
+                                    <option value="revenue">المقبوضات (إيراد)</option>
+                                    <option value="expense">المصروفات</option>
+                                </select>
+                            </div>
+                            <div style="flex: 1; min-width: 120px;">
+                                <label>من تاريخ</label>
+                                <input type="date" id="financeDateFrom" onchange="filterFinanceLog()">
+                            </div>
+                            <div style="flex: 1; min-width: 120px;">
+                                <label>إلى تاريخ</label>
+                                <input type="date" id="financeDateTo" onchange="filterFinanceLog()">
+                            </div>
+                            <div style="display: flex; gap: 8px;" class="action-btns">
+                                <button onclick="printFinanceLog()" class="btn-primary" style="background: #6c757d; width:auto; font-size: 0.85em;"><i class="fas fa-print"></i> طباعة</button>
+                                <button onclick="exportFinanceExcel()" class="btn-primary" style="background: #28a745; width:auto; font-size: 0.85em;"><i class="fas fa-file-excel"></i> Excel</button>
+                                <button onclick="exportFinancePDF()" class="btn-primary" style="background: #e74c3c; width:auto; font-size: 0.85em;"><i class="fas fa-file-pdf"></i> PDF</button>
+                            </div>
+                        </div>
+
+                        <div class="card-panel">
+                            <div class="card-header">
+                                <h3>سجل المعاملات المالية</h3>
+                                <div id="financeFilteredBalance" style="font-weight: bold; color: var(--primary);">تصفية الرصيد: 0.000 د.ب</div>
+                            </div>
+                            <div style="overflow-x: auto;">
+                                <table id="financeTable">
+                                    <thead>
+                                        <tr>
+                                            <th>رقم العملية</th>
+                                            <th>التاريخ</th>
+                                            <th>النوع</th>
+                                            <th>التصنيف</th>
+                                            <th>البيان (الدافع/الجهة)</th>
+                                            <th>الإيراد (د.ب)</th>
+                                            <th>المصروف (د.ب)</th>
+                                            <th>طريقة الدفع/مرفق</th>
+                                            <th class="action-btns">الإجراءات</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody id="financeTableBody">
+                                        <tr><td colspan="9" style="text-align: center;">لا توجد معاملات مسجلة.</td></tr>
+                                    </tbody>
+                                </table>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- 5. Categories Settings Tab -->
+                    <div id="finance-cats" class="finance-tab-content" style="display: none;">
+                        <div class="grid-form" style="grid-template-columns: 1fr 1fr; gap: 20px;">
+                            <div class="card-panel">
+                                <div class="card-header">
+                                    <h3>تصنيفات الإيرادات</h3>
+                                </div>
+                                <div style="display: flex; gap: 10px; margin-bottom: 15px;">
+                                    <input type="text" id="newRevCatInput" placeholder="تصنيف إيراد جديد..." style="flex:1;">
+                                    <button type="button" class="btn-primary" onclick="addFinanceCategory('revenue')" style="width:auto;"><i class="fas fa-plus"></i></button>
+                                </div>
+                                <ul id="revCatsList" style="list-style: none; padding: 0;">
+                                    <!-- Populated dynamically -->
+                                </ul>
+                            </div>
+                            <div class="card-panel">
+                                <div class="card-header">
+                                    <h3>تصنيفات المصروفات</h3>
+                                </div>
+                                <div style="display: flex; gap: 10px; margin-bottom: 15px;">
+                                    <input type="text" id="newExpCatInput" placeholder="تصنيف مصروف جديد..." style="flex:1;">
+                                    <button type="button" class="btn-primary" onclick="addFinanceCategory('expense')" style="width:auto;"><i class="fas fa-plus"></i></button>
+                                </div>
+                                <ul id="expCatsList" style="list-style: none; padding: 0;">
+                                    <!-- Populated dynamically -->
+                                </ul>
+                            </div>
+                        </div>
+                        <div style="text-align: left; margin-top: 15px;">
+                            <button onclick="saveFinanceCategoriesToServer()" class="btn-primary" style="width:auto;"><i class="fas fa-save"></i> حفظ تصنيفات النظام المالي</button>
+                        </div>
+                    </div>
+
+                    <!-- 6. Backup and Restore Tab -->
+                    <div id="finance-backup" class="finance-tab-content" style="display: none;">
+                        <div class="card-panel">
+                            <div class="card-header">
+                                <h3>النسخ الاحتياطي واستعادة البيانات</h3>
+                            </div>
+                            <p style="color: var(--text-gray); margin-bottom: 20px;">يمكنك تحميل كامل قاعدة بيانات الموقع لحفظ نسخة احتياطية محلية، أو استعادة قاعدة البيانات من ملف تم تحميله مسبقاً.</p>
+                            
+                            <div style="display: flex; gap: 20px; flex-wrap: wrap;">
+                                <div style="flex: 1; background: rgba(0,0,0,0.02); padding: 20px; border-radius: 8px; text-align: center; border: 1.5px dashed var(--border);">
+                                    <i class="fas fa-download" style="font-size: 2rem; color: var(--primary); margin-bottom: 10px;"></i>
+                                    <h4>إنشاء نسخة احتياطية</h4>
+                                    <p style="font-size: 0.85em; color: var(--text-gray); margin-bottom: 15px;">تحميل كامل البيانات (الحجوزات، المناسبات، المالية والمسجلين) كملف JSON مشفر.</p>
+                                    <button onclick="downloadBackupDatabase()" class="btn-primary" style="width:auto;"><i class="fas fa-file-download"></i> تحميل قاعدة البيانات</button>
+                                </div>
+                                
+                                <div style="flex: 1; background: rgba(0,0,0,0.02); padding: 20px; border-radius: 8px; text-align: center; border: 1.5px dashed #dc3545;">
+                                    <i class="fas fa-upload" style="font-size: 2rem; color: #dc3545; margin-bottom: 10px;"></i>
+                                    <h4>استعادة قاعدة البيانات</h4>
+                                    <p style="font-size: 0.85em; color: var(--text-gray); margin-bottom: 15px;">رفع ملف JSON لاستبدال كامل محتويات الموقع بالنسخة المحفوظة.</p>
+                                    <input type="file" id="dbRestoreFile" accept=".json" style="display:none;" onchange="handleRestoreDatabaseFile(event)">
+                                    <button onclick="document.getElementById('dbRestoreFile').click()" class="btn-primary" style="background: #dc3545; width:auto;"><i class="fas fa-file-upload"></i> استيراد واستعادة البيانات</button>
+                                </div>
+                            </div>
                         </div>
                     </div>
                 </section>
@@ -573,6 +938,12 @@
                                             <td style="text-align: center;"><input type="radio" name="perm_settings" value="read"></td>
                                             <td style="text-align: center;"><input type="radio" name="perm_settings" value="write"></td>
                                         </tr>
+                                        <tr style="border-bottom: 1px solid rgba(255,255,255,0.05);">
+                                            <td style="padding: 8px;"><i class="fas fa-wallet"></i> إدارة المالية</td>
+                                            <td style="text-align: center;"><input type="radio" name="perm_finance" value="none" checked></td>
+                                            <td style="text-align: center;"><input type="radio" name="perm_finance" value="read"></td>
+                                            <td style="text-align: center;"><input type="radio" name="perm_finance" value="write"></td>
+                                        </tr>
                                     </tbody>
                                 </table>
                             </div>
@@ -667,6 +1038,57 @@
         </div>
     </div>
 
-    <script src="js/admin.js?v=2026"></script>
+    <!-- Modal: Print Transaction Voucher -->
+    <div id="printVoucherModalOverlay" class="modal-overlay" style="display: none;">
+        <div class="modal-box" style="max-width: 600px; background: #fff; color: #000; border: 1.5px solid var(--primary);">
+            <div id="voucherPrintArea" style="padding: 20px; direction: rtl; font-family: 'Tajawal', sans-serif; background: #fff; color: #000; border: 2px solid #315F66; border-radius: 8px;">
+                <!-- Header -->
+                <div style="display: flex; justify-content: space-between; align-items: center; border-bottom: 2px solid #315F66; padding-bottom: 10px; margin-bottom: 20px;">
+                    <div>
+                        <h2 style="margin: 0; color: #315F66; font-size: 1.6rem; font-weight: 800;">مأتم أبوصيبع</h2>
+                        <span style="font-size: 0.85rem; color: #555;">مملكة البحرين - قرية أبوصيبع</span>
+                    </div>
+                    <img src="uploads/matam_logo_min.png" alt="اللوجو" style="height: 60px; max-width: 150px; object-fit: contain;" onerror="this.src='public/branding/logo-primary.png';">
+                </div>
+                
+                <!-- Title -->
+                <h3 id="voucherTitle" style="text-align: center; margin-top: 0; margin-bottom: 25px; font-size: 1.4rem; font-weight: 700; text-decoration: underline; color: #315F66;">سند قبض إيراد</h3>
+                
+                <!-- Fields -->
+                <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 15px; font-size: 1rem; margin-bottom: 25px; line-height: 1.8;">
+                    <div><strong>رقم العملية:</strong> <span id="v-op-num">--</span></div>
+                    <div><strong>التاريخ:</strong> <span id="v-date">--</span></div>
+                    <div style="grid-column: 1 / -1;"><strong>البيان (الدافع/الجهة):</strong> <span id="v-detail">--</span></div>
+                    <div><strong>التصنيف:</strong> <span id="v-category">--</span></div>
+                    <div><strong>طريقة الدفع:</strong> <span id="v-method">--</span></div>
+                    <div style="grid-column: 1 / -1; background: #f8f9f7; padding: 10px; border-radius: 5px; border: 1px solid rgba(49,95,102,0.2);">
+                        <strong>المبلغ المستلم:</strong> <span id="v-amount" style="font-size: 1.2rem; font-weight: bold; color: #28a745;">0.000 د.ب</span>
+                    </div>
+                    <div style="grid-column: 1 / -1;"><strong>ملاحظات:</strong> <span id="v-notes">--</span></div>
+                </div>
+                
+                <!-- Signatures -->
+                <div class="voucher-signatures" style="display: flex; justify-content: space-between; align-items: center; margin-top: 40px; border-top: 1px dashed #ccc; padding-top: 20px;">
+                    <div style="text-align: center;">
+                        <span style="display: block; font-size: 0.9em; margin-bottom: 40px;">توقيع المستلم (المحاسب)</span>
+                        <div style="width: 150px; border-bottom: 1px solid #000;"></div>
+                    </div>
+                    <div style="text-align: center;">
+                        <span style="display: block; font-size: 0.9em; margin-bottom: 40px;">الختم الرسمي للمأتم</span>
+                        <div style="width: 100px; height: 60px; border: 1px dashed #ccc; border-radius: 50%; margin: 0 auto; display: flex; align-items: center; justify-content: center; color: #ccc; font-size: 0.8em;">الختم</div>
+                    </div>
+                </div>
+            </div>
+            
+            <div style="display: flex; gap: 10px; justify-content: center; margin-top: 20px;" class="action-btns">
+                <button type="button" class="btn-primary" style="width: auto;" onclick="executeVoucherPrint()"><i class="fas fa-print"></i> تنفيذ الطباعة</button>
+                <button type="button" class="btn-primary" style="width: auto; background: #7f8c8d;" onclick="document.getElementById('printVoucherModalOverlay').style.display='none'">إغلاق</button>
+            </div>
+        </div>
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.10.1/html2pdf.bundle.min.js"></script>
+    <script src="js/admin.js?v=2026_finance_fixed"></script>
 </body>
 </html>
